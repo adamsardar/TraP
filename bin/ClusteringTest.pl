@@ -32,8 +32,7 @@ use warnings;
 
 # Add Local Library to LibPath
 #----------------------------------------------------------------------------------------------------------------
-use lib "/home/sardar/bin/perl-libs-custom";
-
+use lib "../lib";
 
 # CPAN Includes
 #----------------------------------------------------------------------------------------------------------------
@@ -47,9 +46,8 @@ use Pod::Usage;                       #Print a usage man page from the POD comme
 use Data::Dumper;                     #Allow easy print dumps of datastructures for debugging
 #use XML::Simple qw(:strict);          #Load a config file from the local directory
 use DBI;
-use Supfam::Utils;
 
-use TraP::Cluster;
+use Cluster::Cluster; #Local lib to TraP project, added using the use lib above
 
 # Command Line Options
 #----------------------------------------------------------------------------------------------------------------
@@ -114,6 +112,8 @@ while (my $line = <DATAFILE>){
 	
 	$RawDataHash->{$SpeciesName}=\@SplitLine;
 }
+
+close DATAFILE;
 
 my ($ClusterPositionsHash,$XYClusterGroups) = SOMcluster($RawDataHash,$method,0);
 
