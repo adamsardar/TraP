@@ -49,7 +49,7 @@ our %EXPORT_TAGS = (
 			getAncestralTreeNodeByLeft
 			getAncestralTreeNodeByRight
 ) ],
-'importance' => [ qw(
+'topic' => [ qw(
 			doArchitectureTF_IDF
 			doDomainTF_IDF
 ) ],
@@ -139,8 +139,8 @@ my ($genome, $combs, $dbh) = @_;
 $dbh = dbConnect() unless defined $dbh;
 my $close_dbh = (@_ < 3)?1:0;
 
-        my ($nrows) = $dbh->selectrow_array("SELECT count(genome) FROM len_comb WHERE genome = ?", undef, $genome);
-        my $query = $dbh->prepare("SELECT comb FROM len_comb WHERE genome = ?");
+        my ($nrows) = $dbh->selectrow_array("SELECT count(genome) FROM len_supra WHERE ascomb_prot_number > 0 AND genome = ?", undef, $genome);
+        my $query = $dbh->prepare("SELECT comb_index.comb as comb FROM len_supra, comb_index WHERE len_supra.supra_id = comb_index.id AND len_supra.ascomb_prot_number > 0 AND len_supra.genome = ?");
         $query->execute($genome) or return undef;
         my $pbar = Term::ProgressBar->new({'name' => "Getting combs for $genome",
                                            'count' => $nrows,
