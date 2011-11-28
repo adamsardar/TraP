@@ -1,15 +1,15 @@
-package TraP::Cluster;
+package Cluster::SOM;
 require Exporter;
 
 =head1 NAME
 
-TraP::Cluster
+Cluster::SOM
 
 =head1 SYNOPSIS
 
-First perl module in a library that will become that underpinning the clustering portion of the TraP database
+Module for performing self-organasing map clustering for the TraP database
 
-use TraP::Cluster;
+use Cluster::SOM;
 
 =head1 AUTHOR
 
@@ -39,13 +39,8 @@ our $VERSION   = 1.00;
 use strict;
 use warnings;
 
-use lib "/home/sardar/bin/perl-libs-custom/";
-
 use POSIX;
-
-use Supfam::SQLFunc;
 use Algorithm::Cluster;
-use Supfam::Utils;
 
 sub SOMcluster($$$){
 	
