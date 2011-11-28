@@ -5,7 +5,7 @@ use warnings;
 use DBI;
 use lib '/home/rackham/modules';
 use rackham;
-use lib "../lib";
+use lib "../lib/TraP";
 use Cluster::SOM;
 use Data::Dumper;
 my %genes;
