@@ -1,9 +1,9 @@
-package Tprot::tprot;
+package TraP::Tprot;
 require Exporter;
 
 =head1 NAME
 
-Tprot::tprot
+TraP::Tprot
 
 =head1 SYNOPSIS
 
