@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Example supfam_config.xml copy this to the top level of your home and change as needed. -->
+<config>
+
+   <home>/home/projects</home>
+
+</config>
