@@ -8,17 +8,17 @@ our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = (
 'all' => [ qw(
-		    EasyDump
-		    EasyUnDump
-		    IntUnDiff
-		    TabSepFile
-		    CommaSepFile
-			lcp
-			lcp_regi
+	EasyDump
+	EasyUnDump
+	IntUnDiff
+	TabSepFile
+	CommaSepFile
+	lcp
+	lcp_regi
 ) ],
 'lcp' => [ qw(
-			lcp
-			lcp_regi
+	lcp
+	lcp_regi
 ) ],
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
