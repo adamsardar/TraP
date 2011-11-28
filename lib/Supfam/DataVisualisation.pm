@@ -3,7 +3,7 @@ require Exporter;
 
 =head1 NAME
 
-Supfam::Utils
+Supfam::DataVisualisation
 
 =head1 SYNOPSIS
 
@@ -22,7 +22,7 @@ Copyright 2011 Gough Group, University of Bristol.
 
 =head1 SEE ALSO
 
-Supfam::Config.pm
+JSON::XS
 
 =head1 DESCRIPTION
 
@@ -30,7 +30,7 @@ Supfam::Config.pm
 
 our @ISA       = qw(Exporter AutoLoader);
 our @EXPORT    = qw(
-					Hash2JSON
+					convertHash2JSON
                   );
 our @EXPORT_OK = qw();
 our $VERSION   = 1.00;
@@ -38,27 +38,19 @@ our $VERSION   = 1.00;
 use strict;
 use warnings;
 
-use Supfam::SQLFunc;
 use JSON::XS;
-use Supfam::Utils;
 
-sub func(){
+sub convertHash2JSON{
 
-}
-
-=pod
-=item * EasyDump(FileName, Pointer)
-A wrapper function for the dumper module. Pass in the desired file name and a pointer to the object to be outputted. Does not return.
-=cut
-
-sub Hash2JSON($$$){
-
-	my ($OutputFile,$HashRef,$PrimaryIndexLabel) = @_;
+	my ($HashRef,$PrimaryIndexLabel) = @_;
 	
+	my $PrimaryIndexFlag = (@_ < 2)?1:0;
+	$PrimaryIndexLabel = 'Entry' unless($PrimaryIndexFlag);
+		
 	my $Matrix = []; #This will be a 2D array containing records. $Matrix[0] = [PrimaryIndexLabel, key1, key2, key3, ...], while $Matrix[>0] = [PrimaryIndex1, val1, val2, val3, ...] - where the key-value pairs are drawn from the input hash
 	
 	my @PrimaryIndicies=keys(%$HashRef);
-	my @DataLabels = keys(%{$HashRef->{$PrimaryIndicies[0]}}); #Assume that all primary indicies have the same data labels
+	my @DataLabels = keys(%{$HashRef->{$PrimaryIndicies[0]}}); #Assume that all data values have the same data labels $hash->{PrimaryIndex}={key1 => val1, key2 => val2, key3 => val3, ... } 
 	
 	$Matrix->[0]=[($PrimaryIndexLabel,@DataLabels)]; #Set up the first row of the output array so as to contain all the right labels etc.
 
@@ -68,20 +60,14 @@ sub Hash2JSON($$$){
 		push(@$Matrix,$DataEntryRow);
 	}
 	
-	EasyDump('2DArray.dump',$Matrix);
-	
 	my $utf8_encoded_json_text = JSON::XS->new->utf8->indent->encode ($Matrix);
-	 
-	open FH, ">$OutputFile";
-	print FH $utf8_encoded_json_text."\n";
-	close FH;
 	
-	return(1);
+	return($utf8_encoded_json_text);
 }
 
 =pod
-=item * Hash2JSON(FileName, HashRef, PrimaryIndexLabel)
-Given a hashref of $hash->{PrimaryIndex}={key1 => val1, key2 => val2, key3 => val3, ... } this function will output JSON
+=item * convertHash2JSON( HashRef, PrimaryIndexLabel(opt))
+Given a hashref of $hash->{PrimaryIndex}={key1 => val1, key2 => val2, key3 => val3, ... } this function will return JSON
 of the form:
 var object =[
 [PrimaryIndexLabel, key1, key2, key3, ...]
@@ -89,9 +75,10 @@ var object =[
 [PrimaryIndex2, val1, val2, val3, ...]
 ...
 ];
-This is acheived internally by creating a 2D array as a perl data structure and then outputting to JSON via the JSON CPAN module.
-=cut
+This is acheived internally by creating a 2D array as a perl data structure and then outputting to JSON via the JSON::XS CPAN module.
 
+PrimaryIndexLabel should be simply a descriptive name of the data labels. If left out, then 'Entry' will be used instead.
+=cut
 
 
 1;
