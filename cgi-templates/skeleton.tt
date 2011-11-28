@@ -1,0 +1,30 @@
+    [%  INCLUDE header
+          title = 'This is an HTML skeleton!';
+        
+        pages = [
+          { url   = 'http://mattoates.co.uk'
+            title = 'Matt Oates World' 
+          }
+          { url   = 'http://google.com'
+            title = 'The Search King' 
+          }
+        ]
+    %]
+       <h1>Var1 was [% var1 %]</h1>
+       <h1>Var6 was [% var6 %]</h1>
+       <h1>Some Skeleton Output</h1>
+       <h1>Some Skeleton Output</h1>
+       <ul>
+    [%  FOREACH page IN pages %]
+         <li><a href="[% page.url %]">[% page.title %]</a>
+    [%  END %]
+       </ul>
+       
+       <h1>All of your PATH</h1>
+       <ol>
+    [%  FOREACH p IN path %]
+        <li>[% p %]</li>
+    [% END %]
+        </ol>
+    
+    [% INCLUDE footer %]
