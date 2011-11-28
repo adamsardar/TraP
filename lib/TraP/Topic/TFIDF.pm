@@ -9,6 +9,7 @@ our @ISA = qw(Exporter);
 our %EXPORT_TAGS = (
 'all' => [ qw(
 			tfidf
+			tfidf_sf_proteins
 ) ],
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -76,19 +77,28 @@ use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 =over 4
 =cut
 
-=item * sub1
+=item * tfidf
 Function to do something
 =cut
-sub sub1 {
+sub tfidif {
     my ($var) = @_;
 	return 1;
 }
 
-=item * sub2
+=item * tfidf_sf_proteins
 Function to do something
 =cut
-sub sub2 {
-    my ($var) = @_;
+sub tfidf_sf_proteins {
+    use Supfam::SQLFunc qw/topic/;
+    my ($proteins) = @_;
+    if (ref $proteins eq "ARRAY") {
+        foreach my $protein (@$proteins) {
+            
+        }
+    }
+    else {
+    
+    }
 	return 2;
 }
 
