@@ -6,8 +6,10 @@ use DBI;
 use lib '/home/rackham/modules';
 use rackham;
 use lib "../lib/TraP";
+use lib "../lib/";
 use Cluster::SOM;
 use Data::Dumper;
+use Supfam::Utils;
 my %genes;
 my %samples;
 my %genes_tc;
@@ -24,37 +26,30 @@ my %TFs = %{$TFs};
 my ( $dbh, $sth );
 $dbh = rackham::DBConnect;
 print "running....\n";
- $sth =   $dbh->prepare( "select sampleID,geneID,value from snap_gene_expression where releaseID = 111;" );
-        $sth->execute;
-        print "query returned 1\n";
-        while (my @temp = $sth->fetchrow_array ) {
-			$genes{$temp[1]} = 1;
-			$samples{$temp[0]} = 1;
-			$exps{$temp[0]}{$temp[1]}=$temp[2];
-        }
-  print "loaded data round 1\n";      
+ #$sth =   $dbh->prepare( "select sampleID,geneID,value from snap_gene_expression where releaseID = 111;" );
+   #     $sth->execute;
+   #     print "query returned 1\n";
+        #while (my @temp = $sth->fetchrow_array ) {
+	#		$genes{$temp[1]} = 1;
+	#		$samples{$temp[0]} = 1;
+	#		$exps{$temp[0]}{$temp[1]}=$temp[2];
+        #}
+  #print "loaded data round 1\n";      
 
- $sth =   $dbh->prepare( "select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) as a, rackham.ENT_lookup.GeneID from tprot.raw_data , rackham.ENT_lookup where SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) = rackham.ENT_lookup.ENTID where SampleID = 11;" );
+ $sth =   $dbh->prepare( "select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) as a, rackham.ENT_lookup.GeneID from tprot.raw_data , rackham.ENT_lookup where SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) = rackham.ENT_lookup.ENTID and SampleID = 2;" );
+#select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) as a, rackham.ENT_lookup.GeneID from tprot.raw_data , rackham.ENT_lookup where SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) = rackham.ENT_lookup.ENTID and SampleID = 5 order by GeneID limit 10;
         $sth->execute;
         print "query returned 2\n";
         while (my @temp = $sth->fetchrow_array ) {
-        	my $sample = "$temp[0]"."."."$temp[1]"."."."$temp[2]";
+			my $sample = "$temp[0]"."."."$temp[1]"."."."$temp[2]";
 			$tc_exps{$temp[0]} = 1;
-			$samples{$sample} = 1;
-			if(exists($TFs{$temp[5]})){
-			my $g = $TFs{$temp[5]};
-			if(exists($exps{$sample}{$g})){;
-			$exps{$sample}{$g}= $exps{$sample}{$g} + $temp[3];
+			$samples{$sample} =1;
+			my $g = $temp[5];
+			$genes{$g} = 1;
+			if(exists($exps{$g}{$sample})){;
+			$exps{$g}{$sample}= $exps{$g}{$sample} + $temp[3];
 			}else{
-			$exps{$sample}{$g}=$temp[3];
-			}
-			$genes_tc{$g} = 1;
-			$samples_tc{$sample} = 1;
-			if(exists($tc_sample{$temp[0]}{$temp[1]}{$temp[2]}{$g})){
-			$tc_sample{$temp[0]}{$temp[1]}{$temp[2]}{$g} = $tc_sample{$temp[0]}{$temp[1]}{$temp[2]}{$g}+ $temp[3];
-			}else{
-			$tc_sample{$temp[0]}{$temp[1]}{$temp[2]}{$g} = $temp[3];
-			}
+			$exps{$g}{$sample}=$temp[3];
 			}
         }
 print "loaded data round 2\n";
@@ -65,10 +60,10 @@ my $Names = join("\t", keys %genes);
 print EXPS "samples\t$Names\n";
 
 
-foreach my $sample (keys %samples){
+foreach my $sample (keys %genes){
 	print EXPS "$sample\t";
 
-	foreach my $gene (keys %genes){
+	foreach my $gene (keys %samples){
 		if(exists($exps{$sample}{$gene})){
 			if($exps{$sample}{$gene} == 0){
 			print EXPS "NaN\t";
@@ -88,8 +83,8 @@ foreach my $sample (keys %samples){
 }
 
 my ($ClusterPositionsHash,$XYClusterGroups) = SOMcluster(\%exp_array,'s',0);
-#EasyDump("./ClusterPositionsHash.dat", $ClusterPositionsHash);
-#EasyDump("./XYClusterGroups.dat", $XYClusterGroups);
+EasyDump("./ClusterPositionsHash.dat", $ClusterPositionsHash);
+EasyDump("./XYClusterGroups.dat", $XYClusterGroups);
 
 foreach my $s (keys %tc_exps){
 open(TCEXPS,">tc_exps_$s.txt");
