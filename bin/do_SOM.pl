@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use DBI;
 use lib '/home/rackham/modules';
-use rackham;
+use rackham; #change this to supfam.pm
 use lib "../lib/TraP";
 use lib "../lib/";
 use Cluster::SOM;
@@ -22,19 +22,10 @@ my %tc_sample;
 
 my %exp_array;
 my ( $dbh, $sth );
-$dbh = rackham::DBConnect;
+$dbh = rackham::DBConnect; #change this to whatever it needs to be
 print "running....\n";
- #$sth =   $dbh->prepare( "select sampleID,geneID,value from snap_gene_expression where releaseID = 111;" );
-   #     $sth->execute;
-   #     print "query returned 1\n";
-        #while (my @temp = $sth->fetchrow_array ) {
-	#		$genes{$temp[1]} = 1;
-	#		$samples{$temp[0]} = 1;
-	#		$exps{$temp[0]}{$temp[1]}=$temp[2];
-        #}
-  #print "loaded data round 1\n";      
 
- $sth =   $dbh->prepare( "select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) as a, rackham.ENT_lookup.GeneID from tprot.raw_data , rackham.ENT_lookup where SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) = rackham.ENT_lookup.ENTID and SampleID = 2;" );
+ $sth =   $dbh->prepare( "select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) from tprot.raw_data  where SampleID = 2;" );
 #select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) as a, rackham.ENT_lookup.GeneID from tprot.raw_data , rackham.ENT_lookup where SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) = rackham.ENT_lookup.ENTID and SampleID = 5 order by GeneID limit 10;
         $sth->execute;
         print "query returned 2\n";
@@ -42,7 +33,7 @@ print "running....\n";
 			my $sample = "$temp[0]"."."."$temp[1]"."."."$temp[2]";
 			$tc_exps{$temp[0]} = 1;
 			$samples{$sample} =1;
-			my $g = $temp[5];
+			my $g = $temp[4];
 			$genes{$g} = 1;
 			if(exists($exps{$g}{$sample})){;
 			$exps{$g}{$sample}= $exps{$g}{$sample} + $temp[3];
