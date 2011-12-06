@@ -21,8 +21,6 @@ my %tc_exps;
 my %tc_sample;
 
 my %exp_array;
-my $TFs = rackham::GetGeneLookup;
-my %TFs = %{$TFs};
 my ( $dbh, $sth );
 $dbh = rackham::DBConnect;
 print "running....\n";
