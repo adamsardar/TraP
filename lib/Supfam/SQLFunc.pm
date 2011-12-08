@@ -24,6 +24,7 @@ Copyright 2010 Gough Group, University of Bristol.
 =head1 SEE ALSO
 
 Supfam::Config.pm
+TraP::Config.pm
 
 =head1 DESCRIPTION
 
@@ -34,6 +35,7 @@ our @ISA = qw(Exporter SelfLoader);
 our %EXPORT_TAGS = (
 'all' => [ qw(
 			dbConnect
+			dbTRAPConnect
 			dbDisconnect
 			getGenomeNames
 			getGenomeDomCombs
@@ -63,6 +65,7 @@ our %EXPORT_TAGS = (
 ) ],
 'connect' => [ qw(
 			dbConnect
+			dbTRAPConnect
 			dbDisconnect
 ) ],
 );
@@ -81,9 +84,9 @@ use Math::Combinatorics;
 
 use Supfam::Config;
 
-1;
+use lib ("../lib");
+use TraP::Config;
 
-__DATA__
 
 =pod
 =head2 Methods
@@ -92,21 +95,39 @@ __DATA__
 
 
 sub dbConnect {
-my ($database,$host,$user,$password);
+	my ($database,$host,$user,$password);
+	
+	if (@_) {
+		($database,$host,$user,$password) = @_;
+	}
+	else {
+		($database,$host,$user,$password) = ($SUPFAM{'database.name'},$SUPFAM{'database.host'},$SUPFAM{'database.user'},undef);
+	}
+	
+	return DBI->connect("DBI:mysql:dbname=$database;host=$host"
+	                                        ,$user
+	                                        ,$password
+	                                        ,{RaiseError =>1}
+	                                    ) or die "Fatal Error: couldn't connect to $database on $host";
+}
 
-if (@_) {
-	($database,$host,$user,$password) = @_;
-}
-else {
-	($database,$host,$user,$password) = ($SUPFAM{'database.name'},$SUPFAM{'database.host'},$SUPFAM{'database.user'},undef);
+sub dbTRAPConnect {
+	my ($database,$host,$user,$password);
+	
+	if (@_) {
+		($database,$host,$user,$password) = @_;
+	}
+	else {
+		($database,$host,$user,$password) = ($TRAP{'database.name'},$TRAP{'database.host'},$TRAP{'database.user'},undef);
+	}
+	
+	return DBI->connect("DBI:mysql:dbname=$database;host=$host"
+	                                        ,$user
+	                                        ,$password
+	                                        ,{RaiseError =>1}
+	                                    ) or die "Fatal Error: couldn't connect to $database on $host";
 }
 
-return DBI->connect("DBI:mysql:dbname=$database;host=$host"
-                                        ,$user
-                                        ,$password
-                                        ,{RaiseError =>1}
-                                    ) or die "Fatal Error: couldn't connect to $database on $host";
-}
 
 sub dbDisconnect {
 	my $dbh = shift;
@@ -131,7 +152,6 @@ my $close_dbh = (@_ < 2)?1:0;
         }
 
 dbDisconnect($dbh) if $close_dbh;
-return $goterms;
 }
 
 sub getGenomeDomCombs {
@@ -357,3 +377,7 @@ return $node;
 =back
 
 =cut
+
+1;
+
+__DATA__

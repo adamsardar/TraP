@@ -30,7 +30,7 @@ JSON::XS
 
 our @ISA       = qw(Exporter AutoLoader);
 our @EXPORT    = qw(
-					convertHash2JSON
+					convertHash2JSONMatrix
                   );
 our @EXPORT_OK = qw();
 our $VERSION   = 1.00;
@@ -40,7 +40,7 @@ use warnings;
 
 use JSON::XS;
 
-sub convertHash2JSON{
+sub convertHash2JSONMatrix{
 
 	my ($HashRef,$PrimaryIndexLabel) = @_;
 	
