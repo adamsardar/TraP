@@ -85,7 +85,6 @@ use Math::Combinatorics;
 use Supfam::Config;
 
 use lib ("../lib");
-use TraP::Config;
 
 
 =pod
@@ -96,38 +95,29 @@ use TraP::Config;
 
 sub dbConnect {
 	my ($database,$host,$user,$password);
-	
+	my $c = ''; #Which database config to use
+
+	#Auto fill from database specific config any settings the calling function didn't specify, otherwise use defaults
 	if (@_) {
 		($database,$host,$user,$password) = @_;
+		#If a specific database config exists use it, otherwise default
+		$c = (exists $CONFIG{"database.$database"})?"database.$database":'database';
+		$database = $CONFIG{"$c.name"} unless $database;
+		$host = $CONFIG{"$c.host"} unless $host;
+		$user = $CONFIG{"$c.user"} unless $user;
+		$password = $CONFIG{"$c.password"} unless $password;
 	}
+	#Use default database config, which is SUPERFAMILY
 	else {
-		($database,$host,$user,$password) = ($SUPFAM{'database.name'},$SUPFAM{'database.host'},$SUPFAM{'database.user'},undef);
+		($database,$host,$user,$password) = ($CONFIG{'database.name'},$CONFIG{'database.host'},$CONFIG{'database.user'},undef);
 	}
-	
+
 	return DBI->connect("DBI:mysql:dbname=$database;host=$host"
 	                                        ,$user
 	                                        ,$password
 	                                        ,{RaiseError =>1}
 	                                    ) or die "Fatal Error: couldn't connect to $database on $host";
 }
-
-sub dbTRAPConnect {
-	my ($database,$host,$user,$password);
-	
-	if (@_) {
-		($database,$host,$user,$password) = @_;
-	}
-	else {
-		($database,$host,$user,$password) = ($TRAP{'database.name'},$TRAP{'database.host'},$TRAP{'database.user'},undef);
-	}
-	
-	return DBI->connect("DBI:mysql:dbname=$database;host=$host"
-	                                        ,$user
-	                                        ,$password
-	                                        ,{RaiseError =>1}
-	                                    ) or die "Fatal Error: couldn't connect to $database on $host";
-}
-
 
 sub dbDisconnect {
 	my $dbh = shift;
@@ -296,10 +286,10 @@ return $goterms;
 sub getTreeNode {
 my ($id,$dbh) = @_;
 $dbh = dbConnect() and my $close_dbh = 1 unless defined $dbh;
-	my $node = $dbh->selectrow_hashref("SELECT * 
-													FROM tree 
-													WHERE left_id = ? 
-														OR right_id = ? 
+	my $node = $dbh->selectrow_hashref("SELECT *
+													FROM tree
+													WHERE left_id = ?
+														OR right_id = ?
 													LIMIT 1",
 												$id);
 dbDisconnect($dbh) if $close_dbh;
@@ -310,7 +300,7 @@ sub getTreeNodeByLeft {
 my ($left_id,$dbh) = @_;
 $dbh = dbConnect() and my $close_dbh = 1 unless defined $dbh;
 	my $node = $dbh->selectrow_hashref("SELECT *
-													FROM tree 
+													FROM tree
 													WHERE left_id = ?
 													LIMIT 1",
 												$left_id);
@@ -322,7 +312,7 @@ sub getTreeNodeByRight {
 my ($right_id,$dbh) = @_;
 $dbh = dbConnect() and my $close_dbh = 1 unless defined $dbh;
 	my $node = $dbh->selectrow_hashref("SELECT *
-													FROM tree 
+													FROM tree
 													WHERE right_id = ?
 													LIMIT 1",
 												$right_id);

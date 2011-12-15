@@ -26,11 +26,11 @@ As with %SUPFAM this variable is tied to the local config file to reflect change
 
 require Exporter;
 
-our %SUPFAM;
 our %CONFIG;
+our %LOCAL_CONFIG;
 
 our @ISA       = qw(Exporter);
-our @EXPORT    = qw(%SUPFAM %CONFIG);
+our @EXPORT    = qw(%CONFIG %LOCAL_CONFIG);
 our @EXPORT_OK = qw();
 our $VERSION   = 1.00;
 
@@ -42,27 +42,27 @@ use File::Basename;
 
 #Load in the local config for the invoking script if it exists.
 if ( -e "config.ini" ) {
-   tie %CONFIG, "Config::Simple", "config.ini";
+   tie %LOCAL_CONFIG, "Config::Simple", "config.ini";
 }
 
 #Where is this module located
 my (undef,$mod_path,undef) = fileparse(__FILE__);
 
 #Use the users home supfam_config.ini over anything else
-if ( -e $ENV{'HOME'}."/.supfam_config.ini") {
-   tie %SUPFAM, "Config::Simple", $ENV{'HOME'}."/.supfam_config.ini";
+if ( -e $ENV{'HOME'}."/.global_config.ini") {
+   tie %CONFIG, "Config::Simple", $ENV{'HOME'}."/.global_config.ini";
 }
 #Use the supfamconfig in the current working directory useful for CGI scripts that dont have a home
-elsif (-e ".supfam_config.ini") {
-   tie %SUPFAM, "Config::Simple", ".supfam_config.ini";
+elsif (-e ".global_config.ini") {
+   tie %CONFIG, "Config::Simple", ".global_config.ini";
 }
 #Try to load the default from the Supfam package
-elsif (-e $mod_path."supfam_config.ini") {
-   tie %SUPFAM, "Config::Simple", $mod_path.'supfam_config.ini';
+elsif (-e $mod_path."global_config.ini") {
+   tie %CONFIG, "Config::Simple", $mod_path.'global_config.ini';
 }
 #Warn that we don't have a config for the package
 else {
-   carp "Cannot locate the global supfam_config.ini for Supfam:: modules, looking in: ".$ENV{'HOME'}."/.supfam_config.ini or ".$mod_path.'supfam_config.ini';
+   carp "Cannot locate the global global_config.ini for Supfam:: modules, looking in: ".$ENV{'HOME'}."/.global_config.ini or ".$mod_path.'global_config.ini';
 }
 
 1;
