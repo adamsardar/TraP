@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package Utils::SQL;
+package Utils::SQL::Connect;
 require Exporter;
 require SelfLoader;
 
@@ -48,11 +48,11 @@ use strict;
 use warnings;
 
 use DBI;
+use Data::Dumper;
 
 use Utils::Config;
 
 use lib ("../../");
-
 
 =pod
 =head2 Methods
@@ -68,7 +68,7 @@ sub dbConnect {
 	if (@_) {
 		($database,$host,$user,$password) = @_;
 		#If a specific database config exists use it, otherwise default
-		$c = (exists $CONFIG{"database.$database"})?"database.$database":'database';
+		$c = (exists $CONFIG{"database-$database.name"})?"database-$database":'database';
 		$database = $CONFIG{"$c.name"} unless $database;
 		$host = $CONFIG{"$c.host"} unless $host;
 		$user = $CONFIG{"$c.user"} unless $user;
@@ -78,7 +78,6 @@ sub dbConnect {
 	else {
 		($database,$host,$user,$password) = ($CONFIG{'database.name'},$CONFIG{'database.host'},$CONFIG{'database.user'},undef);
 	}
-
 	return DBI->connect("DBI:mysql:dbname=$database;host=$host"
 	                                        ,$user
 	                                        ,$password
@@ -88,7 +87,6 @@ sub dbConnect {
 
 sub dbDisconnect {
 	my $dbh = shift;
-	warn "Closing Database Connection!\n";
 	return $dbh->disconnect();
 }
 

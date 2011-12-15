@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package TraP::Skeleton;
+package TraP::SQL::TissueMRCA;
 
 require Exporter;
 
@@ -8,11 +8,9 @@ our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = (
 'all' => [ qw(
-			sub1
-			sub2
-) ],
-'yourtag' => [ qw(
-			sub1
+                human_cell_type_experiments
+		experiment_sfs
+		sf_genomes	
 ) ],
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -75,14 +73,13 @@ limitations under the License.
 
 =cut
 
-
-#use lib '~/lib';
-
 =head1 DEPENDANCY
 
 B<Data::Dumper> Used for debug output.
 
 =cut
+use lib '../../';
+use Utils::SQL::Connect qw/:all/;
 use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 
 
@@ -92,29 +89,52 @@ use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 =over 4
 =cut
 
-=item * sub1
-Function to do something
+=item * human_cell_type_experiments
+Function to get all the human cell type experiment ids
 =cut
-sub sub1 {
-    my ($var) = @_;
-	return 1;
+sub human_cell_type_experiments {
+	my @ids = ();
+	my $dbh = dbConnect('trap');
+	my $sth = $dbh->prepare('select experiment_id from experiment where source_id = ?');
+	$sth->execute(1);
+	my $results = $sth->fetchall_arrayref();
+	dbDisconnect($dbh);
+	return $results->[0];
 }
 
-=item * sub2
-For a given sampleID this returns an array of disitinct sfs that are expressed in that sample
+=item * sf_genomes
+Function to find all the genomes a superfamily occurs in
 =cut
-sub cell_sfs {
+sub sf_genomes {
+    my ($sf) = @_;
+    my %genomes;
+    my $dbh = dbConnect('superfamily');
+    my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
+    foreach my $id (@$sf) {
+        $sth->execute($id);
+        while ( my ($genome) = $sth->fetchrow_array() ) {
+            $genomes{$genome} = undef;
+        }
+    }
+return [keys %genomes];
+}
+
+=item * experiment_sfs
+For a given sampleID this returns an array of disitinct sfs that are expressed in that experiment
+=cut
+sub experiment_sfs {
 
 my $sample = shift;
 my @sfs;
 my ($dbh, $sth);
-$dbh = DBConnect;
+$dbh = dbConnect();
 
 $sth =   $dbh->prepare( "select distinct(superfamily.ass.sf) from trap.cell_snapshot, trap.id_mapping, superfamily.ass where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.id_mapping.protein = superfamily.ass.protein and trap.cell_snapshot.experiment_id = '$sample';" );
         	$sth->execute;
-        	while (my @temp = $sth->fetchrow_array ) {
-				push @sfs, $temp[0];
+        	while (my ($sf) = $sth->fetchrow_array ) {
+				push @sfs, $sf;
         	}
+dbDisconnect($dbh);
 return \@sfs;
 }
 
