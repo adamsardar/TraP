@@ -23,8 +23,7 @@ Copyright 2010 Gough Group, University of Bristol.
 
 =head1 SEE ALSO
 
-Supfam::Config.pm
-TraP::Config.pm
+Utils::Config.pm
 
 =head1 DESCRIPTION
 
@@ -82,7 +81,7 @@ use Data::Dumper;
 use Term::ProgressBar;
 use Math::Combinatorics;
 
-use Supfam::Config;
+use Utils::Config;
 
 use lib ("../lib");
 
