@@ -44,12 +44,13 @@ our $VERSION   = 1.00;
 use strict;
 use warnings;
 
+use lib '../';
+
 use DBI;
 #use Data::Dumper;
 #use Term::ProgressBar;
 #use Math::Combinatorics;
 
-use Supfam::Config;
 use Supfam::Utils;
 use Supfam::SQLFunc;
 
