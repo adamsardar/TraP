@@ -50,9 +50,9 @@ use warnings;
 use DBI;
 use Data::Dumper;
 
+use lib ("../");
 use Utils::Config;
 
-use lib ("../../");
 
 =pod
 =head2 Methods

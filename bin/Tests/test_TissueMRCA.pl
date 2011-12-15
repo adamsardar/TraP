@@ -63,8 +63,7 @@ limitations under the License.
 
 #By default use the TraP libraries, assuming executing from the bin dir
 use lib qw'../../lib/';
-
-use TraP::TissueMRCA qw/:all/;
+use TraP::SQL::TissueMRCA qw/:all/;
 
 =head1 DEPENDANCY
 
@@ -135,7 +134,7 @@ print "More verbose\n" if $debug;
 
 my $Genomes = [qw(hu 9f mm dD zz)];
 
-my ($taxon_id,$name,$rank) = calculate_MRCA($Genomes);
+my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($Genomes);
 
 print $taxon_id."\n";
 print $name."\n";
