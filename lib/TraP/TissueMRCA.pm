@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package TraP::SQL::TissueMRCA;
+package TraP::TissueMRCA;
 
 require Exporter;
 
@@ -8,10 +8,10 @@ our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = (
 'all' => [ qw(
-        human_cell_type_experiments
-		experiment_sfs
-		sf_genomes
-		calculate_MRCA_NCBI_placement
+			calculate_MRCA
+) ],
+'yourtag' => [ qw(
+			sub1
 ) ],
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -24,17 +24,17 @@ use warnings;
 
 =head1 NAME
 
-TraP::Skeleton v1.0 - Skeleton module for the TraP project
+TraP::TissueMRCA
 
 =head1 DESCRIPTION
 
 This module has been released as part of the TraP Project code base.
 
-Just a skeleton layout for each module to start from.
+Module for assesing how old the unique/enriched superfamiles within a tissue transcriptome are.
 
 =head1 EXAMPLES
 
-use TraP::Skeleton qw/all/;
+use TraP::TissueMRCA qw/all/;
 
 =head1 AUTHOR
 
@@ -74,155 +74,23 @@ limitations under the License.
 
 =cut
 
+use lib ("../lib");
+use Supfam::Utils qw(:all);
+use Supfam::SQLFunc qw(:all);
+
 =head1 DEPENDANCY
 
 B<Data::Dumper> Used for debug output.
 
 =cut
 
-use lib qw'../../';
-use Utils::SQL::Connect qw/:all/;
-use Supfam::Utils qw(:all);
 use Data::Dumper; #Allow easy print dumps of datastructures for debugging
-
 
 =head1 FUNCTIONS DEFINED
 
-=over 4
-=cut
-
-=item * human_cell_type_experiments
-Function to get all the human cell type experiment ids
-=cut
-sub human_cell_type_experiments {
-	my @ids = ();
-	my $dbh = dbConnect('trap');
-	my $sth = $dbh->prepare('select experiment_id from experiment where source_id = ?');
-	$sth->execute(1);
-	my $results = $sth->fetchall_arrayref();
-	dbDisconnect($dbh);
-	return $results->[0];
-}
-
-=item * sf_genomes
-Function to find all the genomes a superfamily occurs in
-=cut
-sub sf_genomes {
-    my ($sf) = @_;
-    my %genomes;
-    my $dbh = dbConnect('superfamily');
-    my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
-    foreach my $id (@$sf) {
-        $sth->execute($id);
-        while ( my ($genome) = $sth->fetchrow_array() ) {
-            $genomes{$genome} = undef;
-        }
-    }
-return [keys %genomes];
-}
-
-=item * experiment_sfs
-For a given sampleID this returns an array of disitinct sfs that are expressed in that experiment
-=cut
-sub experiment_sfs {
-
-my $sample = shift;
-my @sfs;
-my ($dbh, $sth);
-$dbh = dbConnect();
-
-$sth =   $dbh->prepare( "select distinct(superfamily.ass.sf) from trap.cell_snapshot, trap.id_mapping, superfamily.ass where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.id_mapping.protein = superfamily.ass.protein and trap.cell_snapshot.experiment_id = '$sample';" );
-        	$sth->execute;
-        	while (my ($sf) = $sth->fetchrow_array ) {
-				push @sfs, $sf;
-        	}
-dbDisconnect($dbh);
-return \@sfs;
-}
-
-
-=item * calculate_MRCA_NCBI_placement(\@list_of_genomes)
-
-Given a list of superfamily genome codes, this function will get their MRCA in NCBI taxonomy. Returns 
-its taxon_id, full name and rank in NCBI taxonomy.
-
-=cut
-sub calculate_MRCA_NCBI_placement($) {
-
-    my ($GenomeList) = @_;
-    # $GenomeList = [genomes]
-	#Given a lsit of Genomes, calculate their MRCA in the NCBI taxonomy. 
-	
-	die "Need to pass in a list of genomes as input!\n" unless(scalar(@$GenomeList));
-
-	my $dbh = dbConnect('superfamily');
-	
-	#Convert to left and right ids for each genome
-		
-	my $Genome_left_ids = []; #All the left_ids of genomes
-	my $Genome_right_ids = []; #All the right_ids of genomes
-	
-	my $sth = $dbh->prepare("SELECT left_id,right_id FROM tree WHERE nodename = ?;");
-
-	foreach my $genome (@$GenomeList){
-			
-			$sth->execute($genome);
-			my $Nrows = $sth->rows;
-			
-			unless($Nrows){
-				
-				print STDERR "Genome $genome not found in SUPERFAMILY tree table, skipping this one\n";
-				next;
-				
-			}elsif($Nrows > 1){
-				
-				die "More than one genome entry for genome $genome in superfamily.tree. Something is very wrong !\n";
-				
-			}elsif($Nrows == -1){
-				
-				die "Query appears to have failed on genome $genome!\n";
-			}
-			
-			my ($left_id,$right_id) = $sth->fetchrow_array();
-			push(@$Genome_left_ids,$left_id);
-			push(@$Genome_right_ids,$right_id);
-			
-			$sth->finish;
-	}
-	
-	die "None of the genomes provided were found in the superfamily tree table\n" unless(scalar(@$Genome_left_ids));
-	
-	#Calculate MRCA for each set of genomes per superfamily
-	my $SF2MRCAHash = {};
-	my $TaxonID2leftrightidDictionary = {};
-	
-	$sth = $dbh->prepare("SELECT ncbi_taxonomy.taxon_id, ncbi_taxonomy.name,ncbi_taxonomy.rank FROM tree JOIN ncbi_taxonomy ON ncbi_taxonomy.taxon_id = tree.taxon_id WHERE tree.left_id = (SELECT MAX(tree.left_id) FROM tree WHERE tree.left_id <= ? AND tree.right_id >= ?);");
-	
-	my $MaxLeftID = List::Util::min(@$Genome_left_ids);
-	my $MinRightID = List::Util::max(@$Genome_right_ids);
-	
-	$sth->execute($MaxLeftID,$MinRightID);
-	my $Nrows = $sth->rows;
-			
-	if($Nrows > 1){
-				
-		die "Error in SQL whilst finding MRCA of left_id $MaxLeftID right_id $MinRightID using superfamily.tree. More than one MRCA! Something is very wrong !\n";
-		
-	}elsif($Nrows == -1){
-				
-		die "Query appears to have failed on left_id $MaxLeftID and right_id $MinRightID!\n";
-	}
-					
-	my ($taxon_id,$name,$rank) = $sth->fetchrow_array;
-	
-	$sth->finish;
-	dbDisconnect($dbh);
-	
-	return ($taxon_id,$name,$rank);
-}
 
 =item * calculateSupraListMRCA
-Function under development. Due to complete imminently. Apologies for the bad practice.
+Function to do something
 =cut
 
 #sub calculateSupraListMRCA {
@@ -323,8 +191,101 @@ Function under development. Due to complete imminently. Apologies for the bad pr
 #	return ($MRCABranchName);
 #}
 
+=item * calculate_MRCA(\@list_of_genomes)
+
+Given a list of superfamily genome codes, this function will get their MRCA in NCBI taxonomy. Returns 
+its taxon_id, full name and rank in NCBI taxonomy.
+
+=cut
+
+sub calculate_MRCA($) {
+
+    my ($GenomeList) = @_;
+    # $GenomeList = [genomes]
+	#Given a lsit of Genomes, calculate their MRCA in the NCBI taxonomy. 
+	
+	die "Need to pass in a list of genomes as input!\n" unless(scalar(@$GenomeList));
+	
+	my $dbh = dbConnect();
+	
+	#Convert to left and right ids for each genome
+		
+	my $Genome_left_ids = []; #All the left_ids of genomes
+	my $Genome_right_ids = []; #All the right_ids of genomes
+	
+	my $sth = $dbh->prepare("SELECT left_id,right_id FROM tree WHERE nodename = ?;");
+
+	foreach my $genome (@$GenomeList){
+			
+			$sth->execute($genome);
+			my $Nrows = $sth->rows;
+			
+			unless($Nrows){
+				
+				print STDERR "Genome $genome not found in SUPERFAMILY tree table, skipping this one\n";
+				next;
+				
+			}elsif($Nrows > 1){
+				
+				die "More than one genome entry for genome $genome in superfamily.tree. Something is very wrong !\n";
+				
+			}elsif($Nrows == -1){
+				
+				die "Query appears to have failed on genome $genome!\n";
+			}
+			
+			my ($left_id,$right_id) = $sth->fetchrow_array();
+			push(@$Genome_left_ids,$left_id);
+			push(@$Genome_right_ids,$right_id);
+			
+			$sth->finish;
+	}
+	
+	die "None of the genomes provided were found in the superfamily tree table\n" unless(scalar(@$Genome_left_ids));
+	
+	#Calculate MRCA for each set of genomes per superfamily
+	my $SF2MRCAHash = {};
+	my $TaxonID2leftrightidDictionary = {};
+	
+	$sth = $dbh->prepare("SELECT ncbi_taxonomy.taxon_id, ncbi_taxonomy.name,ncbi_taxonomy.rank FROM tree JOIN ncbi_taxonomy ON ncbi_taxonomy.taxon_id = tree.taxon_id WHERE tree.left_id = (SELECT MAX(tree.left_id) FROM tree WHERE tree.left_id <= ? AND tree.right_id >= ?);");
+	
+	my $MaxLeftID = List::Util::min(@$Genome_left_ids);
+	my $MinRightID = List::Util::max(@$Genome_right_ids);
+	
+	$sth->execute($MaxLeftID,$MinRightID);
+	my $Nrows = $sth->rows;
+			
+	if($Nrows > 1){
+				
+		die "Error in SQL whilst finding MRCA of left_id $MaxLeftID right_id $MinRightID using superfamily.tree. More than one MRCA! Something is very wrong !\n";
+		
+	}elsif($Nrows == -1){
+				
+		die "Query appears to have failed on left_id $MaxLeftID and right_id $MinRightID!\n";
+	}
+					
+	my ($taxon_id,$name,$rank) = $sth->fetchrow_array;
+	
+	$sth->finish;
+	dbDisconnect($dbh);
+	
+	return ($taxon_id,$name,$rank);
+}
 
 
+=pod
+
+=back
+
+=head1 TODO
+
+=over 4
+
+=item Add feature here...
+
+=back
+
+=cut
 
 1;
 __END__
