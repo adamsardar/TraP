@@ -61,7 +61,9 @@ use strict;
 use warnings;
 use threads;
 
-use Supfam::Config;
+use lib '../';
+
+use Utils::Config;
 use Supfam::SQLFunc;
 use File::Basename;
 use File::Temp qw/ tempfile tempdir /;
