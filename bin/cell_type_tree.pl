@@ -143,14 +143,24 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 #-------------------------------------------------------------------------------
 
 my %experiment_genomes;
-
+my %experiment_ncbi;
 foreach my $experiment (@{human_cell_type_experiments()}) {
+	print "running $experiment...\n";
 	my $supfams = experiment_sfs($experiment);
+	print "got superfamilies\n";
 	my $genomes = sf_genomes($supfams);
+	print "got genomes\n";
 	$experiment_genomes{$experiment} = $genomes;
+	my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($genomes);
+	$experiment_ncbi{$experiment}{'taxon_id'} = $taxon_id;
+	$experiment_ncbi{$experiment}{'name'} = $name;
+	$experiment_ncbi{$experiment}{'rank'} = $rank;
+	print "got ncbi details\n";
 }
-
-print Dumper(\%experiment_genomes);
+open(GENOMES,'>../../data/genomes.txt');
+print GENOMES Dumper(\%experiment_genomes);
+open(NCBI,'>../../data/ncbi.txt');
+print NCBI Dumper(\%experiment_ncbi);
 
 =pod
 

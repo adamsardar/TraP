@@ -37,8 +37,8 @@ print "running....\n";
 
 my $tic = Time::HiRes::time;
 
-my $sth =   $dbh->prepare( "select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) from tprot.raw_data  where SampleID = 2;" );
-#select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) as a, rackham.ENT_lookup.GeneID from tprot.raw_data , rackham.ENT_lookup where SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) = rackham.ENT_lookup.ENTID and SampleID = 5 order by GeneID limit 10;
+my $sth =   $dbh->prepare( "select experiment_id,raw_expression,gene_id from cell_snapshot;" );
+#select riken_id,raw_expression,gene_id from cell_snap_shot
 
 #Original sql used when working with rackhamdb. These tables should now be in tprot
 #$sth =   $dbh->prepare( "select tprot.raw_data.sampleID, tprot.raw_data.groupID, tprot.raw_data.replica, tprot.raw_data.value, SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) as a, rackham.ENT_lookup.GeneID from tprot.raw_data , rackham.ENT_lookup where SUBSTRING(tprot.raw_data.GeneID,1,CHAR_LENGTH(tprot.raw_data.GeneID)-2) = rackham.ENT_lookup.ENTID and SampleID = 2;" );
@@ -46,15 +46,15 @@ my $sth =   $dbh->prepare( "select tprot.raw_data.sampleID, tprot.raw_data.group
 $sth->execute();
     
         while (my @temp = $sth->fetchrow_array ) {
-			my $sample = "$temp[0]"."."."$temp[1]"."."."$temp[2]";
+			my $sample = $temp[0];
 			$tc_exps{$temp[0]} = 1;
 			$samples{$sample} =1;
-			my $g = $temp[4];
+			my $g = $temp[2];
 			$genes{$g} = 1;
 			if(exists($exps{$g}{$sample})){;
-			$exps{$g}{$sample}= $exps{$g}{$sample} + $temp[3];
+			$exps{$g}{$sample}= $exps{$g}{$sample} + $temp[1];
 			}else{
-			$exps{$g}{$sample}=$temp[3];
+			$exps{$g}{$sample}=$temp[1];
 			}
         }
         
@@ -111,38 +111,7 @@ $toc = Time::HiRes::time;
 print STDERR "Time taken to dump data using Data::Dumper :".(($toc-$tic)/60)."minutes\n";
 
 
-foreach my $s (keys %tc_exps){
-open(TCEXPS,">tc_exps_$s.txt");
 
-$Names = join("\t", keys %genes_tc); 
-print TCEXPS "samples\t$Names\n";
-
-foreach my $sample_1 (sort keys %{$tc_sample{$s}}){
-foreach my $sample_2 (sort keys %{$tc_sample{$s}{$sample_1}}){
-
-	print TCEXPS "$s"."$sample_1"."$sample_2"."\t";
-	foreach my $gene (sort keys %genes_tc){
-		
-		if(exists($tc_sample{$s}{$sample_1}{$sample_2}{$gene})){
-			
-			if($tc_sample{$s}{$sample_1}{$sample_2}{$gene} == 0){
-				
-				print TCEXPS "NaN\t";
-			}else{
-				
-				print TCEXPS "$tc_sample{$s}{$sample_1}{$sample_2}{$gene}\t";
-			}
-			
-		}else{
-			
-			print TCEXPS "NaN\t";
-		}
-		
-	}
-	print TCEXPS "\n";
-}
-}
-}
 
 
 	

@@ -97,7 +97,7 @@ Function to get all the human cell type experiment ids
 sub human_cell_type_experiments {
 	my @ids = ();
 	my $dbh = dbConnect('trap');
-	my $sth = $dbh->prepare('select experiment_id from experiment where source_id = ?');
+	my $sth = $dbh->prepare('select experiment_id from experiment where source_id = ? limit 1');
 	$sth->execute(1);
 	my $results = $sth->fetchall_arrayref();
 	dbDisconnect($dbh);
@@ -109,15 +109,17 @@ Function to find all the genomes a superfamily occurs in
 =cut
 sub sf_genomes {
     my ($sf) = @_;
+    my $superfamily_query = join (',',@$sf);
     my %genomes;
     my $dbh = dbConnect('superfamily');
-    my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
-    foreach my $id (@$sf) {
-        $sth->execute($id);
-        while ( my ($genome) = $sth->fetchrow_array() ) {
-            $genomes{$genome} = undef;
-        }
+    my $sth = $dbh->prepare("select distinct len_supra.genome from genome,len_supra,comb_index where comb_index.length = 1 and comb_index.comb in ($superfamily_query) and comb_index.id=len_supra.supra_id and genome.genome=len_supra.genome and genome.include='y';;");
+    #my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
+    
+    $sth->execute();
+    while ( my ($genome) = $sth->fetchrow_array() ) {
+    	$genomes{$genome} = undef;
     }
+    
 return [keys %genomes];
 }
 
