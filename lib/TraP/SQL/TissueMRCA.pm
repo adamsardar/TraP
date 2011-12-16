@@ -11,6 +11,7 @@ our %EXPORT_TAGS = (
         human_cell_type_experiments
 		experiment_sfs
 		sf_genomes
+		all_sfs
 		calculate_MRCA_NCBI_placement
 ) ],
 );
@@ -109,18 +110,18 @@ Function to find all the genomes a superfamily occurs in
 =cut
 sub sf_genomes {
     my ($sf) = @_;
-    my $superfamily_query = join (',',@$sf);
-    my %genomes;
+    my %sf_genomes;
+    foreach my $sf (@$sf){
     my $dbh = dbConnect('superfamily');
     my $sth = $dbh->prepare("select distinct len_supra.genome from genome,len_supra,comb_index where comb_index.length = 1 and comb_index.comb in ($superfamily_query) and comb_index.id=len_supra.supra_id and genome.genome=len_supra.genome and genome.include='y';;");
     #my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
     
     $sth->execute();
     while ( my ($genome) = $sth->fetchrow_array() ) {
-    	$genomes{$genome} = undef;
+    	push (@{$sf_genomes{$sf}},$genome);
     }
-    
-return [keys %genomes];
+    }
+return \%sf_genomes;
 }
 
 =item * experiment_sfs
@@ -134,6 +135,26 @@ my ($dbh, $sth);
 $dbh = dbConnect();
 
 $sth =   $dbh->prepare( "select distinct(superfamily.ass.sf) from trap.cell_snapshot, trap.id_mapping, superfamily.ass where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.id_mapping.protein = superfamily.ass.protein and trap.cell_snapshot.experiment_id = '$sample';" );
+        	$sth->execute;
+        	while (my ($sf) = $sth->fetchrow_array ) {
+				push @sfs, $sf;
+        	}
+dbDisconnect($dbh);
+return \@sfs;
+}
+
+
+=item * all_sfs
+For a given source_id this returns an array of distinct sfs that are expressed in any experiment in that source
+=cut
+sub all_sfs {
+
+my $source = shift;
+my @sfs;
+my ($dbh, $sth);
+$dbh = dbConnect();
+
+$sth =   $dbh->prepare( "select distinct(superfamily.ass.sf) from trap.cell_snapshot, trap.id_mapping, superfamily.ass,trap.experiment where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.id_mapping.protein = superfamily.ass.protein and trap.experiment.experiment_id = trap.cell_snapshot.experiment_id and trap.experiment.source_id = $source;");
         	$sth->execute;
         	while (my ($sf) = $sth->fetchrow_array ) {
 				push @sfs, $sf;
@@ -184,6 +205,7 @@ sub calculate_MRCA_NCBI_placement($) {
 				
 				die "Query appears to have failed on genome $genome!\n";
 			}
+			
 			
 			my ($left_id,$right_id) = $sth->fetchrow_array();
 			push(@$Genome_left_ids,$left_id);
