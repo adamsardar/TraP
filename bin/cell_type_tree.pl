@@ -150,20 +150,20 @@ foreach my $experiment (@{human_cell_type_experiments()}) {
 	$experiment_sfs{$experiment} = experiment_sfs($experiment);
 	print "got superfamilies\n";
 }
+	print "now getting all sfs\n";
 	my $source_id = 1;
 	my $supfams = all_sfs($source_id);
+	print "now genomes for each sf\n";
+	
 	my $sf_genomes = sf_genomes($supfams);
 	print "got genomes\n";
-	my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($sf_genomes);
-	$experiment_ncbi{$experiment}{'taxon_id'} = $taxon_id;
-	$experiment_ncbi{$experiment}{'name'} = $name;
-	$experiment_ncbi{$experiment}{'rank'} = $rank;
+	#my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($sf_genomes);
 	print "got ncbi details\n";
 
-open(GENOMES,'>../../data/genomes.txt');
-print GENOMES Dumper(\%experiment_genomes);
-open(NCBI,'>../../data/ncbi.txt');
-print NCBI Dumper(\%experiment_ncbi);
+#open(GENOMES,'>../../data/genomes.txt');
+#print GENOMES Dumper(\%experiment_genomes);
+#open(NCBI,'>../../data/ncbi.txt');
+#print NCBI Dumper(\%experiment_ncbi);
 
 =pod
 
