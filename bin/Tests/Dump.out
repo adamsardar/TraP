@@ -1,0 +1,14 @@
+$VAR1 = {
+          'Trait' => [
+                       '314146',
+                       'Euarchontoglires',
+                       'superorder',
+                       '0.0348534996680343'
+                     ],
+          'Awesome' => [
+                         '33154',
+                         'Opisthokonta',
+                         'no rank',
+                         '0.2559996592837'
+                       ]
+        };
