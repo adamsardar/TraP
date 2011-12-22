@@ -159,7 +159,12 @@ foreach my $experiment (@{human_cell_type_experiments()}) {
 	print "got genomes\n";
 	#my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($sf_genomes);
 	print "got ncbi details\n";
-
+	#my $i = 0;
+	#while($i < 3){
+	#	open(FILE,">../../data/taxon_distribution$i");
+	#	print FILE (taxon_histogram($i));
+	#	$i++;
+	#}
 #open(GENOMES,'>../../data/genomes.txt');
 #print GENOMES Dumper(\%experiment_genomes);
 #open(NCBI,'>../../data/ncbi.txt');
