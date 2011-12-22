@@ -144,10 +144,14 @@ print $rank."\n";
 
 my $Trait2GenomesHash = {};
 $Trait2GenomesHash->{"Trait"}=$Genomes;
-
 $Trait2GenomesHash->{"Awesome"} = [qw(hs dg mm dh)];
 
-my $Supra2TreeDataHash = calculateMRCAstats($Trait2GenomesHash,'hs');
+my $SF2Genomes = sf_genomes([qw(56059 55594 53167 143597 158715 46911 52540)]);
+
+$SF2Genomes->{'test'}=[qw(mm xp)];
+
+
+my $Supra2TreeDataHash = calculateMRCAstats($SF2Genomes,'hs');
 
 EasyDump('Dump.out',$Supra2TreeDataHash);
 

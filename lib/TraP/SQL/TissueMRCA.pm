@@ -107,22 +107,26 @@ sub human_cell_type_experiments {
 }
 
 =item * sf_genomes
-Function to find all the genomes a superfamily occurs in
+Function to find all the genomes a superfamily occurs in given an array ref of a list of superfamily ids (not supra_ids). Returns a hash of $HAsh->{SFid}=[list of genomes]
 =cut
 sub sf_genomes {
-    my ($sf) = @_;
-    my %sf_genomes;
-    foreach my $sf (@$sf){
-    my $dbh = dbConnect('superfamily');
-    my $sth = $dbh->prepare("select distinct len_supra.genome from genome,len_supra,comb_index where comb_index.length = 1 and comb_index.comb in ($superfamily_query) and comb_index.id=len_supra.supra_id and genome.genome=len_supra.genome and genome.include='y';;");
-    #my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
     
-    $sth->execute();
-    while ( my ($genome) = $sth->fetchrow_array() ) {
-    	push (@{$sf_genomes{$sf}},$genome);
+    my ($ListOfSuperfamilies) = @_;
+    my %sf_genomes;
+    foreach my $sf (@$ListOfSuperfamilies){
+    	
+ 	   my $dbh = dbConnect('superfamily');
+    	my $sth = $dbh->prepare("SELECT distinct len_supra.genome FROM genome,len_supra,comb_index WHERE comb_index.length = 1 AND comb_index.comb = ? AND comb_index.id=len_supra.supra_id AND genome.genome=len_supra.genome AND genome.include='y';");
+
+ 	   $sth->execute($sf);
+    
+    	while ( my ($genome) = $sth->fetchrow_array() ) {
+    		push (@{$sf_genomes{$sf}},$genome);
+    	}
     }
-    }
-return \%sf_genomes;
+
+	return \%sf_genomes;
+
 }
 
 =item * experiment_sfs
