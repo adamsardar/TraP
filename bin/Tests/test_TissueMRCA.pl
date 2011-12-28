@@ -64,6 +64,7 @@ limitations under the License.
 #By default use the TraP libraries, assuming executing from the bin dir
 use lib qw'../../lib/';
 use TraP::SQL::TissueMRCA qw/:all/;
+use Supfam::Utils qw/:all/;
 
 =head1 DEPENDANCY
 
@@ -132,7 +133,8 @@ sub func {
 print "Verbose!\n" if $verbose;
 print "More verbose\n" if $debug;
 
-my $Genomes = [qw(hu 9f mm dD zz)];
+
+my $Genomes = [qw(hs mm )];
 
 my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($Genomes);
 
@@ -140,8 +142,18 @@ print $taxon_id."\n";
 print $name."\n";
 print $rank."\n";
 
+my $Trait2GenomesHash = {};
+$Trait2GenomesHash->{"Trait"}=$Genomes;
+$Trait2GenomesHash->{"Awesome"} = [qw(hs dg mm dh)];
+
+my $SF2Genomes = sf_genomes([qw(56059 55594 53167 143597 158715 46911 52540)]);
+
+$SF2Genomes->{'test'}=[qw(mm xp)];
 
 
+my $Supra2TreeDataHash = calculateMRCAstats($SF2Genomes,'hs');
+
+EasyDump('Dump.out',$Supra2TreeDataHash);
 
 
 1;

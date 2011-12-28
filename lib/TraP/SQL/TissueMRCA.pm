@@ -14,6 +14,7 @@ our %EXPORT_TAGS = (
 		all_sfs
 		calculate_MRCA_NCBI_placement
 		taxon_histogram
+		calculateMRCAstats
 ) ],
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -107,22 +108,26 @@ sub human_cell_type_experiments {
 }
 
 =item * sf_genomes
-Function to find all the genomes a superfamily occurs in
+Function to find all the genomes a superfamily occurs in given an array ref of a list of superfamily ids (not supra_ids). Returns a hash of $HAsh->{SFid}=[list of genomes]
 =cut
 sub sf_genomes {
-    my ($sf) = @_;
-    my %sf_genomes;
-    foreach my $sf (@$sf){
-    my $dbh = dbConnect('superfamily');
-    my $sth = $dbh->prepare("select distinct len_supra.genome from genome,len_supra,comb_index where comb_index.length = 1 and comb_index.comb in ($sf) and comb_index.id=len_supra.supra_id and genome.genome=len_supra.genome and genome.include='y';");
-    #my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
     
-    $sth->execute();
-    while ( my ($genome) = $sth->fetchrow_array() ) {
-    	push (@{$sf_genomes{$sf}},$genome);
+    my ($ListOfSuperfamilies) = @_;
+    my %sf_genomes;
+    foreach my $sf (@$ListOfSuperfamilies){
+    	
+ 	   my $dbh = dbConnect('superfamily');
+    	my $sth = $dbh->prepare("SELECT distinct len_supra.genome FROM genome,len_supra,comb_index WHERE comb_index.length = 1 AND comb_index.comb = ? AND comb_index.id=len_supra.supra_id AND genome.genome=len_supra.genome AND genome.include='y';");
+
+ 	   $sth->execute($sf);
+    
+    	while ( my ($genome) = $sth->fetchrow_array() ) {
+    		push (@{$sf_genomes{$sf}},$genome);
+    	}
     }
-    }
-return \%sf_genomes;
+
+	return \%sf_genomes;
+
 }
 
 =item * taxon_histogram
@@ -202,13 +207,15 @@ return \@sfs;
 =item * calculate_MRCA_NCBI_placement(\@list_of_genomes)
 
 Given a list of superfamily genome codes, this function will get their MRCA in NCBI taxonomy. Returns 
-its taxon_id, full name and rank in NCBI taxonomy.
+its taxon_id, full name and rank in NCBI taxonomy. If $ReferenceDistanceGenome is provided, then the 
+distance between $ReferenceDistanceGenome and the calculated MRCA will be returned else undef will be returned in its place.
 
 =cut
-sub calculate_MRCA_NCBI_placement($) {
+sub calculate_MRCA_NCBI_placement{
 
-    my ($GenomeList) = @_;
-    # $GenomeList = [genomes]
+    my ($GenomeList,$ReferenceDistanceGenome) = @_;
+    # $GenomeList = [genomes], reference distance genome is the genome from which to calculate the distance to MRCA
+    
 	#Given a lsit of Genomes, calculate their MRCA in the NCBI taxonomy. 
 	
 	die "Need to pass in a list of genomes as input!\n" unless(scalar(@$GenomeList));
@@ -219,8 +226,20 @@ sub calculate_MRCA_NCBI_placement($) {
 		
 	my $Genome_left_ids = []; #All the left_ids of genomes
 	my $Genome_right_ids = []; #All the right_ids of genomes
-	
+		
 	my $sth = $dbh->prepare("SELECT left_id,right_id FROM tree WHERE nodename = ?;");
+	
+	my ($RefernceGenomeLeftID,$ReferenceGenomeRightID);
+	
+	unless($ReferenceDistanceGenome ~~ undef){
+		
+		$sth->execute($ReferenceDistanceGenome);
+		my $Nrows = $sth->rows;
+		die "Reference genome $ReferenceDistanceGenome not found in SUPERFAMILY\n" if($Nrows < 1);
+		($RefernceGenomeLeftID,$ReferenceGenomeRightID) = $sth->fetchrow_array();
+		$sth->finish;
+	}
+	#If a refernce genome to calculate distances to was given, then grab the left and right ids 
 
 	foreach my $genome (@$GenomeList){
 			
@@ -255,7 +274,7 @@ sub calculate_MRCA_NCBI_placement($) {
 	my $SF2MRCAHash = {};
 	my $TaxonID2leftrightidDictionary = {};
 	
-	$sth = $dbh->prepare("SELECT ncbi_taxonomy.taxon_id, ncbi_taxonomy.name,ncbi_taxonomy.rank FROM tree JOIN ncbi_taxonomy ON ncbi_taxonomy.taxon_id = tree.taxon_id WHERE tree.left_id = (SELECT MAX(tree.left_id) FROM tree WHERE tree.left_id <= ? AND tree.right_id >= ?);");
+	$sth = $dbh->prepare("SELECT ncbi_taxonomy.taxon_id, ncbi_taxonomy.name,ncbi_taxonomy.rank, tree.left_id, tree.right_id FROM tree JOIN ncbi_taxonomy ON ncbi_taxonomy.taxon_id = tree.taxon_id WHERE tree.left_id = (SELECT MAX(tree.left_id) FROM tree WHERE tree.left_id <= ? AND tree.right_id >= ?);");
 	
 	my $MaxLeftID = List::Util::min(@$Genome_left_ids);
 	my $MinRightID = List::Util::max(@$Genome_right_ids);
@@ -272,118 +291,72 @@ sub calculate_MRCA_NCBI_placement($) {
 		die "Query appears to have failed on left_id $MaxLeftID and right_id $MinRightID!\n";
 	}
 					
-	my ($taxon_id,$name,$rank) = $sth->fetchrow_array;
+	my ($taxon_id,$name,$rank,$MRCAleftid,$MRCArightid) = $sth->fetchrow_array;
 	
 	$sth->finish;
+	
+	my $DistanceFromReference; #This is the distance on the tree (in aggregated branch lengths) from MRCA
+	
+	unless($ReferenceDistanceGenome ~~ undef){
+		#i.e. if a reference distance genome was provided
+		
+		$sth = $dbh->prepare("SELECT SUM(edge_length) FROM tree WHERE left_id <= ? AND left_id > ? AND right_id >= ? AND right_id < ?;");
+		
+		if($MRCAleftid <=  $RefernceGenomeLeftID && $MRCArightid >= $ReferenceGenomeRightID){
+			#i.e. if the reference genome is a direct descendent of the MRCA
+			
+			$sth->execute($RefernceGenomeLeftID,$MRCAleftid,$ReferenceGenomeRightID,$MRCArightid);
+			
+			($DistanceFromReference) = $sth->fetchrow_array;
+			
+			$sth->finish;
+			
+		}else{
+			
+			die "Calculating the distance between a leaf genome and a node that isn't even its ancestor makes little to no sense at all!\n";
+			#Check that what we're doing is sensible
+		}
+		
+	}	
+	
 	dbDisconnect($dbh);
 	
-	return ($taxon_id,$name,$rank);
+	return ($taxon_id,$name,$rank,$DistanceFromReference);
 }
 
-=item * calculateSupraListMRCA
-Function under development. Due to complete imminently. Apologies for the bad practice.
+=item * calculateMRCAstats
+Function to take a list of traits (supra_ids, so superfamilies, domain architectures whatever ...) and 
+calculates a whole load of information regarding their MRCA.
+
+Expected input: A hash of form $Hash->{trait}=[list if genomes trait belongs in] and a reference genome (optional)
+
+Output: A hash of structure $Hash->{trait}=[MRCAtaxon_id,MRCA_NCBI_Taxonomy_Name,MRCA_NCBI_Taxonomy_Rank,TotalDistanceFromMRCAtoReference]
+
 =cut
 
-#sub calculateSupraListMRCA {
-#    
-#Commented out, but might compelte, just for the hey.
-#    my ($GenomesList) = @_;
-#	
-#	#Given a lsit of SFs, calculate their MRCA in the NCBI taxonomy. 
-#	
-#	my $TreeProvided = ($TreeInNewick)?1:0;
-#	#TODO Extract Tree from superfamily if no tree given
-#	
-#	my $dbh = dbConnect('SUPERFAMILY');
-#		
-#	my ($root,$TreeCacheHash) = BuildTreeCacheHash($TreeInNewick);
-#	
-#	my $sth = $dbh-> prepare("SELECT DISTINCT(genome) FROM len_supra WHERE supra_id = ?;");
-#	
-#	my $Supra2GenomeListHash = {};
-#	
-#	foreach my $SupraID (@$SupraList){
-#		
-#		$sth->execute($SupraID);
-#		my $GenomesWithSupraID = [];
-#		
-#		while (my $genome = $sth->fetchrow_array){	push(@$GenomesWithSupraID,$genome); } #Populate $GenomesWithSupraID
-#	
-#		$Supra2GenomeListHash->{$SupraID}=$GenomesWithSupraID;
-#		$sth->finish;
-#	}
-#	
-#	#TODO check that there is an overlap between the tree provided and the genomes
-#	SUPERFAMILY
-#	#Now calculate the MRCA of each list of genomes
-#	my $Supra2MRCAHash = {};
-#		
-#	foreach  my $SupraID (@$SupraList){
-#	
-#		my $SupraMRCA = FindMRCA($TreeCacheHash,$root,$Supra2GenomeListHash->{$SupraID});
-#		$Supra2MRCAHash->{$SupraID}=$SupraMRCA;
-#	}
-#	
-#	my $DistinctMRCAsHash = {};
-#	@{$DistinctMRCAsHash}{values(%$Supra2MRCAHash)}=(undef) x scalar(@$SupraList); #Update hash using a hash slice. This a quick way to get all the distinct MRCAs, as well as preallocating for the next step of the script
-#	my @DistinctMRCAs = keys(%$DistinctMRCAsHash);
-#
-#	my $MRMRCA; #A very strange idea, but this is the most recent most recent common ancestor. i.e., of all the MRCAs, which is the last point on the tree
-#
-#	foreach my $DistinctMRCA (@DistinctMRCAs){
-#		
-#		my @MRCADescendents = @{$TreeCacheHash->{$DistinctMRCA}{'all_Descendents'}};
-#		my ($Union,$Intersection,$ListAExclusive,$ListBExclusive) = IntUnDiff(\@MRCADescendents,\@DistinctMRCAs);
-#		
-#		my $NumberOfMRCAsAsDescenents = scalar(@$Intersection);
-#		
-#		$DistinctMRCAsHash->{$DistinctMRCA}=$NumberOfMRCAsAsDescenents;	#Foreach distinct supra_id MRCA, work out the number of times another MRCA in the set appears within it's descendens
-#	
-#		if($NumberOfMRCAsAsDescenents == 0){ # The MRCA with no others as descendents must be the MRMRCA
-#			
-#			die "More than one youngest MRCA! This MUST imply a bug SUPERFAMILYwith the script\n" if($MRMRCA);
-#			$MRMRCA = $DistinctMRCA;
-#		}
-#	}
-#	
-#	my $MRMRCAGenomes = @{$TreeCacheHash->{$MRMRCA}{'Clade_Leaves'}};
-#	
-#	my $MRMRCACladeLeftIDs = [];
-#	my $MRMRCACladeRightIDs = [];
-#	
-#	$sth = $dbh-> prepare("SELECT left_id,right_id FROM tree WHERE nodename = ?");
-#	
-#	foreach my $TreeLeaf ($MRMRCAGenomes){
-#		
-#		$sth->execute($TreeLeaf);
-#		
-#		while(my($leftid,$rightid) = $sth->fetchrow_array){
-#		
-#			push(@$MRMRCACladeLeftIDs,$leftid);
-#			push(@$MRMRCACladeRightIDs,$rightid);
-#		}
-#		$sth->finish;
-#	}
-#	
-#	my $MRMRCAmaxleftid =  List::Util::min(@$MRMRCACladeLeftIDs);
-#	my $MRMRCAminrightid = List::Util::max(@$MRMRCACladeRightIDs);
-#	
-#	$sth = $dbh-> prepare("SELECT taxon_id, MAX(left_id) FROM ncbi_taxonomy ON taxon_id WHERE left_id < ? AND right_id > ?;")
-#	$sth->execute($MRMRCAmaxleftid,$MRMRCAminrightid);
-#	
-#	
-#	
-#	dbDisconnect($dbh);
-#	
-#	
-#	
-#	my 	$MRCABranchName;
-#		SUPERFAMILY
-#	return ($MRCABranchName);
-#}
+sub calculateMRCAstats {
+	
+	my ($Trait2GenomesHash,$ReferenceDistanceGenomes) = @_;
+	#$Trait2GenomesHash->{trait}=[genomes in which it is present]
+	
+	$ReferenceDistanceGenomes = 'hs' if($ReferenceDistanceGenomes ~~ undef); #Set a default of homo sampien
+	
+	my $Supra2TreeData = {};
+	#Structure will be $Supra2TreeData->{$supra_id}=[$MRCAtaxon_id,$MRCA_NCBI_Taxonomy_Name,$MRCA_NCBI_Taxonomy_Rank,$DistanceFromReference]
 
-
-
+	foreach my $Trait (keys(%$Trait2GenomesHash)){
+		
+		my @TraitGenomes = @{$Trait2GenomesHash->{$Trait}}; #List of genomes possesing trait, as passed into function
+		
+		print STDERR "Reference Distance genome $ReferenceDistanceGenomes not in list of genomes passed in for Trait $Trait\n" unless(grep{$_ =~ /$ReferenceDistanceGenomes/}@TraitGenomes);
+		
+		my ($taxon_id,$name,$rank,$DistanceFromReference) = calculate_MRCA_NCBI_placement(\@TraitGenomes,$ReferenceDistanceGenomes);
+		$Supra2TreeData->{$Trait}=[$taxon_id,$name,$rank,$DistanceFromReference];
+	}
+	
+	
+	return ($Supra2TreeData);
+}
 
 1;
 __END__
