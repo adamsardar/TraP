@@ -13,6 +13,7 @@ our %EXPORT_TAGS = (
 		sf_genomes
 		all_sfs
 		calculate_MRCA_NCBI_placement
+		taxon_histogram
 ) ],
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -113,7 +114,7 @@ sub sf_genomes {
     my %sf_genomes;
     foreach my $sf (@$sf){
     my $dbh = dbConnect('superfamily');
-    my $sth = $dbh->prepare("select distinct len_supra.genome from genome,len_supra,comb_index where comb_index.length = 1 and comb_index.comb in ($superfamily_query) and comb_index.id=len_supra.supra_id and genome.genome=len_supra.genome and genome.include='y';;");
+    my $sth = $dbh->prepare("select distinct len_supra.genome from genome,len_supra,comb_index where comb_index.length = 1 and comb_index.comb in ($sf) and comb_index.id=len_supra.supra_id and genome.genome=len_supra.genome and genome.include='y';");
     #my $sth = $dbh->prepare('select distinct(genome) from protein, ass where protein.protein = ass.protein and ass.sf = ?');
     
     $sth->execute();
@@ -122,6 +123,40 @@ sub sf_genomes {
     }
     }
 return \%sf_genomes;
+}
+
+=item * taxon_histogram
+takes a list of genomes and prints a histogram of their distributions at a specified level of the ncbi taxonomy
+=cut
+sub taxon_histogram {
+    my $depth = shift;
+    my ($genomes) = shift;
+    my $query;
+    if(defined($genomes)){
+    	$query = 'select taxonomy from genome';
+    	my $genome_list = join(',',@{$genomes});
+    	$query = $query."where genome in ($genome_list);"
+    }else{
+    	$query = 'select taxonomy from genome where include =\'y\'';
+    }
+    my %taxon_distributions;
+    my $dbh = dbConnect('superfamily');
+    my $sth = $dbh->prepare("$query");    
+    $sth->execute();
+    while ( my ($taxons) = $sth->fetchrow_array() ) {
+    	my @taxons = split(/;/,$taxons);
+    	if(exists($taxon_distributions{$taxons[$depth]})){
+    		$taxon_distributions{$taxons[$depth]} = $taxon_distributions{$taxons[$depth]} + 1;
+    	}else{
+    		$taxon_distributions{$taxons[$depth]} = 1;
+    	}
+    }
+    my $string = '';
+    foreach(sort {$taxon_distributions{$a} <=> $taxon_distributions{$b}} keys %taxon_distributions){
+    	$string .= "$_\t$taxon_distributions{$_}\n";
+    }
+    
+return $string;
 }
 
 =item * experiment_sfs
