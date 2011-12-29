@@ -148,7 +148,7 @@ my %experiment_sfs;
 foreach my $experiment (@{human_cell_type_experiments()}) {
 	print "running $experiment...\n";
 	$experiment_sfs{$experiment} = experiment_sfs($experiment);
-	print "got superfamilies\n";
+	print "got experiment superfamilies\n";
 }
 	print "now getting all sfs\n";
 	my $source_id = 1;
@@ -157,18 +157,11 @@ foreach my $experiment (@{human_cell_type_experiments()}) {
 	
 	my $sf_genomes = sf_genomes($supfams);
 	print "got genomes\n";
-	#my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($sf_genomes);
 	print "got ncbi details\n";
-	#my $i = 0;
-	#while($i < 3){
-	#	open(FILE,">../../data/taxon_distribution$i");
-	#	print FILE (taxon_histogram($i));
-	#	$i++;
-	#}
-#open(GENOMES,'>../../data/genomes.txt');
-#print GENOMES Dumper(\%experiment_genomes);
-#open(NCBI,'>../../data/ncbi.txt');
-#print NCBI Dumper(\%experiment_ncbi);
+	my $Supra2TreeDataHash = calculateMRCAstats($sf_genomes,'hs');
+	
+open(GENOMES,'>../../data/genomes.txt');
+print GENOMES Dumper($Supra2TreeDataHash);
 
 =pod
 
