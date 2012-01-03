@@ -138,17 +138,19 @@ my $Genomes = [qw(hs mm )];
 
 my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($Genomes);
 
-print $taxon_id."\n";
-print $name."\n";
-print $rank."\n";
+#print $taxon_id."\n";
+#print $name."\n";
+#print $rank."\n";
 
 my $Trait2GenomesHash = {};
 $Trait2GenomesHash->{"Trait"}=$Genomes;
 $Trait2GenomesHash->{"Awesome"} = [qw(hs dg mm dh)];
 
-my $SF2Genomes = sf_genomes([qw(56059 55594 53167 143597 158715 46911 52540)]);
+my $SF2Genomes = sf_genomes([qw(57586)]);
 
-$SF2Genomes->{'test'}=[qw(mm xp)];
+
+print Dumper $SF2Genomes;
+#$SF2Genomes->{'test'}=[qw(mm xp)];
 
 
 my $Supra2TreeDataHash = calculateMRCAstats($SF2Genomes,'hs');

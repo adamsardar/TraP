@@ -145,20 +145,24 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 my %experiment_genomes;
 my %experiment_ncbi;
 my %experiment_sfs;
+my %experiment_supras;
 foreach my $experiment (@{human_cell_type_experiments()}) {
 	print "running $experiment...\n";
-	$experiment_sfs{$experiment} = experiment_sfs($experiment);
+	#$experiment_sfs{$experiment} = experiment_sfs($experiment);
+	$experiment_supras{$experiment} = experiment_supras($experiment);
 	print "got experiment superfamilies\n";
 }
 	print "now getting all sfs\n";
 	my $source_id = 1;
-	my $supfams = all_sfs($source_id);
+	#my $supfams = all_sfs($source_id);
+	my $supras = all_supras($source_id);
 	print "now genomes for each sf\n";
 	
-	my $sf_genomes = sf_genomes($supfams);
+	#my $sf_genomes = sf_genomes($supfams);
+	my $supra_genomes = supra_genomes($supras);
 	print "got genomes\n";
 	print "got ncbi details\n";
-	my $Supra2TreeDataHash = calculateMRCAstats($sf_genomes,'hs');
+	my $Supra2TreeDataHash = calculateMRCAstats($supra_genomes,'hs');
 	
 open(GENOMES,'>../../data/genomes.txt');
 print GENOMES Dumper($Supra2TreeDataHash);
@@ -180,4 +184,3 @@ print GENOMES Dumper($Supra2TreeDataHash);
 1;
 
 __END__
-
