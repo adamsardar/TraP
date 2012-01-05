@@ -112,7 +112,7 @@ CPAN dependancies:
 use Getopt::Long; #Deal with command line options
 use Pod::Usage;   #Print a usage man page from the POD comments
 use Data::Dumper; #Allow easy print dumps of datastructures for debugging
-
+use Statistics::Descriptive;
 use TraP::SQL::TissueMRCA qw/:all/;
 
 # Command Line Options
@@ -146,26 +146,100 @@ my %experiment_genomes;
 my %experiment_ncbi;
 my %experiment_sfs;
 my %experiment_supras;
-foreach my $experiment (@{human_cell_type_experiments()}) {
+my %experiment_protein_genedistances;
+#for every experiment we will collect the supraIDs of the dopamian architectures that are expressed and
+#also the gene distances of each of the proteins that are expressed.
+foreach my $experiment (sort {$b <=> $a} @{human_cell_type_experiments()}) {
 	print "running $experiment...\n";
 	#$experiment_sfs{$experiment} = experiment_sfs($experiment);
 	$experiment_supras{$experiment} = experiment_supras($experiment);
+	$experiment_protein_genedistances{$experiment} = experiment_protein_genedistance($experiment,50);
 	print "got experiment superfamilies\n";
 }
+	my $all_protein_genedistances = all_protein_genedistance(1,50);
+
+#for a given source we will collect any supraID for a domain architecture that is expressed in any experiment.
 	print "now getting all sfs\n";
 	my $source_id = 1;
 	#my $supfams = all_sfs($source_id);
-	my $supras = all_supras($source_id);
+	#this supras is an array of supraIDs that are expressed and protein_lookup is a mapping from proteinID to supraID
+	my ($supras,$protein_lookup,$supra_lookup) = all_supras($source_id);
+	my %protein_lookup = %{$protein_lookup};
+	my %supra_lookup = %{$supra_lookup};
 	print "now genomes for each sf\n";
 	
 	#my $sf_genomes = sf_genomes($supfams);
+#Given a list of supras provided above we now collect all the genomes that a supra is in
 	my $supra_genomes = supra_genomes($supras);
 	print "got genomes\n";
 	print "got ncbi details\n";
-	my $Supra2TreeDataHash = calculateMRCAstats($supra_genomes,'hs');
-	
+#for a set of genomes for each supra we calculate where on the tree that supra first appeared
+	my ($Supra2TreeDataHash,$ncbi_placement) = calculateMRCAstats($supra_genomes,'hs');
+	my %Supra2TreeDataHash = %{$Supra2TreeDataHash};
+	print Dumper $ncbi_placement;
+#This is counts supras at each distance
+	my %distances;
+	foreach my $supra (keys %Supra2TreeDataHash){
+		my $dist = $Supra2TreeDataHash{$supra};
+		if(exists($distances{$dist})){
+			$distances{$dist} = $distances{$dist} + scalar(@{$supra_lookup{$supra}});
+		}else{
+			$distances{$dist} = scalar(@{$supra_lookup{$supra}});
+		}
+	}
+
+#this is a very messy set of loops to collect the data to visualise, IT NEEDS TIDYING UP
+my %distance_distributions;
+my %experiment_distance_distributions;	
 open(GENOMES,'>../../data/genomes.txt');
 print GENOMES Dumper($Supra2TreeDataHash);
+open(ALLSCATTER,'>../../data/scatter.txt');
+	foreach my $exp (keys %experiment_supras){
+		my @supras = @{$experiment_supras{$exp}};
+		open FILE,">../../data/$exp.out";
+		foreach my $supra (@supras){
+#here we print the distance of each supra to file
+			if(defined($Supra2TreeDataHash->{$supra})){
+				my $dist = $Supra2TreeDataHash->{$supra};
+			print FILE "$supra:$dist\n";
+			}else{
+				print "$supra is broken\n"
+			}
+		}
+		
+	}
+	
+my %protein_genedistances = %{$all_protein_genedistances};
+#here we are going to loop through all the proteins that each supra is in and map the distance and gene_distance.
+		foreach my $protein (keys %protein_genedistances){
+			if(exists($protein_lookup{$protein})){
+				unless($protein_lookup{$protein} ~~ 1){
+				
+#for each distance we record an array of gene_distances which can be used below to calcualte mean and standard deviation of
+#gene distance at each distance from the reference (probasbly human) on the tree. Each of these distance will correspond
+#to a given ncbi taxon (probavbly)
+				my $dist = $Supra2TreeDataHash->{$protein_lookup{$protein}};
+				push (@{$distance_distributions{$dist}},$protein_genedistances{$protein});
+#a scatter of experiment and overall relationship of gene_distance vs distance is printed to file.
+				print ALLSCATTER "$protein_genedistances{$protein}\t$dist\n";
+			
+				}
+			}
+		}
+#now we loop through the distance arrays to calculate the mean and std dev at each distance.
+open STAT,'>../../data/stats.txt';
+open RATIO,'>../../data/counts.txt';
+foreach my $dist (sort {$a <=> $b} keys %distance_distributions){
+	my @array = @{$distance_distributions{$dist}};
+	my $len = scalar(@array);
+	my $ratio = $len/$distances{$dist};
+	my $stat = Statistics::Descriptive::Full->new();
+	$stat->add_data(@array);
+	my $mean = $stat->mean();
+	my $std  = $stat->standard_deviation();
+	print STAT "$dist\t$mean\t$std\n";
+	print RATIO "$dist\t$ratio\n";
+}
 
 =pod
 
