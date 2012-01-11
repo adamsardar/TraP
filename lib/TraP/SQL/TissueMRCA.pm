@@ -419,7 +419,7 @@ sub calculate_MRCA_NCBI_placement{
 	my $SF2MRCAHash = {};
 	my $TaxonID2leftrightidDictionary = {};
 	
-	$sth = $dbh->prepare("SELECT tree.left_id, tree.right_id FROM tree WHERE tree.left_id = (SELECT MAX(tree.left_id) FROM tree WHERE tree.left_id <= ? AND tree.right_id >= ?);");
+	$sth = $dbh->prepare("SELECT tree.left_id, tree.right_id, tree.taxon_id FROM tree WHERE tree.left_id = (SELECT MAX(tree.left_id) FROM tree WHERE tree.left_id <= ? AND tree.right_id >= ?);");
 	
 	my $MaxLeftID = List::Util::min(@$Genome_left_ids);
 	my $MinRightID = List::Util::max(@$Genome_right_ids);
@@ -436,7 +436,7 @@ sub calculate_MRCA_NCBI_placement{
 		die "Query appears to have failed on left_id $MaxLeftID and right_id $MinRightID!\n";
 	}
 					
-	my ($MRCAleftid,$MRCArightid) = $sth->fetchrow_array;
+	my ($MRCAleftid,$MRCArightid,$taxonID) = $sth->fetchrow_array;
 	
 	$sth->finish;
 	
@@ -464,9 +464,17 @@ sub calculate_MRCA_NCBI_placement{
 			#Check that what we're doing is sensible
 		}
 		
-		$sth = $dbh->prepare("SELECT ncbi_taxonomy.name FROM ncbi_taxonomy JOIN tree ON tree.left_id = ncbi_taxonomy.left_id WHERE tree.left_id = ? AND tree.right_id = ?;");
-		
-		$sth->execute($MRCAleftid,$MRCArightid);
+		unless($taxonID ~~ undef){
+			
+			$sth = $dbh->prepare("SELECT ncbi_taxonomy_lite.name FROM ncbi_taxonomy_lite WHERE  ncbi_taxonomy_lite.taxon_id = ?;");
+			$sth->execute($taxonID);
+		}else{
+			
+			$sth = $dbh->prepare("SELECT ncbi_taxonomy_lite.name FROM ncbi_taxonomy_lite JOIN tree ON tree.taxon_id = ncbi_taxonomy_lite.taxon_id 
+			WHERE tree.left_id IN (SELECT MAX(left_id) FROM tree WHERE left_id < ? AND right_id > ? AND taxon_id IS NOT NULL);");
+			
+			$sth->execute($MRCAleftid,$MRCArightid);
+		}
 		
 		($NCBIPlacement) = $sth->fetchrow_array;
 			
