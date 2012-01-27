@@ -147,12 +147,14 @@ my %experiment_ncbi;
 my %experiment_sfs;
 my %experiment_supras;
 my %experiment_protein_genedistances;
+my $source = 3;
+my $root_genome = 'mm';
 #for every experiment we will collect the supraIDs of the dopamian architectures that are expressed and
 #also the gene distances of each of the proteins that are expressed.
-foreach my $experiment (sort {$b <=> $a} @{human_cell_type_experiments()}) {
+foreach my $experiment (sort {$b <=> $a} @{human_cell_type_experiments($source)}) {
 	print "running $experiment...\n";
 	#$experiment_sfs{$experiment} = experiment_sfs($experiment);
-	$experiment_supras{$experiment} = experiment_supras($experiment);
+	$experiment_supras{$experiment} = experiment_supras($experiment,$root_genome);
 	$experiment_protein_genedistances{$experiment} = experiment_protein_genedistance($experiment,50);
 	print "got experiment superfamilies\n";
 }
@@ -160,10 +162,9 @@ foreach my $experiment (sort {$b <=> $a} @{human_cell_type_experiments()}) {
 
 #for a given source we will collect any supraID for a domain architecture that is expressed in any experiment.
 	print "now getting all sfs\n";
-	my $source_id = 1;
-	#my $supfams = all_sfs($source_id);
+	#my $supfams = all_sfs($source);
 	#this supras is an array of supraIDs that are expressed and protein_lookup is a mapping from proteinID to supraID
-	my ($supras,$protein_lookup,$supra_lookup) = all_supras($source_id);
+	my ($supras,$protein_lookup,$supra_lookup) = all_supras($source,$root_genome);
 	my %protein_lookup = %{$protein_lookup};
 	my %supra_lookup = %{$supra_lookup};
 	print "now genomes for each sf\n";
@@ -174,71 +175,158 @@ foreach my $experiment (sort {$b <=> $a} @{human_cell_type_experiments()}) {
 	print "got genomes\n";
 	print "got ncbi details\n";
 #for a set of genomes for each supra we calculate where on the tree that supra first appeared
-	my ($Supra2TreeDataHash,$ncbi_placement) = calculateMRCAstats($supra_genomes,'hs');
+	my ($Supra2TreeDataHash,$ncbi_placement) = calculateMRCAstats($supra_genomes,$root_genome);
 	my %Supra2TreeDataHash = %{$Supra2TreeDataHash};
-	print Dumper $ncbi_placement;
+	my %ncbi_placement = %{$ncbi_placement};
 #This is counts supras at each distance
 	my %distances;
-	foreach my $supra (keys %Supra2TreeDataHash){
-		my $dist = $Supra2TreeDataHash{$supra};
+	my %s_distances;
+	foreach my $supra (keys %ncbi_placement){
+		my $dist = $ncbi_placement{$supra};
 		if(exists($distances{$dist})){
 			$distances{$dist} = $distances{$dist} + scalar(@{$supra_lookup{$supra}});
+			$s_distances{$dist} = $s_distances{$dist} +1;
 		}else{
 			$distances{$dist} = scalar(@{$supra_lookup{$supra}});
+			$s_distances{$dist} = 1;
 		}
 	}
 
-#this is a very messy set of loops to collect the data to visualise, IT NEEDS TIDYING UP
-my %distance_distributions;
-my %experiment_distance_distributions;	
-open(GENOMES,'>../../data/genomes.txt');
-print GENOMES Dumper($Supra2TreeDataHash);
-open(ALLSCATTER,'>../../data/scatter.txt');
-	foreach my $exp (keys %experiment_supras){
-		my @supras = @{$experiment_supras{$exp}};
-		open FILE,">../../data/$exp.out";
-		foreach my $supra (@supras){
-#here we print the distance of each supra to file
-			if(defined($Supra2TreeDataHash->{$supra})){
-				my $dist = $Supra2TreeDataHash->{$supra};
-			print FILE "$supra:$dist\n";
-			}else{
-				print "$supra is broken\n"
-			}
-		}
-		
+	my $ncbi_distances = calculate_NCBI_taxa_range_distances([keys %distances],$root_genome);
+	my %ncbi_distances = %{$ncbi_distances};
+	open DIST,">../../data/distances.txt";
+	foreach my $dist (sort { $ncbi_distances{$a} <=> $ncbi_distances{$b}} keys %distances){
+		print DIST "$dist($ncbi_distances{$dist})\t$distances{$dist}($s_distances{$dist})\n";
 	}
+
+
 	
-my %protein_genedistances = %{$all_protein_genedistances};
+	#my %protein_genedistances = %{$all_protein_genedistances};
 #here we are going to loop through all the proteins that each supra is in and map the distance and gene_distance.
-		foreach my $protein (keys %protein_genedistances){
-			if(exists($protein_lookup{$protein})){
-				unless($protein_lookup{$protein} ~~ 1){
-				
-#for each distance we record an array of gene_distances which can be used below to calcualte mean and standard deviation of
-#gene distance at each distance from the reference (probasbly human) on the tree. Each of these distance will correspond
-#to a given ncbi taxon (probavbly)
-				my $dist = $Supra2TreeDataHash->{$protein_lookup{$protein}};
-				push (@{$distance_distributions{$dist}},$protein_genedistances{$protein});
-#a scatter of experiment and overall relationship of gene_distance vs distance is printed to file.
-				print ALLSCATTER "$protein_genedistances{$protein}\t$dist\n";
+my %exp_distances;
+my %exp_s_distances;
+my %dist_totals;
+my %s_dist_totals;
+my $exps = scalar(keys %experiment_supras);
+my %exps_total;
+open SUPRADISTANCES ,">../../data/supra_distances.txt";
+foreach my $exp (keys %experiment_supras){
+	my @supras = @{$experiment_supras{$exp}};
+	$exps_total{$exp} = scalar(@supras);
+	foreach my $supra (@supras){
+		my $dist = $ncbi_placement{$supra};
+		print SUPRADISTANCES "$exp\t$supra\t$dist\n";
+		if(exists($exp_distances{$exp}{$dist})){
+			$exp_distances{$exp}{$dist} = $exp_distances{$exp}{$dist} + scalar(@{$supra_lookup{$supra}});
+			$exp_s_distances{$exp}{$dist} = $exp_s_distances{$exp}{$dist} +1;
+		}else{
+			$exp_distances{$exp}{$dist} = scalar(@{$supra_lookup{$supra}});
+			$exp_s_distances{$exp}{$dist} = 1;
+		}
+		if(exists($dist_totals{$dist})){
+			$dist_totals{$dist} = $dist_totals{$dist} + scalar(@{$supra_lookup{$supra}});
+			$s_dist_totals{$dist} = $s_dist_totals{$dist} +1;
+		}else{
+			$dist_totals{$dist} = scalar(@{$supra_lookup{$supra}});
+			$s_dist_totals{$dist} = 1;
+		}
+	}
+}
+
+
+my $explookup = experiment_name_lookup($source);
+my %exp_lookup = %{$explookup};
+open EDIST,">../../data/exparch_distances.txt";
+open EPDIST,">../../data/expprot_distances.txt";
+open MEANADIST,">../../data/exparch_meandistances.txt";
+open MEANPDIST,">../../data/expprot_meandistances.txt";
+open ARCHPROP,">../../data/exparch_props.txt";
+open DUMP,">../../data/dump.txt";
+print EDIST "samples\t";
+print EPDIST "samples\t";
+print MEANADIST "samples\t";
+print MEANPDIST "samples\t";
+print ARCHPROP "samples\t";
+foreach my $ncbi (sort { $ncbi_distances{$a} <=> $ncbi_distances{$b}}keys %ncbi_distances){
+	print EDIST "$ncbi($ncbi_distances{$ncbi})\t";
+	print EPDIST "$ncbi($ncbi_distances{$ncbi})\t";
+	print MEANADIST "$ncbi($ncbi_distances{$ncbi})\t";
+	print MEANPDIST "$ncbi($ncbi_distances{$ncbi})\t";
+	print ARCHPROP "$ncbi($ncbi_distances{$ncbi})\t";
+}
+print EDIST "\n";
+print EPDIST "\n";
+print MEANADIST "\n";
+print MEANPDIST "\n";
+print ARCHPROP "\n";
+my %exp_props;
+my %props;
+	foreach my $exp (keys %exp_distances){
+		print EDIST "$exp_lookup{$exp}\t";
+		print EPDIST "$exp_lookup{$exp}\t";
+		print MEANADIST "$exp_lookup{$exp}\t";
+		print MEANPDIST "$exp_lookup{$exp}\t";
+		print ARCHPROP "$exp_lookup{$exp}\t";
+		foreach my $dist (sort { $ncbi_distances{$a} <=> $ncbi_distances{$b} } keys %ncbi_distances){
+			my $amean = $s_dist_totals{$dist}/$exps;
+			my $pmean = $dist_totals{$dist}/$exps;
 			
+			if(exists($exp_distances{$exp}{$dist})){
+				print EDIST "$exp_s_distances{$exp}{$dist}\t";
+				print EPDIST "$exp_distances{$exp}{$dist}\t";
+				my $adev = $exp_s_distances{$exp}{$dist} - $amean;
+				my $pdev = $exp_distances{$exp}{$dist} - $pmean;
+				my $aprop = $exp_s_distances{$exp}{$dist}/$exps_total{$exp};
+				$exp_props{$exp}{$dist} = $aprop;
+				if(exists($props{$dist})){
+					$props{$dist} = $props{$dist} + $aprop;
+				}else{
+					$props{$dist} = $aprop;
 				}
+				print MEANADIST "$adev\t";
+				print MEANPDIST "$pdev\t";
+				print ARCHPROP "$aprop\t";
+			}else{
+				print EDIST "0\t";
+				print EPDIST "0\t";
+				print MEANADIST "0\t";
+				print MEANPDIST "0\t";
+				print ARCHPROP "0\t";
 			}
 		}
-#now we loop through the distance arrays to calculate the mean and std dev at each distance.
-open STAT,'>../../data/stats.txt';
-open RATIO,'>../../data/counts.txt';
-foreach my $dist (sort {$a <=> $b} keys %distance_distributions){
-	my @array = @{$distance_distributions{$dist}};
-	my $len = scalar(@array);
-	my $ratio = $len/$distances{$dist};
-	my $stat = Statistics::Descriptive::Full->new();
-	$stat->add_data(@array);
-	my $mean = $stat->mean();
-	my $std  = $stat->standard_deviation();
-	print STAT "$dist\t$mean\t$std\n";
-	print RATIO "$dist\t$ratio\n";
+		print EDIST "\n";
+		print EPDIST "\n";
+		print MEANADIST "\n";
+		print MEANPDIST "\n";
+		print ARCHPROP "\n";
+	}
+
+open MEANPROP,">../../data/exparch_meanprops.txt";
+print MEANPROP "samples\t";
+
+foreach my $ncbi (sort { $ncbi_distances{$a} <=> $ncbi_distances{$b}}keys %ncbi_distances){
+	print MEANPROP "$ncbi($ncbi_distances{$ncbi})\t";
+	
+
+}
+print MEANPROP "\n";
+	
+	
+	
+foreach my $exp (keys %exp_props){
+	print MEANPROP "$exp_lookup{$exp}\t";
+	foreach my $dist (sort { $ncbi_distances{$a} <=> $ncbi_distances{$b}} keys  %ncbi_distances){
+		if(exists($exp_props{$exp}{$dist})){
+			my $pmean = $props{$dist}/$exps;
+			my $pdev = $exp_props{$exp}{$dist} - $pmean;
+			print MEANPROP "$pdev\t";
+			print DUMP "$exp\t$ncbi_distances{$dist}\t$pdev\t$dist\t$root_genome\n"
+		}else{
+			print MEANPROP "0\t";
+			print DUMP "$exp\t$ncbi_distances{$dist}\t0\t$dist\t$root_genome\n"
+		}
+	}
+	print MEANPROP "\n";
 }
 
 =pod

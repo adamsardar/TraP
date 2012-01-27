@@ -8,6 +8,8 @@ our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = (
 'all' => [ qw(
+		experiment_name_lookup
+		calculate_NCBI_taxa_range_distances
         human_cell_type_experiments
 		experiment_sfs
 		experiment_supras
@@ -43,7 +45,7 @@ Just a skeleton layout for each module to start from.
 =head1 EXAMPLES
 
 use TraP::Skeleton qw/all/;
-
+calculate_NCBI_taxa_range_distances
 =head1 AUTHOR
 
 DELETE AS APPROPRIATE!
@@ -103,10 +105,11 @@ use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 Function to get all the human cell type experiment ids
 =cut
 sub human_cell_type_experiments {
+	my $source = shift;
 	my @ids = ();
 	my $dbh = dbConnect('trap');
 	my $sth = $dbh->prepare('select experiment_id from experiment where source_id = ?');
-	$sth->execute(1);
+	$sth->execute($source);
 	
 	my $results=[];	
 	while(my ($exp_id)=  $sth->fetchrow_array()){
@@ -127,7 +130,8 @@ sub sf_genomes {
     foreach my $sf (@$ListOfSuperfamilies){
     	
  	   my $dbh = dbConnect('superfamily');
-    	my $sth = $dbh->prepare("SELECT distinct len_supra.genome FROM genome,len_supra,comb_index WHERE comb_index.length = 1 AND comb_index.comb = ? AND comb_index.id=len_supra.supra_id AND genome.genome=len_supra.genome AND genome.include= 'y';");
+    	my $sth = $dbh->prepare("SELECT distinct len_supra.genome FROM genome,len_supra,comb_index WHERE comb_index.length = 1 AND comb_index.comb = ? AND comb_index.id=len_supra.supra_id 
+    	AND genome.genome=len_supra.genome AND genome.include= 'y';");
 
  	   $sth->execute($sf);
     
@@ -207,7 +211,8 @@ my @sfs;
 my ($dbh, $sth);
 $dbh = dbConnect();
 
-$sth =   $dbh->prepare( "select distinct(superfamily.ass.sf) from trap.cell_snapshot, trap.id_mapping, superfamily.ass where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.id_mapping.protein = superfamily.ass.protein and trap.cell_snapshot.experiment_id = '$sample';" );
+$sth =   $dbh->prepare( "select distinct(superfamily.ass.sf) from trap.cell_snapshot, trap.id_mapping, superfamily.ass where trap.cell_snapshot.gene_id = trap.id_mapping.entrez 
+and trap.id_mapping.protein = superfamily.ass.protein and trap.cell_snapshot.experiment_id = '$sample';" );
         	$sth->execute;
         	while (my ($sf) = $sth->fetchrow_array ) {
 				push @sfs, $sf;
@@ -225,6 +230,7 @@ At current, the supraIDs returned are those found in homosapien 'hs'
 sub experiment_supras {
 
 my $sample = shift;
+my $root_genome = shift;
 my @supras;
 my ($dbh, $sth);
 print "connected\n";
@@ -232,9 +238,9 @@ $dbh = dbConnect();
 
 $sth =   $dbh->prepare( "select distinct(len_supra.supra_id) from genome,comb,len_supra,(select distinct(protein)as p from 
 trap.cell_snapshot, trap.id_mapping where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.cell_snapshot.experiment_id 
-= $sample) as a where comb.protein=a.p and len_supra.ascomb_prot_number > 0 and comb.comb_id=len_supra.supra_id AND len_supra.genome = 'hs'
+= $sample and trap.cell_snapshot.raw_expression > 10) as a where comb.protein=a.p and len_supra.ascomb_prot_number > 0 and comb.comb_id=len_supra.supra_id AND len_supra.genome = ?
  and len_supra.genome = genome.genome and genome.include = 'y';" );
-        	$sth->execute;
+        	$sth->execute($root_genome);
         	while (my ($supra) = $sth->fetchrow_array ) {
 				push @supras, $supra;
         	}
@@ -266,7 +272,22 @@ and trap.cell_snapshot.experiment_id = $sample group by p;" );
 dbDisconnect($dbh);
 return \%gene_distances;
 }
-
+=item * experiment_name_lookup
+This returns a hash lookup of exp Id to exp name
+=cut
+sub experiment_name_lookup {
+my $source = shift;
+my %lookup;
+my ($dbh, $sth);
+$dbh = dbConnect();
+$sth =   $dbh->prepare( "select trap.experiment.experiment_id,trap.experiment.sample_name from trap.experiment where trap.experiment.source_id = ?;" );
+        	$sth->execute($source);
+        	while (my ($id,$name) = $sth->fetchrow_array ) {
+        		$lookup{$id}=$name
+        	}
+dbDisconnect($dbh);
+return \%lookup;
+}
 =item * all_protein_genedistance
 For a given source this returns an hash of protein ids limked to their average gene distance according to mogrify.
 =cut
@@ -277,7 +298,7 @@ my $cutoff = shift;
 my %gene_distances;
 my ($dbh, $sth);
 $dbh = dbConnect();
-$sth =   $dbh->prepare( " select distinct(protein) as p, max(trap.cell_snapshot.`mogrify_gene_distance`) from trap.cell_snapshot, 
+$sth =   $dbh->prepare( "select distinct(protein) as p, max(trap.cell_snapshot.`mogrify_gene_distance`) from trap.cell_snapshot, 
 trap.id_mapping where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.cell_snapshot.`mogrify_gene_distance` > $cutoff group by p;" );
         	$sth->execute;
         	while (my ($protein,$gene_distance) = $sth->fetchrow_array ) {
@@ -325,6 +346,7 @@ At current, the supraIDs returned are those found in homosapien 'hs'
 sub all_supras {
 
 my $source = shift;
+my $root_genome = shift;
 my @supras;
 my ($dbh, $sth);
 my %supras;
@@ -334,10 +356,10 @@ $dbh = dbConnect();
 
 $sth =   $dbh->prepare( "select distinct(len_supra.supra_id),p from genome,comb,len_supra,(select distinct(protein)as p from 
 trap.cell_snapshot, trap.id_mapping,trap.experiment where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and 
-trap.experiment.experiment_id = trap.cell_snapshot.experiment_id and trap.experiment.source_id = 1) as a where comb.protein=a.p 
-and len_supra.ascomb_prot_number > 0 and comb.comb_id=len_supra.supra_id AND genome.genome = 'hs' and len_supra.genome = genome.genome
+trap.experiment.experiment_id = trap.cell_snapshot.experiment_id and trap.experiment.source_id = $source) as a where comb.protein=a.p 
+and len_supra.ascomb_prot_number > 0 and comb.comb_id=len_supra.supra_id AND genome.genome = ? and len_supra.genome = genome.genome
  and genome.include = 'y';");
-        	$sth->execute;
+        	$sth->execute($root_genome);
         	while (my ($supra,$protein) = $sth->fetchrow_array ) {
 				$supras{$supra} =1;
 				$prot_lookup{$protein} = $supra;
@@ -360,7 +382,6 @@ sub calculate_MRCA_NCBI_placement{
 
     my ($GenomeList,$ReferenceDistanceGenome) = @_;
     # $GenomeList = [genomes], reference distance genome is the genome from which to calculate the distance to MRCA
-    
 	#Given a lsit of Genomes, calculate their MRCA in the NCBI taxonomy. 
 	
 	die "Need to pass in a list of genomes as input!\n" unless(scalar(@$GenomeList));
@@ -523,6 +544,40 @@ sub calculateMRCAstats {
 	return ($Supra2TreeDistData,$Supra2TreePlacemenetData);
 }
 
+sub calculate_NCBI_taxa_range_distances($$){
+	
+	my ($NCBIRanges,$ReferenceDistanceGenome) = @_;
+	#$NCBIRanges = [list of NCBI 'names']
+	
+	$ReferenceDistanceGenome = 'hs' if($ReferenceDistanceGenome ~~ undef); #Set a default of homo sampien
+	
+	my $dbh = dbConnect('superfamily');
+	my $sth = $dbh->prepare("SELECT left_id,right_id FROM tree WHERE nodename = ?;");
+	$sth->execute($ReferenceDistanceGenome);
+	my $Nrows = $sth->rows;
+	die "Reference genome $ReferenceDistanceGenome not found in SUPERFAMILY\n" if($Nrows < 1);
+	my ($RefernceGenomeLeftID,$ReferenceGenomeRightID) = $sth->fetchrow_array();
+	$sth->finish;
+		
+	my $NCBITaxonRange2DistanceFromReference = {};
+	
+	$sth = $dbh->prepare("SELECT SUM(edge_length) FROM tree 
+	WHERE left_id <= ?
+	AND left_id > (SELECT tree.left_id FROM tree JOIN ncbi_taxonomy_lite ON tree.taxon_id = ncbi_taxonomy_lite.taxon_id WHERE ncbi_taxonomy_lite.name = ?)
+	AND right_id >= ?
+	AND right_id < (SELECT tree.right_id FROM tree JOIN ncbi_taxonomy_lite ON tree.taxon_id = ncbi_taxonomy_lite.taxon_id WHERE ncbi_taxonomy_lite.name = ?);");
+		
+	foreach my $NCBITaxonRange (@$NCBIRanges){
+	
+		$sth->execute($RefernceGenomeLeftID,$NCBITaxonRange,$ReferenceGenomeRightID,$NCBITaxonRange);
+		my ($DistanceFromReference) = $sth->fetchrow_array;
+		$DistanceFromReference = 0 if($DistanceFromReference ~~ undef);
+		$NCBITaxonRange2DistanceFromReference->{$NCBITaxonRange}=$DistanceFromReference;
+		$sth->finish;
+	}
+	
+	return($NCBITaxonRange2DistanceFromReference);	
+}
 
 1;
 __END__
