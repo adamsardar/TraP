@@ -76,7 +76,10 @@ use Supfam::Utils qw(:all);
 #Deal with the CGI parameters here
 my $cgi = CGI->new;
 
-my $exp = 1265;
+my $exp = $cgi->param('exp');
+unless(defined($exp)){
+        $exp = 2632;
+}
 
 
 =item B<get_exp_name>
@@ -99,22 +102,24 @@ sub get_exp_name {
 sub get_times {
 	my $exp = shift;
 	my @exps = split(/,/,$exp);
-	
+	my %times;
+	foreach $exp (@exps){
 	my $dbh = dbConnect('trap');
 	my $sth = $dbh->prepare('select distance,label,proportion from snapshot_evolution where experiment_id = ?;');
 	$sth->execute($exp);
-	my %times;
+	
 	my $results=[];	
 	while(my ($distance,$label,$proportion)=  $sth->fetchrow_array()){
-		$times{$distance}{'label'} = $label;
-		$times{$distance}{'size'} = $proportion;
+		$times{$exp}{$distance}{'label'} = $label;
+		$times{$exp}{$distance}{'size'} = $proportion;
+	}
 	}
 	return \%times;
 }
 
 sub get_norm_times {
 	my $dbh = dbConnect('trap');
-	my $sth = $dbh->prepare('select distance,max(proportion),min(proportion),std(proportion) from snapshot_evolution group by distance; ');
+	my $sth = $dbh->prepare('select distance,max(proportion),min(proportion),std(proportion) from snapshot_evolution where genome =\'hs\' group by distance; ');
 	$sth->execute();
 	my %norm_times;
 	my $results=[];	
@@ -129,15 +134,16 @@ sub get_norm_times {
 =item B<draw_timeline>
 =cut
 sub draw_timeline {
-	my ($width,$height,$times,$norms,$name) = @_;
+	my ($width,$height,$times,$norms) = @_;
 	my $diagram = '';
 	my $points = scalar(keys %{$norms});
 	my $inc = $width/($points+2);
-	my $timeline_y = $height / 2;
+	my $no_samples = scalar(keys %{$times});
+	my $timeline_y = ($no_samples*$inc*2)+(2*$inc);
 	
 	my $tick_height = 10;
 
-	my $scale_y = $timeline_y + (2*$inc);
+	my $scale_y = ($inc);
 	#Draw header
 	$diagram .= <<EOF
 <?xml version="1.0" standalone="no"?>
@@ -151,13 +157,22 @@ EOF
     ;
 	
 	#Draw the time and scale lines
+
+	$diagram .= <<EOF
+	<line x1="0" y1="$scale_y" x2="$width" y2="$scale_y" style="stroke: #333; stroke-width: 1;" />
+EOF
+	;
+
+my %times = %{$times};
+foreach my $exp (keys %times)	{
+	my $name = get_exp_name($exp);
+		#Draw the time and scale lines
 	my $up = $timeline_y+($inc/2);
 	my $down = $timeline_y-($inc/2);
 	$diagram .= <<EOF
 	<line x1="0" y1="$timeline_y" x2="$width" y2="$timeline_y" style="stroke: #333; stroke-width: 1;" />
 	<line x1="0" y1="$up" x2="$width" y2="$up" style="stroke-opacity: 0.2;stroke: #333; stroke-width: 1;" />
 	<line x1="0" y1="$down" x2="$width" y2="$down" style="stroke-opacity: 0.2;stroke: #333; stroke-width: 1;" />
-	<line x1="0" y1="$scale_y" x2="$width" y2="$scale_y" style="stroke: #333; stroke-width: 1;" />
 EOF
 	;
 	
@@ -170,7 +185,7 @@ EOF
 	
 	#Foreach point in time draw the tickmark/label on the scale and the circle on the timeline
 	my $dx = 0;
-	foreach my $time (sort {$a <=> $b} keys %{$times}) {
+	foreach my $time (sort {$a <=> $b} keys %{$times{$exp}}) {
 		$dx = $dx + $inc;
 		my $dy = $scale_y + $tick_height;
 		
@@ -180,7 +195,7 @@ EOF
 EOF
 		;
 		
-		my $label =  $times->{$time}{'label'};
+		my $label =  $times{$exp}{$time}{'label'};
 		#Draw the labels
 		$diagram .= <<EOF
 		<text x="$dx" y="$dy" text-anchor="right" style="font-size:10px" transform="rotate(90 $dx,$dy)">$label</text>
@@ -192,18 +207,20 @@ EOF
 		
 		my $color;
 		my $size;
-		if($times->{$time}{'size'} > 0){
-			$size = abs(($times->{$time}{'size'}/$norms->{$time}{'max'})*($inc/2));
+		if($times->{$exp}{$time}{'size'} > 0){
+			$size = abs(($times{$exp}{$time}{'size'}/$norms->{$time}{'max'})*($inc/2));
 			$color = 'green';
 		}else{
 			$color = 'red';
-			$size = abs(($times->{$time}{'size'}/$norms->{$time}{'min'})*($inc/2));
+			$size = abs(($times{$exp}{$time}{'size'}/$norms->{$time}{'min'})*($inc/2));
 		}
 		#Draw the circles
 		$diagram .= <<EOF
 		<circle cx="$dx" cy="$timeline_y" r="$size" stroke="black" stroke-width="1" fill="$color" opacity="0.6"/>
 EOF
 	}
+	$timeline_y = $timeline_y - (2*$inc)
+}
 	
 	$diagram .= "\n</svg>";
 
@@ -212,9 +229,14 @@ EOF
 
 my $times = get_times($exp);
 my $norm_times = get_norm_times();
-my $name = get_exp_name($exp);
+
+my $points = scalar(keys %{$norm_times});
+my $no_samples = scalar(keys %{$times});
+my $width = 600;
+my $inc = $width/($points+2);
+my $height = ($no_samples*$inc*2)+(10*$inc);
 print $cgi->header("image/svg+xml");
-print draw_timeline(1000,600,$times,$norm_times,$name);
+print draw_timeline(1000,600,$times,$norm_times);
 
 =back
 =cut
