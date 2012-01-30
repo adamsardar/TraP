@@ -122,10 +122,9 @@ sub get_norm_times {
 	my $sth = $dbh->prepare('select distance,max(proportion),min(proportion),std(proportion) from snapshot_evolution where genome =\'hs\' group by distance; ');
 	$sth->execute();
 	my %norm_times;
-	my $results=[];	
 	while(my ($distance,$max,$min,$std)=  $sth->fetchrow_array()){
 		$norm_times{$distance}{'max'} = $max;
-		$norm_times{$distance}{'min'} = $max;
+		$norm_times{$distance}{'min'} = $min;
 		$norm_times{$distance}{'std'} = $std;
 	}
 	return \%norm_times;
@@ -139,11 +138,11 @@ sub draw_timeline {
 	my $points = scalar(keys %{$norms});
 	my $inc = $width/($points+2);
 	my $no_samples = scalar(keys %{$times});
-	my $timeline_y = ($no_samples*$inc*2)+(2*$inc);
+	my $timeline_y = $height-(6*$inc);
 	
 	my $tick_height = 10;
 
-	my $scale_y = ($inc);
+	my $scale_y = $height-(5*$inc);
 	#Draw header
 	$diagram .= <<EOF
 <?xml version="1.0" standalone="no"?>
@@ -164,6 +163,7 @@ EOF
 	;
 
 my %times = %{$times};
+my $done = 0;
 foreach my $exp (keys %times)	{
 	my $name = get_exp_name($exp);
 		#Draw the time and scale lines
@@ -185,23 +185,28 @@ EOF
 	
 	#Foreach point in time draw the tickmark/label on the scale and the circle on the timeline
 	my $dx = 0;
+	
 	foreach my $time (sort {$a <=> $b} keys %{$times{$exp}}) {
 		$dx = $dx + $inc;
 		my $dy = $scale_y + $tick_height;
-		
+		if($done == 0){
 		#Draw scalebar tick marks
 		$diagram .= <<EOF
 	<line x1="$dx" y1="$scale_y" x2="$dx" y2="$dy" style="stroke: #333; stroke-width: 1;" />
+	<line x1="$dx" y1="$scale_y" x2="$dx" y2="$inc" style="stroke: #333; stroke-width: 1; opacity: 0.01" />
 EOF
 		;
 		
 		my $label =  $times{$exp}{$time}{'label'};
 		#Draw the labels
+		my $font = 10;
+		my $rotate = $dy - ($font/2);
 		$diagram .= <<EOF
-		<text x="$dx" y="$dy" text-anchor="right" style="font-size:10px" transform="rotate(90 $dx,$dy)">$label</text>
+		<text x="$dx" y="$dy" text-anchor="right" style="font-size:10px" transform="rotate(90 $dx,$rotate)">$label</text>
 EOF
 		;
 		
+		}
 
 			
 		
@@ -212,13 +217,18 @@ EOF
 			$color = 'green';
 		}else{
 			$color = 'red';
-			$size = abs(($times{$exp}{$time}{'size'}/$norms->{$time}{'min'})*($inc/2));
+			if(($norms->{$time}{'min'} == 0)||($times{$exp}{$time}{'size'} == 0)){
+				$size = 0;
+			}else{
+			$size = abs($times{$exp}{$time}{'size'}/$norms->{$time}{'min'})*($inc/2);
+			}
 		}
 		#Draw the circles
 		$diagram .= <<EOF
-		<circle cx="$dx" cy="$timeline_y" r="$size" stroke="black" stroke-width="1" fill="$color" opacity="0.6"/>
+		<circle cx="$dx" cy="$timeline_y" r="$size" fill-opacity="$size" stroke="black" stroke-width="1" fill="$color" opacity="0.6"/>
 EOF
 	}
+	$done = 1;
 	$timeline_y = $timeline_y - (2*$inc)
 }
 	
@@ -234,9 +244,9 @@ my $points = scalar(keys %{$norm_times});
 my $no_samples = scalar(keys %{$times});
 my $width = 600;
 my $inc = $width/($points+2);
-my $height = ($no_samples*$inc*2)+(10*$inc);
+my $height = ($no_samples*$inc*2)+(6*$inc);
 print $cgi->header("image/svg+xml");
-print draw_timeline(1000,600,$times,$norm_times);
+print draw_timeline($width,$height,$times,$norm_times);
 
 =back
 =cut
