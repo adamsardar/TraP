@@ -76,11 +76,41 @@ use Supfam::Utils qw(:all);
 #Deal with the CGI parameters here
 my $cgi = CGI->new;
 
-my $exp = $cgi->param('exp');
-unless(defined($exp)){
-        $exp = 2632;
+my $genome = $cgi->param('genome');
+unless(defined($genome)){
+        $genome = 'hs';
 }
 
+my $exp = $cgi->param('exp');
+unless(defined($exp)){
+        $exp = 2622;
+}
+my $sort = $cgi->param('sort');
+unless(defined($sort)){
+        $sort = 'desc';
+}
+my @exps;
+my $like = $cgi->param('like');
+my $order = $cgi->param('order');
+if(defined($like)){
+	my $dbh = dbConnect('trap');
+	my $sth = $dbh->prepare("select experiment_id from experiment where sample_name like '%"."$like"."%' and genome = ?;");
+	$sth->execute($genome);
+	while( my ($exp_id)=  $sth->fetchrow_array()){ 
+		push (@exps,$exp_id);
+	}
+}elsif(defined($order)){
+	if(defined($sort)){
+	my $dbh = dbConnect('trap');
+	my $sth = $dbh->prepare("select experiment_id from snapshot_evolution where genome = 'hs' and label =? order by proportion $sort limit 20;");
+	$sth->execute($order);
+	while( my ($exp_id)=  $sth->fetchrow_array()){ 
+		push (@exps,$exp_id);
+	}
+	}
+}else{
+	@exps = split(/,/,$exp);
+}
 
 =item B<get_exp_name>
 =cut
@@ -101,7 +131,7 @@ sub get_exp_name {
 =cut
 sub get_times {
 	my $exp = shift;
-	my @exps = split(/,/,$exp);
+	my @exps = @{$exp};
 	my %times;
 	foreach $exp (@exps){
 	my $dbh = dbConnect('trap');
@@ -202,7 +232,9 @@ EOF
 		my $font = 10;
 		my $rotate = $dy - ($font/2);
 		$diagram .= <<EOF
+		<a xlink:href="http://luca.cs.bris.ac.uk/~rackham/cgi-bin/cell_timeline.cgi?order=$label">
 		<text x="$dx" y="$dy" text-anchor="right" style="font-size:10px" transform="rotate(90 $dx,$rotate)">$label</text>
+		</a>
 EOF
 		;
 		
@@ -213,7 +245,11 @@ EOF
 		my $color;
 		my $size;
 		if($times->{$exp}{$time}{'size'} > 0){
+			if(($norms->{$time}{'max'} == 0)||($times{$exp}{$time}{'size'} == 0)){
+				$size = 0;
+			}else{
 			$size = abs(($times{$exp}{$time}{'size'}/$norms->{$time}{'max'})*($inc/2));
+			}
 			$color = 'green';
 		}else{
 			$color = 'red';
@@ -237,7 +273,7 @@ EOF
 	return $diagram;
 }
 
-my $times = get_times($exp);
+my $times = get_times(\@exps);
 my $norm_times = get_norm_times();
 
 my $points = scalar(keys %{$norm_times});

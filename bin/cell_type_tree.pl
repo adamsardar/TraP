@@ -147,8 +147,8 @@ my %experiment_ncbi;
 my %experiment_sfs;
 my %experiment_supras;
 my %experiment_protein_genedistances;
-my $source = 3;
-my $root_genome = 'mm';
+my $source = 7;
+my $root_genome = 'hs';
 #for every experiment we will collect the supraIDs of the dopamian architectures that are expressed and
 #also the gene distances of each of the proteins that are expressed.
 foreach my $experiment (sort {$b <=> $a} @{human_cell_type_experiments($source)}) {
@@ -194,7 +194,7 @@ foreach my $experiment (sort {$b <=> $a} @{human_cell_type_experiments($source)}
 
 	my $ncbi_distances = calculate_NCBI_taxa_range_distances([keys %distances],$root_genome);
 	my %ncbi_distances = %{$ncbi_distances};
-	open DIST,">../../data/distances.txt";
+	open DIST,">../../data/Trap/distances.txt";
 	foreach my $dist (sort { $ncbi_distances{$a} <=> $ncbi_distances{$b}} keys %distances){
 		print DIST "$dist($ncbi_distances{$dist})\t$distances{$dist}($s_distances{$dist})\n";
 	}
@@ -209,7 +209,7 @@ my %dist_totals;
 my %s_dist_totals;
 my $exps = scalar(keys %experiment_supras);
 my %exps_total;
-open SUPRADISTANCES ,">../../data/supra_distances.txt";
+open SUPRADISTANCES ,">../../data/Trap/supra_distances.txt";
 foreach my $exp (keys %experiment_supras){
 	my @supras = @{$experiment_supras{$exp}};
 	$exps_total{$exp} = scalar(@supras);
@@ -236,12 +236,12 @@ foreach my $exp (keys %experiment_supras){
 
 my $explookup = experiment_name_lookup($source);
 my %exp_lookup = %{$explookup};
-open EDIST,">../../data/exparch_distances.txt";
-open EPDIST,">../../data/expprot_distances.txt";
-open MEANADIST,">../../data/exparch_meandistances.txt";
-open MEANPDIST,">../../data/expprot_meandistances.txt";
-open ARCHPROP,">../../data/exparch_props.txt";
-open DUMP,">../../data/dump.txt";
+open EDIST,">../../data/Trap/exparch_distances.txt";
+open EPDIST,">../../data/Trap/expprot_distances.txt";
+open MEANADIST,">../../data/Trap/exparch_meandistances.txt";
+open MEANPDIST,">../../data/Trap/expprot_meandistances.txt";
+open ARCHPROP,">../../data/Trap/exparch_props.txt";
+open DUMP,">../../data/Trap/dump.txt";
 print EDIST "samples\t";
 print EPDIST "samples\t";
 print MEANADIST "samples\t";
@@ -301,7 +301,7 @@ my %props;
 		print ARCHPROP "\n";
 	}
 
-open MEANPROP,">../../data/exparch_meanprops.txt";
+open MEANPROP,">../../data/Trap/exparch_meanprops.txt";
 print MEANPROP "samples\t";
 
 foreach my $ncbi (sort { $ncbi_distances{$a} <=> $ncbi_distances{$b}}keys %ncbi_distances){
