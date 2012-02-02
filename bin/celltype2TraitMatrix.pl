@@ -186,7 +186,7 @@ while(<EXPERIMENTIDS>){
 close EXPERIMENTIDS;
 
 my $dbh = dbConnect('trap');
-my $sth = $dbh->prepare_cached("SELECT experiment_id FROM snapshot_order_supra WHERE experiment_id = ?;");
+my $sth = $dbh->prepare("SELECT experiment_id FROM snapshot_order_supra WHERE experiment_id = ?;");
 
 foreach my $ExpID (@ExperimentIDs){
 	
