@@ -1,0 +1,1552 @@
+chronic lymphocytic leukemia (T-CLL) cell line	1274
+choriocarcinoma cell line	1273
+choriocarcinoma cell line	1272
+choriocarcinoma cell line	1271
+chondrosarcoma cell line	1270
+cholangiocellular carcinoma cell line	1269
+cervical cancer cell line	1268
+cervical cancer cell line	1267
+carcinosarcoma cell line	1266
+carcinoid cell line	1265
+carcinoid cell line	1264
+bronchogenic carcinoma cell line	1263
+bronchioalveolar carcinoma cell line	1262
+bronchial squamous cell carcinoma cell line	1261
+breast carcinoma cell line	1260
+breast carcinoma cell line	1259
+bone marrow stromal cell line	1258
+biphenotypic B myelomonocytic leukemia cell line	1257
+bile duct carcinoma cell line	1256
+bile duct carcinoma cell line	1255
+basal cell carcinoma cell line	1254
+b cell line	1253
+astrocytoma cell line	1252
+argyrophil small cell carcinoma cell line	1251
+anaplastic squamous cell carcinoma cell line	1250
+anaplastic large cell lymphoma cell line	1249
+anaplastic carcinoma cell line	1248
+alveolar cell carcinoma cell line	1247
+adult T-cell leukemia cell line	1246
+adrenal cortex adenocarcinoma cell line	1245
+adenocarcinoma cell line	1244
+acute myeloid leukemia (FAB M7) cell line	1243
+acute myeloid leukemia (FAB M7) cell line	1242
+acute myeloid leukemia (FAB M6) cell line	1241
+acute myeloid leukemia (FAB M6) cell line	1240
+acute myeloid leukemia (FAB M6) cell line	1239
+acute myeloid leukemia (FAB M5) cell line	1238
+acute myeloid leukemia (FAB M5) cell line	1237
+acute myeloid leukemia (FAB M5) cell line	1236
+acute myeloid leukemia (FAB M5) cell line	1235
+acute myeloid leukemia (FAB M5) cell line	1234
+acute myeloid leukemia (FAB M5) cell line	1233
+acute myeloid leukemia (FAB M4eo) cell line	1232
+acute myeloid leukemia (FAB M4eo) cell line	1231
+acute myeloid leukemia (FAB M4) cell line	1230
+acute myeloid leukemia (FAB M4) cell line	1229
+acute myeloid leukemia (FAB M3) cell line	1228
+acute myeloid leukemia (FAB M2) cell line	1227
+acute myeloid leukemia (FAB M2) cell line	1226
+acute myeloid leukemia (FAB M2) cell line	1225
+acute myeloid leukemia (FAB M1) cell line	1224
+acute myeloid leukemia (FAB M0) cell line	1223
+acute lymphoblastic leukemia (T-ALL) cell line	1222
+acute lymphoblastic leukemia (T-ALL) cell line	1221
+acute lymphoblastic leukemia (B-ALL) cell line	1220
+acute lymphoblastic leukemia (B-ALL) cell line	1219
+acantholytic squamous carcinoma cell line	1218
+Wilms' tumor cell line	1217
+Wilms' tumor cell line	1216
+NK T cell leukemia cell line	1215
+Krukenberg tumor cell line	1214
+Hodgkin's lymphoma cell line	1213
+Ewing's sarcoma cell line	1212
+Burkitt's lymphoma cell line	1211
+Burkitt's lymphoma cell line	1210
+tpm.B lymphoblastoid cell line: GM12878 ENCODE	1209
+tpm.B lymphoblastoid cell line: GM12878 ENCODE	1208
+tpm.B lymphoblastoid cell line: GM12878 ENCODE	1207
+non-small cell lung cancer cell line	1206
+mesodermal tumor cell line	1205
+leiomyosarcoma  cell line	1204
+acute myeloid leukemia (FAB M0) cell line	1203
+chronic myeloblastic leukemia (CML) cell line	1275
+chronic myelogenous leukemia (CML) cell line	1276
+tpm.chronic myelogenous leukemia cell line:K562 ENCODE	1277
+tpm.chronic myelogenous leukemia cell line:K562 ENCODE	1278
+tpm.chronic myelogenous leukemia cell line:K562 ENCODE	1279
+chronic myelogenous leukemia cell line	1280
+chronic myelogenous leukemia cell line	1281
+clear cell carcinoma cell line	1282
+clear cell carcinoma cell line	1283
+colon carcinoma cell line	1284
+colon carcinoma cell line	1285
+cord blood derived cell line	1286
+cord blood derived cell line	1287
+cord blood derived cell line	1288
+diffuse large B-cell lymphoma cell line	1289
+ductal cell carcinoma cell line	1290
+ductal cell carcinoma cell line	1291
+tpm.embryonic kidney cell line: HEK293/SLAM infection	1292
+embryonic kidney cell line	1293
+embryonic pancreas cell line	1294
+embryonic pancreas cell line	1295
+embryonic pancreas cell line	1296
+embryonic pancreas cell line	1297
+endometrial carcinoma cell line	1298
+endometrial stromal sarcoma cell line	1299
+endometrioid adenocarcinoma cell line	1300
+epidermoid carcinoma  cell line	1301
+epidermoid carcinoma cell line	1302
+epithelioid sarcoma cell line	1303
+tpm.epitheloid carcinoma cell line: HelaS3 ENCODE	1304
+tpm.epitheloid carcinoma cell line: HelaS3 ENCODE	1305
+tpm.epitheloid carcinoma cell line: HelaS3 ENCODE	1306
+extraskeletal myxoid chondrosarcoma cell line	1307
+fibrosarcoma cell line	1308
+fibrous histiocytoma cell line	1309
+gall bladder carcinoma cell line	1310
+gall bladder carcinoma cell line	1311
+gastric adenocarcinoma cell line	1312
+gastric adenocarcinoma cell line	1313
+gastric cancer cell line	1314
+gastrointestinal carcinoma cell line	1315
+giant cell carcinoma cell line	1316
+giant cell carcinoma cell line	1317
+glassy cell carcinoma cell line	1318
+tpm.glioblastoma cell line:A172	1319
+tpm.glioblastoma cell line:A172	1320
+glioblastoma cell line	1321
+glioma cell line	1322
+granulosa cell tumor cell line	1323
+hairy cell leukemia cell line	1324
+hepatic mesenchymal tumor cell line	1325
+hepatoblastoma cell line	1326
+tpm.hepatocellular carcinoma cell line: HepG2 ENCODE	1327
+tpm.hepatocellular carcinoma cell line: HepG2 ENCODE	1328
+tpm.hepatocellular carcinoma cell line: HepG2 ENCODE	1329
+hepatoma cell line	1330
+hereditary spherocytic anemia cell line	1331
+keratoacanthoma cell line	1332
+large cell lung carcinoma cell line	1333
+large cell lung carcinoma cell line	1334
+large cell non-keratinizing squamous carcinoma cell line	1335
+leiomyoblastoma  cell line	1336
+leiomyoma cell line	1337
+leiomyoma cell line	1338
+leiomyoma cell line	1339
+lens epithelial cell line	1340
+tpm.leukemia	1341
+liposarcoma cell line	1342
+liposarcoma cell line	1343
+lung adenocarcinoma cell line	1344
+lung adenocarcinoma cell line	1345
+lymphangiectasia cell line	1346
+tpm.lymphoma	1347
+malignant trichilemmal cyst cell line	1348
+maxillary sinus tumor cell line	1349
+medulloblastoma cell line	1350
+medulloblastoma cell line	1351
+melanoma cell line	1352
+melanoma cell line	1353
+meningioma cell line	1354
+merkel cell carcinoma cell line	1355
+merkel cell carcinoma cell line	1356
+mesenchymal stem cell line	1357
+mesothelioma cell line	1358
+mesothelioma cell line	1359
+mesothelioma cell line	1360
+mesothelioma cell line	1361
+mesothelioma cell line	1362
+mesothelioma cell line	1363
+mesothelioma cell line	1364
+mesothelioma cell line	1365
+mesothelioma cell line	1366
+mesothelioma cell line	1367
+mesothelioma cell line	1368
+mesothelioma cell line	1369
+mesothelioma cell line	1370
+mesothelioma cell line	1371
+mesothelioma cell line	1372
+mesothelioma cell line	1373
+mixed mullerian tumor cell line	1374
+mucinous adenocarcinoma cell line	1375
+mucinous cystadenocarcinoma  cell line	1376
+tpm.mycosis fungoides	1377
+myelodysplastic syndrome cell line	1378
+myeloma cell line	1379
+myxofibrosarcoma cell line	1380
+myxofibrosarcoma cell line	1381
+neuroblastoma cell line	1382
+neuroblastoma cell line	1383
+neuroblastoma cell line	1384
+neuroblastoma cell line	1385
+neuroectodermal tumor  cell line	1386
+neuroectodermal tumor cell line	1387
+neuroectodermal tumor cell line	1388
+neuroepithelioma cell line	1389
+neurofibroma cell line	1390
+non T non B acute lymphoblastic leukemia (ALL) cell line	1391
+normal embryonic palatal mesenchymal cell line	1392
+normal intestinal epithelial cell line	1393
+oral squamous cell carcinoma cell line	1394
+oral squamous cell carcinoma cell line	1395
+oral squamous cell carcinoma cell line	1396
+oral squamous cell carcinoma cell line	1397
+osteoclastoma cell line	1398
+osteosarcoma cell line	1399
+osteosarcoma cell line	1400
+pagetoid sarcoma cell line	1401
+pancreatic carcinoma cell line	1402
+papillary adenocarcinoma cell line	1403
+papillotubular adenocarcinoma cell line	1404
+peripheral neuroectodermal tumor cell line	1405
+pharyngeal carcinoma cell line	1406
+plasma cell leukemia cell line	1407
+pleomorphic hepatocellular carcinoma cell line	1408
+prostate cancer cell line	1409
+prostate cancer cell line	1410
+rectal cancer cell line	1411
+renal cell carcinoma cell line	1412
+renal cell carcinoma cell line	1413
+retinoblastoma cell line	1414
+rhabdomyosarcoma cell line	1415
+rhabdomyosarcoma cell line	1416
+sacrococcigeal teratoma cell line	1417
+tpm.schwannoma cell line:HS-PSS	1418
+tpm.schwannoma cell line:HS-PSS	1419
+serous adenocarcinoma cell line	1420
+serous cystadenocarcinoma cell line	1421
+signet ring carcinoma cell line	1422
+signet ring carcinoma cell line	1423
+small cell cervical cancer cell line	1424
+small cell gastrointestinal carcinoma cell line	1425
+small cell lung carcinoma cell line	1426
+small cell lung carcinoma cell line	1427
+small cell lung carcinoma cell line	1428
+small cell lung carcinoma cell line	1429
+small-cell gastrointestinal carcinoma cell line	1430
+somatostatinoma cell line	1431
+spindle cell sarcoma cell line	1432
+splenic lymphoma with villous lymphocytes cell line	1433
+squamous cell carcinoma cell line	1434
+squamous cell carcinoma cell line	1435
+squamous cell carcinoma cell line	1436
+squamous cell lung carcinoma cell line	1437
+synovial sarcoma cell line	1438
+teratocarcinoma cell line	1439
+teratocarcinoma cell line	1440
+teratocarcinoma cell line	1441
+testicular germ cell embryonal carcinoma cell line	1442
+testicular germ cell embryonal carcinoma cell line	1443
+testicular germ cell embryonal carcinoma cell line	1444
+testicular germ cell embryonal carcinoma cell line	1445
+thyroid carcinoma cell line	1446
+transitional cell carcinoma cell line	1447
+transitional-cell carcinoma cell line	1448
+transitional-cell carcinoma cell line	1449
+tridermal teratoma cell line	1450
+tubular adenocarcinoma cell line	1451
+xeroderma pigentosum b cell line	1452
+tpm.Fibroblast - Aortic Adventitial	1453
+tpm.Fibroblast - Aortic Adventitial	1454
+tpm.Fibroblast - skin dystrophia myotonica	1455
+tpm.Fibroblast - skin dystrophia myotonica	1456
+tpm.Fibroblast - skin normal	1457
+tpm.Fibroblast - skin normal	1458
+tpm.Fibroblast - skin spinal muscular atrophy	1459
+tpm.Fibroblast - skin spinal muscular atrophy	1460
+tpm.Preadipocyte - breast	1461
+tpm.Small Airway Epithelial Cells	1462
+tpm.Smooth Muscle Cells - Aortic	1463
+tpm.Smooth Muscle Cells - Aortic	1464
+tpm.Basophils	1465
+tpm.Basophils	1466
+tpm.CD133+ stem cells - adult bone marrow derived	1467
+tpm.CD133+ stem cells - cord blood derived	1468
+tpm.CD14-CD16+ Monocytes	1469
+tpm.CD19+ B Cells (pluriselect)	1470
+tpm.CD19+ B Cells (pluriselect)	1471
+tpm.CD19+ B Cells (pluriselect)	1472
+tpm.CD19+ B Cells (pluriselect)	1473
+tpm.CD19+ B Cells (pluriselect)	1474
+tpm.CD19+ B Cells (pluriselect)	1475
+tpm.CD19+ B Cells (pluriselect)	1476
+tpm.CD19+ B Cells (pluriselect)	1477
+tpm.CD34+ Progenitors	1478
+tpm.CD34+ Progenitors	1479
+tpm.CD34+ stem cells - adult bone marrow derived	1480
+tpm.CD4+CD25+CD45RA+ naive regulatory T cells	1481
+tpm.CD4+CD25+CD45RA+ naive regulatory T cells	1482
+tpm.CD4+CD25-CD45RA- memory conventional T cells	1483
+tpm.CD4+CD25-CD45RA- memory conventional T cells	1484
+tpm.CD8+ T Cells (pluriselect)	1485
+tpm.CD8+ T Cells (pluriselect)	1486
+tpm.CD8+ T Cells (pluriselect)	1487
+tpm.CD8+ T Cells (pluriselect)	1488
+tpm.CD8+ T Cells (pluriselect)	1489
+tpm.CD8+ T Cells (pluriselect)	1490
+tpm.CD8+ T Cells (pluriselect)	1491
+tpm.CD8+ T Cells (pluriselect)	1492
+tpm.Dendritic Cells - monocyte immature derived	1493
+tpm.Dendritic Cells - plasmacytoid	1494
+tpm.Dendritic Cells - plasmacytoid	1495
+tpm.Eosinophils	1496
+tpm.Eosinophils	1497
+tpm.Eosinophils	1498
+tpm.Mallassez-derived cells	1499
+tpm.Mesothelial Cells	1500
+tpm.common myeloid progenitor CMP	1501
+tpm.common myeloid progenitor CMP	1502
+tpm.granulocyte macrophage progenitor	1503
+tpm.granulocyte macrophage progenitor	1504
+tpm.granulocyte macrophage progenitor	1505
+tpm.mature adipocyte	1506
+tpm.mature adipocyte	1507
+tpm.mature adipocyte	1508
+tpm.mature adipocyte	1509
+tpm.nasal epithelial cells	1510
+tpm.neutrophil PMN	1511
+tpm.neutrophil PMN	1512
+tpm.neutrophil PMN	1513
+tpm.promyelocytes/myelocytes PMC	1514
+tpm.promyelocytes/myelocytes PMC	1515
+tpm.promyelocytes/myelocytes PMC	1516
+tpm.Adipocyte - breast	1517
+tpm.Adipocyte - breast	1518
+tpm.Adipocyte - omental	1519
+tpm.Adipocyte - omental	1520
+tpm.Adipocyte - omental	1521
+tpm.Adipocyte - perirenal	1522
+tpm.Adipocyte - subcutaneous	1523
+tpm.Adipocyte - subcutaneous	1524
+tpm.Adipocyte - subcutaneous	1525
+tpm.Alveolar Epithelial Cells	1526
+tpm.Alveolar Epithelial Cells	1527
+tpm.Alveolar Epithelial Cells	1528
+tpm.Amniotic Epithelial Cells	1529
+tpm.Amniotic Epithelial Cells	1530
+tpm.Amniotic Epithelial Cells	1531
+tpm.Anulus Pulposus Cell	1532
+tpm.Anulus Pulposus Cell	1533
+tpm.Astrocyte - cerebellum	1534
+tpm.Astrocyte - cerebellum	1535
+tpm.Astrocyte - cerebellum	1536
+tpm.Astrocyte - cerebral cortex	1537
+tpm.Astrocyte - cerebral cortex	1538
+tpm.Astrocyte - cerebral cortex	1539
+tpm.Basophils	1540
+tpm.Bronchial Epithelial Cell	1541
+tpm.Bronchial Epithelial Cell	1542
+tpm.Bronchial Epithelial Cell	1543
+tpm.Bronchial Epithelial Cell	1544
+tpm.Bronchial Epithelial Cell	1545
+tpm.Bronchial Epithelial Cell	1546
+tpm.Bronchial Epithelial Cell	1547
+tpm.CD14+ Monocytes	1548
+tpm.CD14+ Monocytes	1549
+tpm.CD14+ Monocytes	1550
+tpm.CD14+ monocyte derived endothelial progenitor cells	1551
+tpm.CD14+ monocyte derived endothelial progenitor cells	1552
+tpm.CD14+ monocyte derived endothelial progenitor cells	1553
+tpm.CD14+ monocytes - mock treated	1554
+tpm.CD14+ monocytes - mock treated	1555
+tpm.CD14+ monocytes - mock treated	1556
+tpm.CD14+ monocytes - treated with B-glucan	1557
+tpm.CD14+ monocytes - treated with B-glucan	1558
+tpm.CD14+ monocytes - treated with B-glucan	1559
+tpm.CD14+ monocytes - treated with BCG	1560
+tpm.CD14+ monocytes - treated with BCG	1561
+tpm.CD14+ monocytes - treated with BCG	1562
+tpm.CD14+ monocytes - treated with Candida	1563
+tpm.CD14+ monocytes - treated with Candida	1564
+tpm.CD14+ monocytes - treated with Candida	1565
+tpm.CD14+ monocytes - treated with Cryptococcus	1566
+tpm.CD14+ monocytes - treated with Cryptococcus	1567
+tpm.CD14+ monocytes - treated with Cryptococcus	1568
+tpm.CD14+ monocytes - treated with Group A streptococci	1569
+tpm.CD14+ monocytes - treated with Group A streptococci	1570
+tpm.CD14+ monocytes - treated with Group A streptococci	1571
+tpm.CD14+ monocytes - treated with IFN + N-hexane	1572
+tpm.CD14+ monocytes - treated with IFN + N-hexane	1573
+tpm.CD14+ monocytes - treated with IFN + N-hexane	1574
+tpm.CD14+ monocytes - treated with Salmonella	1575
+tpm.CD14+ monocytes - treated with Salmonella	1576
+tpm.CD14+ monocytes - treated with Salmonella	1577
+tpm.CD14+ monocytes - treated with Trehalose dimycolate (TDM)	1578
+tpm.CD14+ monocytes - treated with Trehalose dimycolate (TDM)	1579
+tpm.CD14+ monocytes - treated with Trehalose dimycolate (TDM)	1580
+tpm.CD14+ monocytes - treated with lipopolysaccharide	1581
+tpm.CD14+ monocytes - treated with lipopolysaccharide	1582
+tpm.CD14+ monocytes - treated with lipopolysaccharide	1583
+tpm.CD14+CD16+ Monocytes	1584
+tpm.CD14+CD16+ Monocytes	1585
+tpm.CD14+CD16+ Monocytes	1586
+tpm.CD14+CD16- Monocytes	1587
+tpm.CD14+CD16- Monocytes	1588
+tpm.CD14+CD16- Monocytes	1589
+tpm.CD14-CD16+ Monocytes	1590
+tpm.CD14-CD16+ Monocytes	1591
+tpm.CD19+ B Cells	1592
+tpm.CD19+ B Cells	1593
+tpm.CD19+ B Cells	1594
+tpm.CD34+ stem cells - adult bone marrow derived	1595
+tpm.CD4+ T Cells	1596
+tpm.CD4+ T Cells	1597
+tpm.CD4+ T Cells	1598
+tpm.CD4+CD25+CD45RA+ naive regulatory T cells expanded	1599
+tpm.CD4+CD25+CD45RA+ naive regulatory T cells	1600
+tpm.CD4+CD25+CD45RA- memory regulatory T cells expanded	1601
+tpm.CD4+CD25+CD45RA- memory regulatory T cells	1602
+tpm.CD4+CD25+CD45RA- memory regulatory T cells	1603
+tpm.CD4+CD25+CD45RA- memory regulatory T cells	1604
+tpm.CD4+CD25+CD45RA- naive regulatory T cells expanded	1605
+tpm.CD4+CD25+CD45RA- naive regulatory T cells expanded	1606
+tpm.CD4+CD25-CD45RA+ memory conventional T cells expanded	1607
+tpm.CD4+CD25-CD45RA+ memory conventional T cells expanded	1608
+tpm.CD4+CD25-CD45RA+ naive conventional T cells expanded	1609
+tpm.CD4+CD25-CD45RA+ naive conventional T cells	1610
+tpm.CD4+CD25-CD45RA+ naive conventional T cells	1611
+tpm.CD4+CD25-CD45RA+ naive conventional T cells	1612
+tpm.CD4+CD25-CD45RA- memory conventional T cells expanded	1613
+tpm.CD4+CD25-CD45RA- memory conventional T cells	1614
+tpm.CD8+ T Cells	1615
+tpm.CD8+ T Cells	1616
+tpm.CD8+ T Cells	1617
+tpm.Cardiac Myocyte	1618
+tpm.Cardiac Myocyte	1619
+tpm.Cardiac Myocyte	1620
+tpm.Chondrocyte - de diff	1621
+tpm.Chondrocyte - de diff	1622
+tpm.Chondrocyte - de diff	1623
+tpm.Chondrocyte - re diff	1624
+tpm.Chondrocyte - re diff	1625
+tpm.Ciliary Epithelial Cells	1626
+tpm.Ciliary Epithelial Cells	1627
+tpm.Ciliary Epithelial Cells	1628
+tpm.Corneal Epithelial Cells	1629
+tpm.Corneal Epithelial Cells	1630
+tpm.Corneal Epithelial Cells	1631
+tpm.Dendritic Cells - monocyte immature derived	1632
+tpm.Dendritic Cells - monocyte immature derived	1633
+tpm.Dendritic Cells - monocyte immature derived	1634
+tpm.Dendritic Cells - plasmacytoid	1635
+tpm.Endothelial Cells - Aortic	1636
+tpm.Endothelial Cells - Aortic	1637
+tpm.Endothelial Cells - Aortic	1638
+tpm.Endothelial Cells - Aortic	1639
+tpm.Endothelial Cells - Artery	1640
+tpm.Endothelial Cells - Artery	1641
+tpm.Endothelial Cells - Artery	1642
+tpm.Endothelial Cells - Lymphatic	1643
+tpm.Endothelial Cells - Lymphatic	1644
+tpm.Endothelial Cells - Lymphatic	1645
+tpm.Endothelial Cells - Microvascular	1646
+tpm.Endothelial Cells - Microvascular	1647
+tpm.Endothelial Cells - Microvascular	1648
+tpm.Endothelial Cells - Thoracic	1649
+tpm.Endothelial Cells - Thoracic	1650
+tpm.Endothelial Cells - Umbilical vein	1651
+tpm.Endothelial Cells - Umbilical vein	1652
+tpm.Endothelial Cells - Umbilical vein	1653
+tpm.Endothelial Cells - Vein	1654
+tpm.Endothelial Cells - Vein	1655
+tpm.Endothelial Cells - Vein	1656
+tpm.Esophageal Epithelial Cells	1657
+tpm.Esophageal Epithelial Cells	1658
+tpm.Esophageal Epithelial Cells	1659
+tpm.Fibroblast - Aortic Adventitial	1660
+tpm.Fibroblast - Aortic Adventitial	1661
+tpm.Fibroblast - Aortic Adventitial	1662
+tpm.Fibroblast - Cardiac	1663
+tpm.Fibroblast - Cardiac	1664
+tpm.Fibroblast - Cardiac	1665
+tpm.Fibroblast - Cardiac	1666
+tpm.Fibroblast - Cardiac	1667
+tpm.Fibroblast - Cardiac	1668
+tpm.Fibroblast - Choroid Plexus	1669
+tpm.Fibroblast - Choroid Plexus	1670
+tpm.Fibroblast - Choroid Plexus	1671
+tpm.Fibroblast - Conjunctival	1672
+tpm.Fibroblast - Conjunctival	1673
+tpm.Fibroblast - Dermal	1674
+tpm.Fibroblast - Dermal	1675
+tpm.Fibroblast - Dermal	1676
+tpm.Fibroblast - Dermal	1677
+tpm.Fibroblast - Dermal	1678
+tpm.Fibroblast - Dermal	1679
+tpm.Fibroblast - Gingival	1680
+tpm.Fibroblast - Gingival	1681
+tpm.Fibroblast - Gingival	1682
+tpm.Fibroblast - Gingival	1683
+tpm.Fibroblast - Gingival	1684
+tpm.Fibroblast - Lung	1685
+tpm.Fibroblast - Lung	1686
+tpm.Fibroblast - Lung	1687
+tpm.Fibroblast - Lymphatic	1688
+tpm.Fibroblast - Lymphatic	1689
+tpm.Fibroblast - Lymphatic	1690
+tpm.Fibroblast - Mammary	1691
+tpm.Fibroblast - Mammary	1692
+tpm.Fibroblast - Mammary	1693
+tpm.Fibroblast - Periodontal Ligament	1694
+tpm.Fibroblast - Periodontal Ligament	1695
+tpm.Fibroblast - Periodontal Ligament	1696
+tpm.Fibroblast - Periodontal Ligament	1697
+tpm.Fibroblast - Periodontal Ligament	1698
+tpm.Fibroblast - Periodontal Ligament	1699
+tpm.Fibroblast - Pulmonary Artery	1700
+tpm.Fibroblast - Villous Mesenchymal	1701
+tpm.Fibroblast - Villous Mesenchymal	1702
+tpm.Fibroblast - Villous Mesenchymal	1703
+tpm.Fibroblast - skin dystrophia myotonica	1704
+tpm.Fibroblast - skin dystrophia myotonica	1705
+tpm.Fibroblast - skin dystrophia myotonica	1706
+tpm.Fibroblast - skin normal	1707
+tpm.Fibroblast - skin normal	1708
+tpm.Fibroblast - skin spinal muscular atrophy	1709
+tpm.Fibroblast - skin spinal muscular atrophy	1710
+tpm.Fibroblast - skin spinal muscular atrophy	1711
+tpm.Fibroblast - skin walker warburg	1712
+tpm.Gingival epithelial cells	1713
+tpm.Gingival epithelial cells	1714
+tpm.Gingival epithelial cells	1715
+tpm.Hair Follicle Dermal Papilla Cells	1716
+tpm.Hair Follicle Dermal Papilla Cells	1717
+tpm.Hair Follicle Dermal Papilla Cells	1718
+tpm.Hair Follicle Outer Root Sheath Cells	1719
+tpm.Hair Follicle Outer Root Sheath Cells	1720
+tpm.Hep-2 cells mock treated	1721
+tpm.Hep-2 cells mock treated	1722
+tpm.Hep-2 cells mock treated	1723
+tpm.Hep-2 cells treated with Streptococci strain 5448	1724
+tpm.Hep-2 cells treated with Streptococci strain 5448	1725
+tpm.Hep-2 cells treated with Streptococci strain 5448	1726
+tpm.Hep-2 cells treated with Streptococci strain JRS4	1727
+tpm.Hep-2 cells treated with Streptococci strain JRS4	1728
+tpm.Hep-2 cells treated with Streptococci strain JRS4	1729
+tpm.Hepatic Sinusoidal Endothelial Cells	1730
+tpm.Hepatic Sinusoidal Endothelial Cells	1731
+tpm.Hepatic Sinusoidal Endothelial Cells	1732
+tpm.Hepatic Stellate Cells (lipocyte)	1733
+tpm.Hepatic Stellate Cells (lipocyte)	1734
+tpm.Hepatic Stellate Cells (lipocyte)	1735
+tpm.Hepatocyte	1736
+tpm.Hepatocyte	1737
+tpm.Hepatocyte	1738
+tpm.Intestinal epithelial cells (polarized)	1739
+tpm.Iris Pigment Epithelial Cells	1740
+tpm.Keratinocyte - epidermal	1741
+tpm.Keratinocyte - epidermal	1742
+tpm.Keratinocyte - epidermal	1743
+tpm.Keratinocyte - oral	1744
+tpm.Keratocytes	1745
+tpm.Keratocytes	1746
+tpm.Keratocytes	1747
+tpm.Lens Epithelial Cells	1748
+tpm.Lens Epithelial Cells	1749
+tpm.Lens Epithelial Cells	1750
+tpm.Macrophage - monocyte derived	1751
+tpm.Macrophage - monocyte derived	1752
+tpm.Macrophage - monocyte derived	1753
+tpm.Mallassez-derived cells	1754
+tpm.Mallassez-derived cells	1755
+tpm.Mammary Epithelial Cell	1756
+tpm.Mammary Epithelial Cell	1757
+tpm.Mammary Epithelial Cell	1758
+tpm.Mast cell - stimulated	1759
+tpm.Mast cell	1760
+tpm.Mast cell	1761
+tpm.Mast cell	1762
+tpm.Mast cell	1763
+tpm.Melanocyte - dark	1764
+tpm.Melanocyte - dark	1765
+tpm.Melanocyte - dark	1766
+tpm.Melanocyte - light	1767
+tpm.Melanocyte - light	1768
+tpm.Melanocyte - light	1769
+tpm.Meningeal Cells	1770
+tpm.Meningeal Cells	1771
+tpm.Meningeal Cells	1772
+tpm.Mesenchymal Stem Cells - Vertebral	1773
+tpm.Mesenchymal Stem Cells - Wharton's Jelly	1774
+tpm.Mesenchymal Stem Cells - adipose	1775
+tpm.Mesenchymal Stem Cells - adipose	1776
+tpm.Mesenchymal Stem Cells - adipose	1777
+tpm.Mesenchymal Stem Cells - amniotic membrane	1778
+tpm.Mesenchymal Stem Cells - amniotic membrane	1779
+tpm.Mesenchymal Stem Cells - bone marrow	1780
+tpm.Mesenchymal Stem Cells - bone marrow	1781
+tpm.Mesenchymal Stem Cells - bone marrow	1782
+tpm.Mesenchymal Stem Cells - bone marrow	1783
+tpm.Mesenchymal Stem Cells - hepatic	1784
+tpm.Mesenchymal Stem Cells - hepatic	1785
+tpm.Mesenchymal Stem Cells - umbilical	1786
+tpm.Mesenchymal Stem Cells - umbilical	1787
+tpm.Mesenchymal Stem Cells - umbilical	1788
+tpm.Mesenchymal stem cells - adipose	1789
+tpm.Mesenchymal stem cells - hepatic	1790
+tpm.Mesenchymal stem cells - umbilical	1791
+tpm.Mesothelial Cells	1792
+tpm.Mesothelial Cells	1793
+tpm.Multipotent Cord Blood Unrestricted Somatic Stem Cells	1794
+tpm.Multipotent Cord Blood Unrestricted Somatic Stem Cells	1795
+tpm.Myoblast	1796
+tpm.Myoblast	1797
+tpm.Myoblast	1798
+tpm.Natural Killer Cells	1799
+tpm.Natural Killer Cells	1800
+tpm.Natural Killer Cells	1801
+tpm.Neural stem cells	1802
+tpm.Neural stem cells	1803
+tpm.Neurons	1804
+tpm.Neurons	1805
+tpm.Neurons	1806
+tpm.Neutrophils	1807
+tpm.Neutrophils	1808
+tpm.Neutrophils	1809
+tpm.Nucleus Pulposus Cell	1810
+tpm.Nucleus Pulposus Cell	1811
+tpm.Nucleus Pulposus Cell	1812
+tpm.Olfactory epithelial cells	1813
+tpm.Olfactory epithelial cells	1814
+tpm.Olfactory epithelial cells	1815
+tpm.Olfactory epithelial cells	1816
+tpm.Oligodendrocyte - precursors	1817
+tpm.Osteoblast - differentiated	1818
+tpm.Osteoblast - differentiated	1819
+tpm.Osteoblast - differentiated	1820
+tpm.Osteoblast	1821
+tpm.Osteoblast	1822
+tpm.Osteoblast	1823
+tpm.Pancreatic stromal cells	1824
+tpm.Pericytes	1825
+tpm.Pericytes	1826
+tpm.Pericytes	1827
+tpm.Perineurial Cells	1828
+tpm.Perineurial Cells	1829
+tpm.Peripheral Blood Mononuclear Cells	1830
+tpm.Peripheral Blood Mononuclear Cells	1831
+tpm.Peripheral Blood Mononuclear Cells	1832
+tpm.Placental Epithelial Cells	1833
+tpm.Placental Epithelial Cells	1834
+tpm.Placental Epithelial Cells	1835
+tpm.Preadipocyte - breast	1836
+tpm.Preadipocyte - breast	1837
+tpm.Preadipocyte - omental	1838
+tpm.Preadipocyte - omental	1839
+tpm.Preadipocyte - omental	1840
+tpm.Preadipocyte - perirenal	1841
+tpm.Preadipocyte - subcutaneous	1842
+tpm.Preadipocyte - subcutaneous	1843
+tpm.Preadipocyte - subcutaneous	1844
+tpm.Preadipocyte - visceral	1845
+tpm.Preadipocyte - visceral	1846
+tpm.Preadipocyte - visceral	1847
+tpm.Prostate Epithelial Cells (polarized)	1848
+tpm.Prostate Epithelial Cells	1849
+tpm.Prostate Epithelial Cells	1850
+tpm.Prostate Stromal Cells	1851
+tpm.Prostate Stromal Cells	1852
+tpm.Prostate Stromal Cells	1853
+tpm.Renal Cortical Epithelial Cells	1854
+tpm.Renal Cortical Epithelial Cells	1855
+tpm.Renal Epithelial Cells	1856
+tpm.Renal Epithelial Cells	1857
+tpm.Renal Epithelial Cells	1858
+tpm.Renal Glomerular Endothelial Cells	1859
+tpm.Renal Glomerular Endothelial Cells	1860
+tpm.Renal Glomerular Endothelial Cells	1861
+tpm.Renal Glomerular Endothelial Cells	1862
+tpm.Renal Mesangial Cells	1863
+tpm.Renal Mesangial Cells	1864
+tpm.Renal Mesangial Cells	1865
+tpm.Renal Proximal Tubular Epithelial Cell	1866
+tpm.Renal Proximal Tubular Epithelial Cell	1867
+tpm.Renal Proximal Tubular Epithelial Cell	1868
+tpm.Reticulocytes	1869
+tpm.Reticulocytes	1870
+tpm.Retinal Pigment Epithelial Cells	1871
+tpm.Retinal Pigment Epithelial Cells	1872
+tpm.Retinal Pigment Epithelial Cells	1873
+tpm.Retinal Pigment Epithelial Cells	1874
+tpm.Schwann Cells	1875
+tpm.Schwann Cells	1876
+tpm.Schwann Cells	1877
+tpm.Sebocyte	1878
+tpm.Sebocyte	1879
+tpm.Sebocyte	1880
+tpm.Sertoli Cells	1881
+tpm.Sertoli Cells	1882
+tpm.Skeletal Muscle Cells	1883
+tpm.Skeletal Muscle Cells	1884
+tpm.Skeletal Muscle Cells	1885
+tpm.Skeletal Muscle Cells	1886
+tpm.Skeletal Muscle Cells	1887
+tpm.Skeletal Muscle Cells	1888
+tpm.Skeletal Muscle Satellite Cells	1889
+tpm.Skeletal Muscle Satellite Cells	1890
+tpm.Skeletal Muscle Satellite Cells	1891
+tpm.Skeletal muscle cells differentiated into Myotubes - multinucleated	1892
+tpm.Skeletal muscle cells differentiated into Myotubes - multinucleated	1893
+tpm.Skeletal muscle cells differentiated into Myotubes - multinucleated	1894
+tpm.Small Airway Epithelial Cells	1895
+tpm.Small Airway Epithelial Cells	1896
+tpm.Small Airway Epithelial Cells	1897
+tpm.Smooth Muscle Cells - Aortic	1898
+tpm.Smooth Muscle Cells - Aortic	1899
+tpm.Smooth Muscle Cells - Aortic	1900
+tpm.Smooth Muscle Cells - Aortic	1901
+tpm.Smooth Muscle Cells - Bladder	1902
+tpm.Smooth Muscle Cells - Brachiocephalic	1903
+tpm.Smooth Muscle Cells - Brachiocephalic	1904
+tpm.Smooth Muscle Cells - Brachiocephalic	1905
+tpm.Smooth Muscle Cells - Brain Vascular	1906
+tpm.Smooth Muscle Cells - Brain Vascular	1907
+tpm.Smooth Muscle Cells - Brain Vascular	1908
+tpm.Smooth Muscle Cells - Bronchial	1909
+tpm.Smooth Muscle Cells - Bronchial	1910
+tpm.Smooth Muscle Cells - Carotid	1911
+tpm.Smooth Muscle Cells - Carotid	1912
+tpm.Smooth Muscle Cells - Carotid	1913
+tpm.Smooth Muscle Cells - Colonic	1914
+tpm.Smooth Muscle Cells - Colonic	1915
+tpm.Smooth Muscle Cells - Colonic	1916
+tpm.Smooth Muscle Cells - Coronary Artery	1917
+tpm.Smooth Muscle Cells - Coronary Artery	1918
+tpm.Smooth Muscle Cells - Coronary Artery	1919
+tpm.Smooth Muscle Cells - Esophageal	1920
+tpm.Smooth Muscle Cells - Esophageal	1921
+tpm.Smooth Muscle Cells - Internal Thoracic Artery	1922
+tpm.Smooth Muscle Cells - Internal Thoracic Artery	1923
+tpm.Smooth Muscle Cells - Internal Thoracic Artery	1924
+tpm.Smooth Muscle Cells - Intestinal	1925
+tpm.Smooth Muscle Cells - Prostate	1926
+tpm.Smooth Muscle Cells - Prostate	1927
+tpm.Smooth Muscle Cells - Prostate	1928
+tpm.Smooth Muscle Cells - Pulmonary Artery	1929
+tpm.Smooth Muscle Cells - Pulmonary Artery	1930
+tpm.Smooth Muscle Cells - Pulmonary Artery	1931
+tpm.Smooth Muscle Cells - Subclavian Artery	1932
+tpm.Smooth Muscle Cells - Subclavian Artery	1933
+tpm.Smooth Muscle Cells - Subclavian Artery	1934
+tpm.Smooth Muscle Cells - Tracheal	1935
+tpm.Smooth Muscle Cells - Tracheal	1936
+tpm.Smooth Muscle Cells - Tracheal	1937
+tpm.Smooth Muscle Cells - Umbilical Artery	1938
+tpm.Smooth Muscle Cells - Umbilical Artery	1939
+tpm.Smooth Muscle Cells - Umbilical Artery	1940
+tpm.Smooth Muscle Cells - Umbilical Vein	1941
+tpm.Smooth Muscle Cells - Umbilical Vein	1942
+tpm.Smooth Muscle Cells - Umbilical Vein	1943
+tpm.Smooth Muscle Cells - Umbilical artery	1944
+tpm.Smooth Muscle Cells - Uterine	1945
+tpm.Smooth Muscle Cells - Uterine	1946
+tpm.Synoviocyte	1947
+tpm.Synoviocyte	1948
+tpm.Synoviocyte	1949
+tpm.Trabecular Meshwork Cells	1950
+tpm.Trabecular Meshwork Cells	1951
+tpm.Trabecular Meshwork Cells	1952
+tpm.Tracheal Epithelial Cells	1953
+tpm.Tracheal Epithelial Cells	1954
+tpm.Tracheal Epithelial Cells	1955
+tpm.Urothelial Cells	1956
+tpm.Urothelial Cells	1957
+tpm.Urothelial Cells	1958
+tpm.Urothelial cells	1959
+tpm.Whole blood (ribopure)	1960
+tpm.Whole blood (ribopure)	1961
+tpm.Whole blood (ribopure)	1962
+tpm.Whole blood (ribopure)	1963
+tpm.Whole blood (ribopure)	1964
+tpm.Whole blood (ribopure)	1965
+tpm.Whole blood (ribopure)	1966
+tpm.Whole blood (ribopure)	1967
+tpm.amniotic membrane cells	1968
+tpm.amniotic membrane cells	1969
+tpm.amniotic membrane cells	1970
+tpm.chorionic membrane cells	1971
+tpm.chorionic membrane cells	1972
+tpm.chorionic membrane cells	1973
+tpm.immature langerhans cells	1974
+tpm.immature langerhans cells	1975
+tpm.mesenchymal precursor cell - adipose	1976
+tpm.mesenchymal precursor cell - adipose	1977
+tpm.mesenchymal precursor cell - adipose	1978
+tpm.mesenchymal precursor cell - bone marrow	1979
+tpm.mesenchymal precursor cell - bone marrow	1980
+tpm.mesenchymal precursor cell - bone marrow	1981
+tpm.mesenchymal precursor cell - cardiac	1982
+tpm.mesenchymal precursor cell - cardiac	1983
+tpm.mesenchymal precursor cell - cardiac	1984
+tpm.mesenchymal precursor cell - cardiac	1985
+tpm.mesenchymal precursor cell - ovarian cancer left ovary	1986
+tpm.mesenchymal precursor cell - ovarian cancer left ovary	1987
+tpm.mesenchymal precursor cell - ovarian cancer left ovary	1988
+tpm.mesenchymal precursor cell - ovarian cancer left ovary	1989
+tpm.mesenchymal precursor cell - ovarian cancer metastasis	1990
+tpm.mesenchymal precursor cell - ovarian cancer metastasis	1991
+tpm.mesenchymal precursor cell - ovarian cancer metastasis	1992
+tpm.mesenchymal precursor cell - ovarian cancer metastasis	1993
+tpm.mesenchymal precursor cell - ovarian cancer right ovary	1994
+tpm.mesenchymal precursor cell - ovarian cancer right ovary	1995
+tpm.mesenchymal precursor cell - ovarian cancer right ovary	1996
+tpm.mesenchymal precursor cell - ovarian cancer right ovary	1997
+tpm.mesenchymal precursor cell - ovarian cancer right ovary	1998
+tpm.migratory langerhans cells	1999
+tpm.migratory langerhans cells	2000
+tpm.migratory langerhans cells	2001
+tpm.nasal epithelial cells	2002
+tpm.nasal epithelial cells	2003
+tpm.salivary acinar cells	2004
+tpm.salivary acinar cells	2005
+tpm.salivary acinar cells	2006
+tpm.serous adenocarcinoma cell line:SK-OV-3-R after co-culture with SOC-57-02-G	2007
+tpm.serous adenocarcinoma cell line:SK-OV-3-R	2008
+tpm.tenocyte	2009
+tpm.tenocyte	2010
+tpm.tenocyte	2011
+tpm.MCF7 breast cancer cell line response to EGF1	2012
+tpm.MCF7 breast cancer cell line response to EGF1	2013
+tpm.Adipocyte differentiation	2014
+tpm.Adipocyte differentiation	2015
+tpm.Adipocyte differentiation	2016
+tpm.Adipocyte differentiation	2017
+tpm.Adipocyte differentiation	2018
+tpm.Adipocyte differentiation	2019
+tpm.Adipocyte differentiation	2020
+tpm.Adipocyte differentiation	2021
+tpm.Adipocyte differentiation	2022
+tpm.Adipocyte differentiation	2023
+tpm.Adipocyte differentiation	2024
+tpm.Adipocyte differentiation	2025
+tpm.Aortic smooth muscle cell response to FGF2	2026
+tpm.Aortic smooth muscle cell response to FGF2	2027
+tpm.Aortic smooth muscle cell response to FGF2	2028
+tpm.Aortic smooth muscle cell response to FGF2	2029
+tpm.Aortic smooth muscle cell response to FGF2	2030
+tpm.Aortic smooth muscle cell response to FGF2	2031
+tpm.Aortic smooth muscle cell response to FGF2	2032
+tpm.Aortic smooth muscle cell response to FGF2	2033
+tpm.Aortic smooth muscle cell response to FGF2	2034
+tpm.Aortic smooth muscle cell response to FGF2	2035
+tpm.Aortic smooth muscle cell response to FGF2	2036
+tpm.Aortic smooth muscle cell response to FGF2	2037
+tpm.Aortic smooth muscle cell response to FGF2	2038
+tpm.Aortic smooth muscle cell response to FGF2	2039
+tpm.Aortic smooth muscle cell response to FGF2	2040
+tpm.Aortic smooth muscle cell response to FGF2	2041
+tpm.Aortic smooth muscle cell response to FGF2	2042
+tpm.Aortic smooth muscle cell response to FGF2	2043
+tpm.Aortic smooth muscle cell response to FGF2	2044
+tpm.Aortic smooth muscle cell response to FGF2	2045
+tpm.Aortic smooth muscle cell response to FGF2	2046
+tpm.Aortic smooth muscle cell response to FGF2	2047
+tpm.Aortic smooth muscle cell response to FGF2	2048
+tpm.Aortic smooth muscle cell response to FGF2	2049
+tpm.Aortic smooth muscle cell response to FGF2	2050
+tpm.Aortic smooth muscle cell response to FGF2	2051
+tpm.Aortic smooth muscle cell response to FGF2	2052
+tpm.Aortic smooth muscle cell response to FGF2	2053
+tpm.Aortic smooth muscle cell response to FGF2	2054
+tpm.Aortic smooth muscle cell response to IL1b	2055
+tpm.Aortic smooth muscle cell response to IL1b	2056
+tpm.Aortic smooth muscle cell response to IL1b	2057
+tpm.Aortic smooth muscle cell response to IL1b	2058
+tpm.Aortic smooth muscle cell response to IL1b	2059
+tpm.Aortic smooth muscle cell response to IL1b	2060
+tpm.Aortic smooth muscle cell response to IL1b	2061
+tpm.Aortic smooth muscle cell response to IL1b	2062
+tpm.Aortic smooth muscle cell response to IL1b	2063
+tpm.Aortic smooth muscle cell response to IL1b	2064
+tpm.Aortic smooth muscle cell response to IL1b	2065
+tpm.Aortic smooth muscle cell response to IL1b	2066
+tpm.Aortic smooth muscle cell response to IL1b	2067
+tpm.Aortic smooth muscle cell response to IL1b	2068
+tpm.Aortic smooth muscle cell response to IL1b	2069
+tpm.Aortic smooth muscle cell response to IL1b	2070
+tpm.Aortic smooth muscle cell response to IL1b	2071
+tpm.Aortic smooth muscle cell response to IL1b	2072
+tpm.Aortic smooth muscle cell response to IL1b	2073
+tpm.Aortic smooth muscle cell response to IL1b	2074
+tpm.Aortic smooth muscle cell response to IL1b	2075
+tpm.Aortic smooth muscle cell response to IL1b	2076
+tpm.Aortic smooth muscle cell response to IL1b	2077
+tpm.Aortic smooth muscle cell response to IL1b	2078
+tpm.Aortic smooth muscle cell response to IL1b	2079
+tpm.Aortic smooth muscle cell response to IL1b	2080
+tpm.Aortic smooth muscle cell response to IL1b	2081
+tpm.Aortic smooth muscle cell response to IL1b	2082
+tpm.Aortic smooth muscle cell response to IL1b	2083
+tpm.H9 Embryoid body cells melanocytic induction	2084
+tpm.H9 Embryoid body cells melanocytic induction	2085
+tpm.H9 Embryoid body cells melanocytic induction	2086
+tpm.H9 Embryoid body cells melanocytic induction	2087
+tpm.H9 Embryoid body cells melanocytic induction	2088
+tpm.H9 Embryoid body cells melanocytic induction	2089
+tpm.H9 Embryoid body cells melanocytic induction	2090
+tpm.H9 Embryoid body cells melanocytic induction	2091
+tpm.H9 Embryoid body cells melanocytic induction	2092
+tpm.H9 Embryoid body cells melanocytic induction	2093
+tpm.H9 Embryoid body cells melanocytic induction	2094
+tpm.H9 Embryoid body cells melanocytic induction	2095
+tpm.H9 Embryoid body cells melanocytic induction	2096
+tpm.H9 Embryoid body cells melanocytic induction	2097
+tpm.H9 Embryoid body cells melanocytic induction	2098
+tpm.H9 Embryoid body cells melanocytic induction	2099
+tpm.H9 Embryoid body cells melanocytic induction	2100
+tpm.H9 Embryoid body cells melanocytic induction	2101
+tpm.H9 Embryoid body cells melanocytic induction	2102
+tpm.H9 Embryoid body cells melanocytic induction	2103
+tpm.H9 Embryoid body cells melanocytic induction	2104
+tpm.H9 Embryoid body cells melanocytic induction	2105
+tpm.H9 Embryoid body cells melanocytic induction	2106
+tpm.H9 Embryoid body cells melanocytic induction	2107
+tpm.H9 Embryoid body cells melanocytic induction	2108
+tpm.H9 Embryoid body cells melanocytic induction	2109
+tpm.H9 Embryoid body cells melanocytic induction	2110
+tpm.H9 Embryoid body cells melanocytic induction	2111
+tpm.H9 Embryoid body cells melanocytic induction	2112
+tpm.H9 Embryoid body cells melanocytic induction	2113
+tpm.H9 Embryoid body cells melanocytic induction	2114
+tpm.H9 Embryoid body cells melanocytic induction	2115
+tpm.H9 Embryoid body cells melanocytic induction	2116
+tpm.H9 Embryoid body cells melanocytic induction	2117
+tpm.H9 Embryoid body cells melanocytic induction	2118
+tpm.H9 Embryoid body cells melanocytic induction	2119
+tpm.H9 Embryoid body cells melanocytic induction	2120
+tpm.H9 Embryoid body cells melanocytic induction	2121
+tpm.H9 Embryoid body cells melanocytic induction	2122
+tpm.H9 Embryoid body cells melanocytic induction	2123
+tpm.H9 Embryoid body cells melanocytic induction	2124
+tpm.H9 Embryoid body cells melanocytic induction	2125
+tpm.H9 Embryoid body cells melanocytic induction	2126
+tpm.H9 Embryoid body cells melanocytic induction	2127
+tpm.H9 Embryonic Stem cells	2128
+tpm.H9 Embryonic Stem cells	2129
+tpm.H9 Embryonic Stem cells	2130
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2131
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2132
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2133
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2134
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2135
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2136
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2137
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2138
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2139
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2140
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2141
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2142
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2143
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2144
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2145
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2146
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2147
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2148
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2149
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2150
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2151
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2152
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2153
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2154
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2155
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2156
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2157
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2158
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2159
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2160
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2161
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2162
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2163
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2164
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2165
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2166
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2167
+tpm.K562 erythroblastic leukemia response to hemin	2168
+tpm.K562 erythroblastic leukemia response to hemin	2169
+tpm.K562 erythroblastic leukemia response to hemin	2170
+tpm.K562 erythroblastic leukemia response to hemin	2171
+tpm.K562 erythroblastic leukemia response to hemin	2172
+tpm.K562 erythroblastic leukemia response to hemin	2173
+tpm.K562 erythroblastic leukemia response to hemin	2174
+tpm.K562 erythroblastic leukemia response to hemin	2175
+tpm.K562 erythroblastic leukemia response to hemin	2176
+tpm.K562 erythroblastic leukemia response to hemin	2177
+tpm.K562 erythroblastic leukemia response to hemin	2178
+tpm.K562 erythroblastic leukemia response to hemin	2179
+tpm.K562 erythroblastic leukemia response to hemin	2180
+tpm.K562 erythroblastic leukemia response to hemin	2181
+tpm.K562 erythroblastic leukemia response to hemin	2182
+tpm.K562 erythroblastic leukemia response to hemin	2183
+tpm.K562 erythroblastic leukemia response to hemin	2184
+tpm.K562 erythroblastic leukemia response to hemin	2185
+tpm.K562 erythroblastic leukemia response to hemin	2186
+tpm.K562 erythroblastic leukemia response to hemin	2187
+tpm.K562 erythroblastic leukemia response to hemin	2188
+tpm.K562 erythroblastic leukemia response to hemin	2189
+tpm.K562 erythroblastic leukemia response to hemin	2190
+tpm.K562 erythroblastic leukemia response to hemin	2191
+tpm.K562 erythroblastic leukemia response to hemin	2192
+tpm.K562 erythroblastic leukemia response to hemin	2193
+tpm.K562 erythroblastic leukemia response to hemin	2194
+tpm.K562 erythroblastic leukemia response to hemin	2195
+tpm.K562 erythroblastic leukemia response to hemin	2196
+tpm.K562 erythroblastic leukemia response to hemin	2197
+tpm.K562 erythroblastic leukemia response to hemin	2198
+tpm.K562 erythroblastic leukemia response to hemin	2199
+tpm.K562 erythroblastic leukemia response to hemin	2200
+tpm.K562 erythroblastic leukemia response to hemin	2201
+tpm.K562 erythroblastic leukemia response to hemin	2202
+tpm.K562 erythroblastic leukemia response to hemin	2203
+tpm.K562 erythroblastic leukemia response to hemin	2204
+tpm.K562 erythroblastic leukemia response to hemin	2205
+tpm.K562 erythroblastic leukemia response to hemin	2206
+tpm.K562 erythroblastic leukemia response to hemin	2207
+tpm.K562 erythroblastic leukemia response to hemin	2208
+tpm.K562 erythroblastic leukemia response to hemin	2209
+tpm.K562 erythroblastic leukemia response to hemin	2210
+tpm.K562 erythroblastic leukemia response to hemin	2211
+tpm.K562 erythroblastic leukemia response to hemin	2212
+tpm.K562 erythroblastic leukemia response to hemin	2213
+tpm.K562 erythroblastic leukemia response to hemin	2214
+tpm.K562 erythroblastic leukemia response to hemin	2215
+tpm.K562 erythroblastic leukemia response to hemin	2216
+tpm.K562 erythroblastic leukemia response to hemin	2217
+tpm.K562 erythroblastic leukemia response to hemin	2218
+tpm.K562 erythroblastic leukemia response to hemin	2219
+tpm.K562 erythroblastic leukemia response to hemin	2220
+tpm.K562 erythroblastic leukemia response to hemin	2221
+tpm.Lymphatic Endothelial cells response to VEGFC	2222
+tpm.Lymphatic Endothelial cells response to VEGFC	2223
+tpm.Lymphatic Endothelial cells response to VEGFC	2224
+tpm.Lymphatic Endothelial cells response to VEGFC	2225
+tpm.Lymphatic Endothelial cells response to VEGFC	2226
+tpm.Lymphatic Endothelial cells response to VEGFC	2227
+tpm.Lymphatic Endothelial cells response to VEGFC	2228
+tpm.Lymphatic Endothelial cells response to VEGFC	2229
+tpm.Lymphatic Endothelial cells response to VEGFC	2230
+tpm.Lymphatic Endothelial cells response to VEGFC	2231
+tpm.Lymphatic Endothelial cells response to VEGFC	2232
+tpm.Lymphatic Endothelial cells response to VEGFC	2233
+tpm.Lymphatic Endothelial cells response to VEGFC	2234
+tpm.Lymphatic Endothelial cells response to VEGFC	2235
+tpm.Lymphatic Endothelial cells response to VEGFC	2236
+tpm.Lymphatic Endothelial cells response to VEGFC	2237
+tpm.Lymphatic Endothelial cells response to VEGFC	2238
+tpm.Lymphatic Endothelial cells response to VEGFC	2239
+tpm.Lymphatic Endothelial cells response to VEGFC	2240
+tpm.Lymphatic Endothelial cells response to VEGFC	2241
+tpm.Lymphatic Endothelial cells response to VEGFC	2242
+tpm.Lymphatic Endothelial cells response to VEGFC	2243
+tpm.Lymphatic Endothelial cells response to VEGFC	2244
+tpm.Lymphatic Endothelial cells response to VEGFC	2245
+tpm.Lymphatic Endothelial cells response to VEGFC	2246
+tpm.Lymphatic Endothelial cells response to VEGFC	2247
+tpm.Lymphatic Endothelial cells response to VEGFC	2248
+tpm.Lymphatic Endothelial cells response to VEGFC	2249
+tpm.Lymphatic Endothelial cells response to VEGFC	2250
+tpm.Lymphatic Endothelial cells response to VEGFC	2251
+tpm.Lymphatic Endothelial cells response to VEGFC	2252
+tpm.Lymphatic Endothelial cells response to VEGFC	2253
+tpm.Lymphatic Endothelial cells response to VEGFC	2254
+tpm.Lymphatic Endothelial cells response to VEGFC	2255
+tpm.Lymphatic Endothelial cells response to VEGFC	2256
+tpm.Lymphatic Endothelial cells response to VEGFC	2257
+tpm.Lymphatic Endothelial cells response to VEGFC	2258
+tpm.Lymphatic Endothelial cells response to VEGFC	2259
+tpm.Lymphatic Endothelial cells response to VEGFC	2260
+tpm.Lymphatic Endothelial cells response to VEGFC	2261
+tpm.Lymphatic Endothelial cells response to VEGFC	2262
+tpm.Lymphatic Endothelial cells response to VEGFC	2263
+tpm.Lymphatic Endothelial cells response to VEGFC	2264
+tpm.Lymphatic Endothelial cells response to VEGFC	2265
+tpm.Lymphatic Endothelial cells response to VEGFC	2266
+tpm.Lymphatic Endothelial cells response to VEGFC	2267
+tpm.Lymphatic Endothelial cells response to VEGFC	2268
+tpm.Lymphatic Endothelial cells response to VEGFC	2269
+tpm.MCF7 breast cancer cell line response to EGF1	2270
+tpm.MCF7 breast cancer cell line response to EGF1	2271
+tpm.MCF7 breast cancer cell line response to EGF1	2272
+tpm.MCF7 breast cancer cell line response to EGF1	2273
+tpm.MCF7 breast cancer cell line response to EGF1	2274
+tpm.MCF7 breast cancer cell line response to EGF1	2275
+tpm.MCF7 breast cancer cell line response to EGF1	2276
+tpm.MCF7 breast cancer cell line response to EGF1	2277
+tpm.MCF7 breast cancer cell line response to EGF1	2278
+tpm.MCF7 breast cancer cell line response to EGF1	2279
+tpm.MCF7 breast cancer cell line response to EGF1	2280
+tpm.MCF7 breast cancer cell line response to EGF1	2281
+tpm.MCF7 breast cancer cell line response to EGF1	2282
+tpm.MCF7 breast cancer cell line response to EGF1	2283
+tpm.MCF7 breast cancer cell line response to EGF1	2284
+tpm.MCF7 breast cancer cell line response to EGF1	2285
+tpm.MCF7 breast cancer cell line response to EGF1	2286
+tpm.MCF7 breast cancer cell line response to EGF1	2287
+tpm.MCF7 breast cancer cell line response to EGF1	2288
+tpm.MCF7 breast cancer cell line response to EGF1	2289
+tpm.MCF7 breast cancer cell line response to EGF1	2290
+tpm.MCF7 breast cancer cell line response to EGF1	2291
+tpm.MCF7 breast cancer cell line response to EGF1	2292
+tpm.MCF7 breast cancer cell line response to EGF1	2293
+tpm.MCF7 breast cancer cell line response to EGF1	2294
+tpm.MCF7 breast cancer cell line response to EGF1	2295
+tpm.MCF7 breast cancer cell line response to EGF1	2296
+tpm.MCF7 breast cancer cell line response to EGF1	2297
+tpm.MCF7 breast cancer cell line response to EGF1	2298
+tpm.MCF7 breast cancer cell line response to EGF1	2299
+tpm.MCF7 breast cancer cell line response to EGF1	2300
+tpm.MCF7 breast cancer cell line response to EGF1	2301
+tpm.MCF7 breast cancer cell line response to EGF1	2302
+tpm.MCF7 breast cancer cell line response to EGF1	2303
+tpm.MCF7 breast cancer cell line response to EGF1	2304
+tpm.MCF7 breast cancer cell line response to EGF1	2305
+tpm.MCF7 breast cancer cell line response to EGF1	2306
+tpm.MCF7 breast cancer cell line response to EGF1	2307
+tpm.MCF7 breast cancer cell line response to EGF1	2308
+tpm.MCF7 breast cancer cell line response to EGF1	2309
+tpm.MCF7 breast cancer cell line response to EGF1	2310
+tpm.MCF7 breast cancer cell line response to EGF1	2311
+tpm.MCF7 breast cancer cell line response to EGF1	2312
+tpm.MCF7 breast cancer cell line response to EGF1	2313
+tpm.MCF7 breast cancer cell line response to EGF1	2314
+tpm.MCF7 breast cancer cell line response to EGF1	2315
+tpm.MCF7 breast cancer cell line response to HRG	2316
+tpm.MCF7 breast cancer cell line response to HRG	2317
+tpm.MCF7 breast cancer cell line response to HRG	2318
+tpm.MCF7 breast cancer cell line response to HRG	2319
+tpm.MCF7 breast cancer cell line response to HRG	2320
+tpm.MCF7 breast cancer cell line response to HRG	2321
+tpm.MCF7 breast cancer cell line response to HRG	2322
+tpm.MCF7 breast cancer cell line response to HRG	2323
+tpm.MCF7 breast cancer cell line response to HRG	2324
+tpm.MCF7 breast cancer cell line response to HRG	2325
+tpm.MCF7 breast cancer cell line response to HRG	2326
+tpm.MCF7 breast cancer cell line response to HRG	2327
+tpm.MCF7 breast cancer cell line response to HRG	2328
+tpm.MCF7 breast cancer cell line response to HRG	2329
+tpm.MCF7 breast cancer cell line response to HRG	2330
+tpm.MCF7 breast cancer cell line response to HRG	2331
+tpm.MCF7 breast cancer cell line response to HRG	2332
+tpm.MCF7 breast cancer cell line response to HRG	2333
+tpm.MCF7 breast cancer cell line response to HRG	2334
+tpm.MCF7 breast cancer cell line response to HRG	2335
+tpm.MCF7 breast cancer cell line response to HRG	2336
+tpm.MCF7 breast cancer cell line response to HRG	2337
+tpm.MCF7 breast cancer cell line response to HRG	2338
+tpm.MCF7 breast cancer cell line response to HRG	2339
+tpm.MCF7 breast cancer cell line response to HRG	2340
+tpm.MCF7 breast cancer cell line response to HRG	2341
+tpm.MCF7 breast cancer cell line response to HRG	2342
+tpm.MCF7 breast cancer cell line response to HRG	2343
+tpm.MCF7 breast cancer cell line response to HRG	2344
+tpm.MCF7 breast cancer cell line response to HRG	2345
+tpm.MCF7 breast cancer cell line response to HRG	2346
+tpm.MCF7 breast cancer cell line response to HRG	2347
+tpm.MCF7 breast cancer cell line response to HRG	2348
+tpm.MCF7 breast cancer cell line response to HRG	2349
+tpm.MCF7 breast cancer cell line response to HRG	2350
+tpm.MCF7 breast cancer cell line response to HRG	2351
+tpm.MCF7 breast cancer cell line response to HRG	2352
+tpm.MCF7 breast cancer cell line response to HRG	2353
+tpm.MCF7 breast cancer cell line response to HRG	2354
+tpm.MCF7 breast cancer cell line response to HRG	2355
+tpm.MCF7 breast cancer cell line response to HRG	2356
+tpm.MCF7 breast cancer cell line response to HRG	2357
+tpm.MCF7 breast cancer cell line response to HRG	2358
+tpm.MCF7 breast cancer cell line response to HRG	2359
+tpm.MCF7 breast cancer cell line response to HRG	2360
+tpm.Melanocyte	2361
+tpm.Melanocyte	2362
+tpm.Melanocyte	2363
+tpm.Monocyte-derived macrophages response to LPS	2364
+tpm.Monocyte-derived macrophages response to LPS	2365
+tpm.Monocyte-derived macrophages response to LPS	2366
+tpm.Monocyte-derived macrophages response to LPS	2367
+tpm.Monocyte-derived macrophages response to LPS	2368
+tpm.Monocyte-derived macrophages response to LPS	2369
+tpm.Monocyte-derived macrophages response to LPS	2370
+tpm.Monocyte-derived macrophages response to LPS	2371
+tpm.Monocyte-derived macrophages response to LPS	2372
+tpm.Monocyte-derived macrophages response to LPS	2373
+tpm.Monocyte-derived macrophages response to LPS	2374
+tpm.Monocyte-derived macrophages response to LPS	2375
+tpm.Monocyte-derived macrophages response to LPS	2376
+tpm.Monocyte-derived macrophages response to LPS	2377
+tpm.Monocyte-derived macrophages response to LPS	2378
+tpm.Monocyte-derived macrophages response to LPS	2379
+tpm.Monocyte-derived macrophages response to LPS	2380
+tpm.Monocyte-derived macrophages response to LPS	2381
+tpm.Monocyte-derived macrophages response to LPS	2382
+tpm.Monocyte-derived macrophages response to LPS	2383
+tpm.Monocyte-derived macrophages response to LPS	2384
+tpm.Monocyte-derived macrophages response to LPS	2385
+tpm.Monocyte-derived macrophages response to LPS	2386
+tpm.Monocyte-derived macrophages response to LPS	2387
+tpm.Monocyte-derived macrophages response to LPS	2388
+tpm.Monocyte-derived macrophages response to LPS	2389
+tpm.Monocyte-derived macrophages response to LPS	2390
+tpm.Monocyte-derived macrophages response to LPS	2391
+tpm.Monocyte-derived macrophages response to LPS	2392
+tpm.Monocyte-derived macrophages response to LPS	2393
+tpm.Monocyte-derived macrophages response to LPS	2394
+tpm.Monocyte-derived macrophages response to LPS	2395
+tpm.Monocyte-derived macrophages response to LPS	2396
+tpm.Monocyte-derived macrophages response to LPS	2397
+tpm.Monocyte-derived macrophages response to LPS	2398
+tpm.Monocyte-derived macrophages response to LPS	2399
+tpm.Monocyte-derived macrophages response to LPS	2400
+tpm.Monocyte-derived macrophages response to LPS	2401
+tpm.Monocyte-derived macrophages response to LPS	2402
+tpm.Monocyte-derived macrophages response to LPS	2403
+tpm.Monocyte-derived macrophages response to LPS	2404
+tpm.Monocyte-derived macrophages response to LPS	2405
+tpm.Monocyte-derived macrophages response to LPS	2406
+tpm.Monocyte-derived macrophages response to LPS	2407
+tpm.Monocyte-derived macrophages response to LPS	2408
+tpm.Monocyte-derived macrophages response to LPS	2409
+tpm.Monocyte-derived macrophages response to LPS	2410
+tpm.Monocyte-derived macrophages response to LPS	2411
+tpm.Monocyte-derived macrophages response to LPS	2412
+tpm.Monocyte-derived macrophages response to LPS	2413
+tpm.Monocyte-derived macrophages response to LPS	2414
+tpm.Monocyte-derived macrophages response to LPS	2415
+tpm.Monocyte-derived macrophages response to LPS	2416
+tpm.Monocyte-derived macrophages response to LPS	2417
+tpm.Monocyte-derived macrophages response to LPS	2418
+tpm.Monocyte-derived macrophages response to LPS	2419
+tpm.Monocyte-derived macrophages response to LPS	2420
+tpm.Monocyte-derived macrophages response to LPS	2421
+tpm.Monocyte-derived macrophages response to LPS	2422
+tpm.Monocyte-derived macrophages response to LPS	2423
+tpm.Monocyte-derived macrophages response to LPS	2424
+tpm.Monocyte-derived macrophages response to LPS	2425
+tpm.Monocyte-derived macrophages response to LPS	2426
+tpm.Monocyte-derived macrophages response to LPS	2427
+tpm.Monocyte-derived macrophages response to LPS	2428
+tpm.Monocyte-derived macrophages response to LPS	2429
+tpm.Monocyte-derived macrophages response to LPS	2430
+tpm.Monocyte-derived macrophages response to LPS	2431
+tpm.Monocyte-derived macrophages response to LPS	2432
+tpm.Monocyte-derived macrophages response to LPS	2433
+tpm.Monocyte-derived macrophages response to LPS	2434
+tpm.Monocyte-derived macrophages response to LPS	2435
+tpm.Monocyte-derived macrophages response to LPS	2436
+tpm.Monocyte-derived macrophages response to LPS	2437
+tpm.Monocyte-derived macrophages response to LPS	2438
+tpm.Monocyte-derived macrophages response to LPS	2439
+tpm.Monocyte-derived macrophages response to LPS	2440
+tpm.Monocyte-derived macrophages response to mock influenza infection	2441
+tpm.Monocyte-derived macrophages response to mock influenza infection	2442
+tpm.Monocyte-derived macrophages response to mock influenza infection	2443
+tpm.Monocyte-derived macrophages response to mock influenza infection	2444
+tpm.Monocyte-derived macrophages response to mock influenza infection	2445
+tpm.Monocyte-derived macrophages response to mock influenza infection	2446
+tpm.Monocyte-derived macrophages response to mock influenza infection	2447
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2448
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2449
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2450
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2451
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2452
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2453
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2454
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2455
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2456
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2457
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2458
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2459
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2460
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2461
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2462
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2463
+tpm.Myoblast differentiation to myotubes	2464
+tpm.Myoblast differentiation to myotubes	2465
+tpm.Myoblast differentiation to myotubes	2466
+tpm.Myoblast differentiation to myotubes	2467
+tpm.Myoblast differentiation to myotubes	2468
+tpm.Myoblast differentiation to myotubes	2469
+tpm.Myoblast differentiation to myotubes	2470
+tpm.Myoblast differentiation to myotubes	2471
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2472
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2473
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2474
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2475
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2476
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2477
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2478
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2479
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2480
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2481
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2482
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2483
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2484
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2485
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2486
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2487
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2488
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2489
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2490
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2491
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2492
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2493
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2494
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2495
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2496
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2497
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2498
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2499
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2500
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2501
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2502
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2503
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2504
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2505
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2506
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2507
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2508
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2509
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2510
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2511
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2512
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2513
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2514
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2515
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2516
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2517
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2518
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2519
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2520
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2521
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2522
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2523
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2524
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2525
+tpm.iPS differentiation to neuron control donor C11-CRL2429	2526
+tpm.iPS differentiation to neuron control donor C11-CRL2429	2527
+tpm.iPS differentiation to neuron control donor C11-CRL2429	2528
+tpm.iPS differentiation to neuron control donor C11-CRL2429	2529
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2530
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2531
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2532
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2533
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2534
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2535
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2536
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2537
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2538
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2539
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2540
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2541
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2542
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2543
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2544
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2545
+tpm.iPS differentiation to neuron down-syndrome donor C18-CCL54	2546
+tpm.iPS differentiation to neuron down-syndrome donor C18-CCL54	2547
+tpm.iPS differentiation to neuron down-syndrome donor C18-CCL54	2548
+tpm.iPS differentiation to neuron down-syndrome donor C18-CCL54	2549
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2550
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2551
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2552
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2553
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2554
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2555
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2556
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2557
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2558
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2559
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2560
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2561
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2562
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2563
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2564
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2565
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2566
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2567
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2568
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2569
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2570
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2571
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2572
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2573
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2574
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2575
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2576
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2577
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2578
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2579
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2580
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2581
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2582
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2583
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2584
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2585
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2586
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2587
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2588
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2589
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2590
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2591
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2592
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2593
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2594
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2595
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2596
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2597
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2598
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2599
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2600
+tpm.mesenchymal stem cells (adipose derived)	2601
+tpm.mesenchymal stem cells (adipose derived)	2602
+tpm.Clontech Human Universal Reference Total RNA	2603
+tpm.Fingernail (including nail plate	2604
+tpm.SABiosciences XpressRef Human Universal Total RNA	2605
+tpm.Skin - palm	2606
+tpm.Universal RNA - Human Normal Tissues Biochain	2607
+tpm.Urethra	2608
+tpm.achilles tendon	2609
+tpm.adipose tissue	2610
+tpm.adrenal gland	2611
+tpm.amygdala - adult	2612
+tpm.amygdala	2613
+tpm.aorta	2614
+tpm.appendix	2615
+tpm.artery	2616
+tpm.bladder	2617
+tpm.blood	2618
+tpm.bone marrow	2619
+tpm.brain	2620
+tpm.brain	2621
+tpm.brain	2622
+tpm.breast	2623
+tpm.caudate nucleus - adult	2624
+tpm.caudate nucleus	2625
+tpm.cerebellum - adult	2626
+tpm.cerebellum	2627
+tpm.cerebellum	2628
+tpm.cerebral meninges	2629
+tpm.cerebrospinal fluid	2630
+tpm.cervix	2631
+tpm.colon	2632
+tpm.colon	2633
+tpm.colon	2634
+tpm.corpus callosum	2635
+tpm.cruciate ligament	2636
+tpm.diaphragm	2637
+tpm.diencephalon	2638
+tpm.ductus deferens	2639
+tpm.duodenum fetal	2640
+tpm.duodenum fetal	2641
+tpm.dura mater	2642
+tpm.epididymis	2643
+tpm.esophagus	2644
+tpm.eye - muscle inferior rectus	2645
+tpm.eye - muscle lateral	2646
+tpm.eye - muscle medial	2647
+tpm.eye - muscle superior	2648
+tpm.eye - vitreous humor	2649
+tpm.eye	2650
+tpm.frontal lobe	2651
+tpm.gall bladder	2652
+tpm.globus pallidus - adult	2653
+tpm.globus pallidus	2654
+tpm.heart - mitral valve	2655
+tpm.heart - pulmonic valve	2656
+tpm.heart - tricuspid valve	2657
+tpm.heart adult	2658
+tpm.heart adult	2659
+tpm.heart	2660
+tpm.heart	2661
+tpm.hippocampus - adult	2662
+tpm.hippocampus	2663
+tpm.insula	2664
+tpm.kidney	2665
+tpm.kidney	2666
+tpm.left atrium	2667
+tpm.left ventricle	2668
+tpm.liver	2669
+tpm.liver	2670
+tpm.locus coeruleus - adult	2671
+tpm.locus coeruleus	2672
+tpm.lung	2673
+tpm.lung	2674
+tpm.lung right lower lobe	2675
+tpm.lymph node	2676
+tpm.medial frontal gyrus - adult	2677
+tpm.medial temporal gyrus - adult	2678
+tpm.medial temporal gyrus	2679
+tpm.medulla oblongata - adult	2680
+tpm.medulla oblongata	2681
+tpm.medulla oblongata	2682
+tpm.middle temporal gyrus	2683
+tpm.nucleus accumbens	2684
+tpm.occipital cortex - adult	2685
+tpm.occipital cortex	2686
+tpm.occipital lobe	2687
+tpm.occipital lobe	2688
+tpm.occipital pole	2689
+tpm.olfactory region	2690
+tpm.optic nerve	2691
+tpm.ovary	2692
+tpm.pancreas	2693
+tpm.paracentral gyrus	2694
+tpm.parietal lobe - adult	2695
+tpm.parietal lobe	2696
+tpm.parietal lobe	2697
+tpm.parietal lobe	2698
+tpm.parotid gland	2699
+tpm.penis	2700
+tpm.pineal gland - adult	2701
+tpm.pineal gland	2702
+tpm.pituitary gland - adult	2703
+tpm.pituitary gland	2704
+tpm.placenta	2705
+tpm.pons	2706
+tpm.postcentral gyrus	2707
+tpm.prostate	2708
+tpm.putamen	2709
+tpm.rectum	2710
+tpm.retina	2711
+tpm.salivary gland	2712
+tpm.seminal vesicle	2713
+tpm.skeletal muscle - soleus muscle	2714
+tpm.skeletal muscle	2715
+tpm.skeletal muscle	2716
+tpm.skin	2717
+tpm.skin	2718
+tpm.small intestine	2719
+tpm.small intestine	2720
+tpm.smooth muscle	2721
+tpm.spinal cord - adult	2722
+tpm.spinal cord	2723
+tpm.spinal cord	2724
+tpm.spleen	2725
+tpm.spleen	2726
+tpm.stomach	2727
+tpm.submaxillary gland	2728
+tpm.substantia nigra - adult	2729
+tpm.substantia nigra	2730
+tpm.temporal lobe	2731
+tpm.temporal lobe fetal	2732
+tpm.temporal lobe fetal	2733
+tpm.testis	2734
+tpm.testis	2735
+tpm.thalamus - adult	2736
+tpm.thalamus	2737
+tpm.throat	2738
+tpm.throat	2739
+tpm.thymus	2740
+tpm.thymus	2741
+tpm.thyroid	2742
+tpm.thyroid	2743
+tpm.tongue epidermis (fungiform papillae)	2744
+tpm.tongue	2745
+tpm.tongue	2746
+tpm.tonsil	2747
+tpm.trachea	2748
+tpm.trachea	2749
+tpm.umbilical cord	2750
+tpm.uterus	2751
+tpm.uterus	2752
+tpm.vagina	2753
+tpm.vein	2754

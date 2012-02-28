@@ -1,0 +1,64 @@
+
+
+This is RAxML version 7.3.0 released by Alexandros Stamatakis in June 2011.
+
+With greatly appreciated code contributions by:
+Andre Aberer (HITS)
+Simon Berger (HITS)
+Nick Pattengale (Sandia)
+Wayne Pfeiffer (SDSC)
+Akifumi S. Tanabe (Univ. Tsukuba)
+
+
+Alignment has 4231 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML Model Optimization up to an accuracy of 0.100000 log likelihood units
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+All free model parameters will be estimated by RAxML
+GAMMA model of rate heteorgeneity, ML estimate of alpha-parameter
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 4231
+Name: No Name Provided
+DataType: BINARY/MORPHOLOGICAL
+Substitution Matrix: Uncorrected
+
+
+
+
+RAxML was called as follows:
+
+raxmlHPC-PTHREADS-SSE3 -f e -n RootedOnMesenchymal2 -T 22 -m BINGAMMA -s ../ExperimentCombsExpressed.alignment.phy -t ./backup -p 12345 
+
+
+You provided an incomplete starting tree 492 alignmnet has 1551 taxa
+Testing which likelihood implementation to use
+Standard Implementation full tree traversal time: 0.226226
+Subtree Equality Vectors for gap columns full tree traversal time: 0.252165
+... using standard implementation
+
+
+Model parameters (binary file format) written to: /home/sardar/TraP/bin/CellTypeTree/BranchLengthsOnTree/RAxML_binaryModelParameters.RootedOnMesenchymal2
+
+
+Overall Time for Tree Evaluation 320.290763
+Final GAMMA  likelihood: -1420075.410046
+
+
+Model Parameters of Partition 0, Name: No Name Provided, Type of Data: BINARY/MORPHOLOGICAL
+alpha: 0.883463
+Tree-Length: 87.257485
+rate 0 <-> 1: 1.000000
+
+freq pi(0): 0.412426
+freq pi(1): 0.587574
+
+Final tree written to:                 /home/sardar/TraP/bin/CellTypeTree/BranchLengthsOnTree/RAxML_result.RootedOnMesenchymal2
+Execution Log File written to:         /home/sardar/TraP/bin/CellTypeTree/BranchLengthsOnTree/RAxML_log.RootedOnMesenchymal2

@@ -1,0 +1,493 @@
+acantholytic squamous carcinoma cell line	1218
+acute lymphoblastic leukemia (B-ALL) cell line	1220
+acute lymphoblastic leukemia (T-ALL) cell line	1222
+acute myeloid leukemia (FAB M0) cell line	1223
+acute myeloid leukemia (FAB M1) cell line	1224
+acute myeloid leukemia (FAB M2) cell line	1227
+acute myeloid leukemia (FAB M3) cell line	1228
+acute myeloid leukemia (FAB M4) cell line	1230
+acute myeloid leukemia (FAB M4eo) cell line	1232
+acute myeloid leukemia (FAB M5) cell line	1238
+acute myeloid leukemia (FAB M6) cell line	1241
+acute myeloid leukemia (FAB M7) cell line	1243
+adenocarcinoma cell line	1244
+adrenal cortex adenocarcinoma cell line	1245
+adult T-cell leukemia cell line	1246
+alveolar cell carcinoma cell line	1247
+anaplastic carcinoma cell line	1248
+anaplastic large cell lymphoma cell line	1249
+anaplastic squamous cell carcinoma cell line	1250
+argyrophil small cell carcinoma cell line	1251
+astrocytoma cell line	1252
+b cell line	1253
+basal cell carcinoma cell line	1254
+bile duct carcinoma cell line	1256
+biphenotypic B myelomonocytic leukemia cell line	1257
+bone marrow stromal cell line	1258
+breast carcinoma cell line	1260
+bronchial squamous cell carcinoma cell line	1261
+bronchioalveolar carcinoma cell line	1262
+bronchogenic carcinoma cell line	1263
+Burkitt's lymphoma cell line	1211
+carcinoid cell line	1265
+carcinosarcoma cell line	1266
+cervical cancer cell line	1268
+cholangiocellular carcinoma cell line	1269
+chondrosarcoma cell line	1270
+choriocarcinoma cell line	1273
+chronic lymphocytic leukemia (T-CLL) cell line	1274
+chronic myeloblastic leukemia (CML) cell line	1275
+chronic myelogenous leukemia (CML) cell line	1276
+chronic myelogenous leukemia cell line	1280
+clear cell carcinoma cell line	1282
+colon carcinoma cell line	1284
+cord blood derived cell line	1286
+diffuse large B-cell lymphoma cell line	1289
+ductal cell carcinoma cell line	1290
+embryonic kidney cell line	1293
+embryonic pancreas cell line	1294
+endometrial carcinoma cell line	1298
+endometrial stromal sarcoma cell line	1299
+endometrioid adenocarcinoma cell line	1300
+epidermoid carcinoma  cell line	1301
+epidermoid carcinoma cell line	1302
+epithelioid sarcoma cell line	1303
+Ewing's sarcoma cell line	1212
+extraskeletal myxoid chondrosarcoma cell line	1307
+fibrosarcoma cell line	1308
+fibrous histiocytoma cell line	1309
+gall bladder carcinoma cell line	1310
+gastric adenocarcinoma cell line	1312
+gastric cancer cell line	1314
+gastrointestinal carcinoma cell line	1315
+giant cell carcinoma cell line	1316
+glassy cell carcinoma cell line	1318
+glioblastoma cell line	1321
+glioma cell line	1322
+granulosa cell tumor cell line	1323
+hairy cell leukemia cell line	1324
+hepatic mesenchymal tumor cell line	1325
+hepatoblastoma cell line	1326
+hepatoma cell line	1330
+hereditary spherocytic anemia cell line	1331
+Hodgkin's lymphoma cell line	1213
+keratoacanthoma cell line	1332
+Krukenberg tumor cell line	1214
+large cell lung carcinoma cell line	1333
+large cell non-keratinizing squamous carcinoma cell line	1335
+leiomyoblastoma  cell line	1336
+leiomyoma cell line	1337
+leiomyosarcoma  cell line	1204
+lens epithelial cell line	1340
+liposarcoma cell line	1342
+lung adenocarcinoma cell line	1344
+lymphangiectasia cell line	1346
+malignant trichilemmal cyst cell line	1348
+maxillary sinus tumor cell line	1349
+medulloblastoma cell line	1350
+melanoma cell line	1352
+meningioma cell line	1354
+merkel cell carcinoma cell line	1355
+mesenchymal stem cell line	1357
+mesodermal tumor cell line	1205
+mesothelioma cell line	1358
+mixed mullerian tumor cell line	1374
+mucinous adenocarcinoma cell line	1375
+mucinous cystadenocarcinoma  cell line	1376
+myelodysplastic syndrome cell line	1378
+myeloma cell line	1379
+myxofibrosarcoma cell line	1380
+neuroblastoma cell line	1382
+neuroectodermal tumor  cell line	1386
+neuroectodermal tumor cell line	1387
+neuroepithelioma cell line	1389
+neurofibroma cell line	1390
+NK T cell leukemia cell line	1215
+non T non B acute lymphoblastic leukemia (ALL) cell line	1391
+non-small cell lung cancer cell line	1206
+normal embryonic palatal mesenchymal cell line	1392
+normal intestinal epithelial cell line	1393
+oral squamous cell carcinoma cell line	1394
+osteoclastoma cell line	1398
+osteosarcoma cell line	1399
+pagetoid sarcoma cell line	1401
+pancreatic carcinoma cell line	1402
+papillary adenocarcinoma cell line	1403
+papillotubular adenocarcinoma cell line	1404
+peripheral neuroectodermal tumor cell line	1405
+pharyngeal carcinoma cell line	1406
+plasma cell leukemia cell line	1407
+pleomorphic hepatocellular carcinoma cell line	1408
+prostate cancer cell line	1409
+rectal cancer cell line	1411
+renal cell carcinoma cell line	1412
+retinoblastoma cell line	1414
+rhabdomyosarcoma cell line	1415
+sacrococcigeal teratoma cell line	1417
+serous adenocarcinoma cell line	1420
+serous cystadenocarcinoma cell line	1421
+signet ring carcinoma cell line	1422
+small cell cervical cancer cell line	1424
+small cell gastrointestinal carcinoma cell line	1425
+small cell lung carcinoma cell line	1426
+small-cell gastrointestinal carcinoma cell line	1430
+somatostatinoma cell line	1431
+spindle cell sarcoma cell line	1432
+splenic lymphoma with villous lymphocytes cell line	1433
+squamous cell carcinoma cell line	1434
+squamous cell lung carcinoma cell line	1437
+synovial sarcoma cell line	1438
+teratocarcinoma cell line	1439
+testicular germ cell embryonal carcinoma cell line	1442
+thyroid carcinoma cell line	1446
+tpm.achilles tendon	2609
+tpm.Adipocyte - breast	1517
+tpm.Adipocyte - omental	1519
+tpm.Adipocyte - perirenal	1522
+tpm.Adipocyte - subcutaneous	1523
+tpm.Adipocyte differentiation	2014
+tpm.adipose tissue	2610
+tpm.adrenal gland	2611
+tpm.Alveolar Epithelial Cells	1526
+tpm.Amniotic Epithelial Cells	1529
+tpm.amniotic membrane cells	1968
+tpm.amygdala	2613
+tpm.amygdala - adult	2612
+tpm.Anulus Pulposus Cell	1532
+tpm.aorta	2614
+tpm.Aortic smooth muscle cell response to FGF2	2026
+tpm.Aortic smooth muscle cell response to IL1b	2055
+tpm.appendix	2615
+tpm.artery	2616
+tpm.Astrocyte - cerebellum	1534
+tpm.Astrocyte - cerebral cortex	1537
+tpm.B lymphoblastoid cell line: GM12878 ENCODE	1209
+tpm.Basophils	1465
+tpm.bladder	2617
+tpm.blood	2618
+tpm.bone marrow	2619
+tpm.brain	2620
+tpm.breast	2623
+tpm.Bronchial Epithelial Cell	1541
+tpm.Cardiac Myocyte	1618
+tpm.caudate nucleus	2625
+tpm.caudate nucleus - adult	2624
+tpm.CD133+ stem cells - adult bone marrow derived	1467
+tpm.CD133+ stem cells - cord blood derived	1468
+tpm.CD14+ monocyte derived endothelial progenitor cells	1551
+tpm.CD14+ Monocytes	1548
+tpm.CD14+ monocytes - mock treated	1554
+tpm.CD14+ monocytes - treated with B-glucan	1557
+tpm.CD14+ monocytes - treated with BCG	1560
+tpm.CD14+ monocytes - treated with Candida	1563
+tpm.CD14+ monocytes - treated with Cryptococcus	1566
+tpm.CD14+ monocytes - treated with Group A streptococci	1569
+tpm.CD14+ monocytes - treated with IFN + N-hexane	1572
+tpm.CD14+ monocytes - treated with lipopolysaccharide	1581
+tpm.CD14+ monocytes - treated with Salmonella	1575
+tpm.CD14+ monocytes - treated with Trehalose dimycolate (TDM)	1578
+tpm.CD14+CD16+ Monocytes	1584
+tpm.CD14+CD16- Monocytes	1587
+tpm.CD14-CD16+ Monocytes	1469
+tpm.CD19+ B Cells	1592
+tpm.CD19+ B Cells (pluriselect)	1470
+tpm.CD34+ Progenitors	1478
+tpm.CD34+ stem cells - adult bone marrow derived	1480
+tpm.CD4+ T Cells	1596
+tpm.CD4+CD25+CD45RA+ naive regulatory T cells	1481
+tpm.CD4+CD25+CD45RA+ naive regulatory T cells expanded	1599
+tpm.CD4+CD25+CD45RA- memory regulatory T cells	1602
+tpm.CD4+CD25+CD45RA- memory regulatory T cells expanded	1601
+tpm.CD4+CD25+CD45RA- naive regulatory T cells expanded	1605
+tpm.CD4+CD25-CD45RA+ memory conventional T cells expanded	1607
+tpm.CD4+CD25-CD45RA+ naive conventional T cells	1610
+tpm.CD4+CD25-CD45RA+ naive conventional T cells expanded	1609
+tpm.CD4+CD25-CD45RA- memory conventional T cells	1483
+tpm.CD4+CD25-CD45RA- memory conventional T cells expanded	1613
+tpm.CD8+ T Cells	1615
+tpm.CD8+ T Cells (pluriselect)	1485
+tpm.cerebellum	2627
+tpm.cerebellum - adult	2626
+tpm.cerebral meninges	2629
+tpm.cerebrospinal fluid	2630
+tpm.cervix	2631
+tpm.Chondrocyte - de diff	1621
+tpm.Chondrocyte - re diff	1624
+tpm.chorionic membrane cells	1971
+tpm.chronic myelogenous leukemia cell line:K562 ENCODE	1277
+tpm.Ciliary Epithelial Cells	1626
+tpm.Clontech Human Universal Reference Total RNA	2603
+tpm.colon	2632
+tpm.common myeloid progenitor CMP	1501
+tpm.Corneal Epithelial Cells	1629
+tpm.corpus callosum	2635
+tpm.cruciate ligament	2636
+tpm.Dendritic Cells - monocyte immature derived	1493
+tpm.Dendritic Cells - plasmacytoid	1494
+tpm.diaphragm	2637
+tpm.diencephalon	2638
+tpm.ductus deferens	2639
+tpm.duodenum fetal	2640
+tpm.dura mater	2642
+tpm.embryonic kidney cell line: HEK293/SLAM infection	1292
+tpm.Endothelial Cells - Aortic	1636
+tpm.Endothelial Cells - Artery	1640
+tpm.Endothelial Cells - Lymphatic	1643
+tpm.Endothelial Cells - Microvascular	1646
+tpm.Endothelial Cells - Thoracic	1649
+tpm.Endothelial Cells - Umbilical vein	1651
+tpm.Endothelial Cells - Vein	1654
+tpm.Eosinophils	1496
+tpm.epididymis	2643
+tpm.epitheloid carcinoma cell line: HelaS3 ENCODE	1304
+tpm.Esophageal Epithelial Cells	1657
+tpm.esophagus	2644
+tpm.eye	2650
+tpm.eye - muscle inferior rectus	2645
+tpm.eye - muscle lateral	2646
+tpm.eye - muscle medial	2647
+tpm.eye - muscle superior	2648
+tpm.eye - vitreous humor	2649
+tpm.Fibroblast - Aortic Adventitial	1453
+tpm.Fibroblast - Cardiac	1663
+tpm.Fibroblast - Choroid Plexus	1669
+tpm.Fibroblast - Conjunctival	1672
+tpm.Fibroblast - Dermal	1674
+tpm.Fibroblast - Gingival	1680
+tpm.Fibroblast - Lung	1685
+tpm.Fibroblast - Lymphatic	1688
+tpm.Fibroblast - Mammary	1691
+tpm.Fibroblast - Periodontal Ligament	1694
+tpm.Fibroblast - Pulmonary Artery	1700
+tpm.Fibroblast - skin dystrophia myotonica	1455
+tpm.Fibroblast - skin normal	1457
+tpm.Fibroblast - skin spinal muscular atrophy	1459
+tpm.Fibroblast - skin walker warburg	1712
+tpm.Fibroblast - Villous Mesenchymal	1701
+tpm.Fingernail (including nail plate	2604
+tpm.frontal lobe	2651
+tpm.gall bladder	2652
+tpm.Gingival epithelial cells	1713
+tpm.glioblastoma cell line:A172	1319
+tpm.globus pallidus	2654
+tpm.globus pallidus - adult	2653
+tpm.granulocyte macrophage progenitor	1503
+tpm.H9 Embryoid body cells melanocytic induction	2084
+tpm.H9 Embryonic Stem cells	2128
+tpm.Hair Follicle Dermal Papilla Cells	1716
+tpm.Hair Follicle Outer Root Sheath Cells	1719
+tpm.heart	2660
+tpm.heart - mitral valve	2655
+tpm.heart - pulmonic valve	2656
+tpm.heart - tricuspid valve	2657
+tpm.heart adult	2658
+tpm.Hep-2 cells mock treated	1721
+tpm.Hep-2 cells treated with Streptococci strain 5448	1724
+tpm.Hep-2 cells treated with Streptococci strain JRS4	1727
+tpm.Hepatic Sinusoidal Endothelial Cells	1730
+tpm.Hepatic Stellate Cells (lipocyte)	1733
+tpm.hepatocellular carcinoma cell line: HepG2 ENCODE	1327
+tpm.Hepatocyte	1736
+tpm.HES3-GFP Embryonic Stem cells cardiomyocytic induction	2131
+tpm.hippocampus	2663
+tpm.hippocampus - adult	2662
+tpm.immature langerhans cells	1974
+tpm.insula	2664
+tpm.Intestinal epithelial cells (polarized)	1739
+tpm.iPS differentiation to neuron control donor C11-CRL2429	2526
+tpm.iPS differentiation to neuron control donor C32-CRL1502	2530
+tpm.iPS differentiation to neuron down-syndrome donor C11-CCL54	2538
+tpm.iPS differentiation to neuron down-syndrome donor C18-CCL54	2546
+tpm.Iris Pigment Epithelial Cells	1740
+tpm.K562 erythroblastic leukemia response to hemin	2168
+tpm.Keratinocyte - epidermal	1741
+tpm.Keratinocyte - oral	1744
+tpm.Keratocytes	1745
+tpm.kidney	2665
+tpm.left atrium	2667
+tpm.left ventricle	2668
+tpm.Lens Epithelial Cells	1748
+tpm.leukemia	1341
+tpm.liver	2669
+tpm.locus coeruleus	2672
+tpm.locus coeruleus - adult	2671
+tpm.lung	2673
+tpm.lung right lower lobe	2675
+tpm.lymph node	2676
+tpm.Lymphatic Endothelial cells response to VEGFC	2222
+tpm.lymphoma	1347
+tpm.Macrophage - monocyte derived	1751
+tpm.Mallassez-derived cells	1499
+tpm.Mammary Epithelial Cell	1756
+tpm.Mast cell	1760
+tpm.Mast cell - stimulated	1759
+tpm.mature adipocyte	1506
+tpm.MCF7 breast cancer cell line response to EGF1	2012
+tpm.MCF7 breast cancer cell line response to HRG	2316
+tpm.medial frontal gyrus - adult	2677
+tpm.medial temporal gyrus	2679
+tpm.medial temporal gyrus - adult	2678
+tpm.medulla oblongata	2681
+tpm.medulla oblongata - adult	2680
+tpm.Melanocyte	2361
+tpm.Melanocyte - dark	1764
+tpm.Melanocyte - light	1767
+tpm.Meningeal Cells	1770
+tpm.mesenchymal precursor cell - adipose	1976
+tpm.mesenchymal precursor cell - bone marrow	1979
+tpm.mesenchymal precursor cell - cardiac	1982
+tpm.mesenchymal precursor cell - ovarian cancer left ovary	1986
+tpm.mesenchymal precursor cell - ovarian cancer metastasis	1990
+tpm.mesenchymal precursor cell - ovarian cancer right ovary	1994
+tpm.mesenchymal stem cells (adipose derived)	2601
+tpm.mesenchymal stem cells (adipose derived) adipogenic induction	2550
+tpm.Mesenchymal Stem Cells - adipose	1775
+tpm.Mesenchymal Stem Cells - amniotic membrane	1778
+tpm.Mesenchymal Stem Cells - bone marrow	1780
+tpm.Mesenchymal Stem Cells - hepatic	1784
+tpm.Mesenchymal Stem Cells - umbilical	1786
+tpm.Mesenchymal Stem Cells - Vertebral	1773
+tpm.Mesenchymal Stem Cells - Wharton's Jelly	1774
+tpm.Mesothelial Cells	1500
+tpm.middle temporal gyrus	2683
+tpm.migratory langerhans cells	1999
+tpm.Monocyte-derived macrophages response to LPS	2364
+tpm.Monocyte-derived macrophages response to mock influenza infection	2441
+tpm.Monocyte-derived macrophages response to udorn influenza infection	2448
+tpm.Multipotent Cord Blood Unrestricted Somatic Stem Cells	1794
+tpm.mycosis fungoides	1377
+tpm.Myoblast	1796
+tpm.Myoblast differentiation to myotubes	2464
+tpm.nasal epithelial cells	1510
+tpm.Natural Killer Cells	1799
+tpm.Neural stem cells	1802
+tpm.Neurons	1804
+tpm.neutrophil PMN	1511
+tpm.Neutrophils	1807
+tpm.nucleus accumbens	2684
+tpm.Nucleus Pulposus Cell	1810
+tpm.occipital cortex	2686
+tpm.occipital cortex - adult	2685
+tpm.occipital lobe	2687
+tpm.occipital pole	2689
+tpm.Olfactory epithelial cells	1813
+tpm.olfactory region	2690
+tpm.Oligodendrocyte - precursors	1817
+tpm.optic nerve	2691
+tpm.Osteoblast	1821
+tpm.Osteoblast - differentiated	1818
+tpm.ovary	2692
+tpm.pancreas	2693
+tpm.Pancreatic stromal cells	1824
+tpm.paracentral gyrus	2694
+tpm.parietal lobe	2696
+tpm.parietal lobe - adult	2695
+tpm.parotid gland	2699
+tpm.penis	2700
+tpm.Pericytes	1825
+tpm.Perineurial Cells	1828
+tpm.Peripheral Blood Mononuclear Cells	1830
+tpm.pineal gland	2702
+tpm.pineal gland - adult	2701
+tpm.pituitary gland	2704
+tpm.pituitary gland - adult	2703
+tpm.placenta	2705
+tpm.Placental Epithelial Cells	1833
+tpm.pons	2706
+tpm.postcentral gyrus	2707
+tpm.Preadipocyte - breast	1461
+tpm.Preadipocyte - omental	1838
+tpm.Preadipocyte - perirenal	1841
+tpm.Preadipocyte - subcutaneous	1842
+tpm.Preadipocyte - visceral	1845
+tpm.promyelocytes/myelocytes PMC	1514
+tpm.prostate	2708
+tpm.Prostate Epithelial Cells	1849
+tpm.Prostate Epithelial Cells (polarized)	1848
+tpm.Prostate Stromal Cells	1851
+tpm.putamen	2709
+tpm.rectum	2710
+tpm.Renal Cortical Epithelial Cells	1854
+tpm.Renal Epithelial Cells	1856
+tpm.Renal Glomerular Endothelial Cells	1859
+tpm.Renal Mesangial Cells	1863
+tpm.Renal Proximal Tubular Epithelial Cell	1866
+tpm.Reticulocytes	1869
+tpm.retina	2711
+tpm.Retinal Pigment Epithelial Cells	1871
+tpm.SABiosciences XpressRef Human Universal Total RNA	2605
+tpm.salivary acinar cells	2004
+tpm.salivary gland	2712
+tpm.Saos-2 osteosarcoma treated with ascorbic acid and BGP to induce calcification	2472
+tpm.Schwann Cells	1875
+tpm.schwannoma cell line:HS-PSS	1418
+tpm.Sebocyte	1878
+tpm.seminal vesicle	2713
+tpm.serous adenocarcinoma cell line:SK-OV-3-R	2008
+tpm.serous adenocarcinoma cell line:SK-OV-3-R after co-culture with SOC-57-02-G	2007
+tpm.Sertoli Cells	1881
+tpm.skeletal muscle	2715
+tpm.skeletal muscle - soleus muscle	2714
+tpm.Skeletal Muscle Cells	1883
+tpm.Skeletal muscle cells differentiated into Myotubes - multinucleated	1892
+tpm.Skeletal Muscle Satellite Cells	1889
+tpm.skin	2717
+tpm.Skin - palm	2606
+tpm.Small Airway Epithelial Cells	1462
+tpm.small intestine	2719
+tpm.smooth muscle	2721
+tpm.Smooth Muscle Cells - Aortic	1463
+tpm.Smooth Muscle Cells - Bladder	1902
+tpm.Smooth Muscle Cells - Brachiocephalic	1903
+tpm.Smooth Muscle Cells - Brain Vascular	1906
+tpm.Smooth Muscle Cells - Bronchial	1909
+tpm.Smooth Muscle Cells - Carotid	1911
+tpm.Smooth Muscle Cells - Colonic	1914
+tpm.Smooth Muscle Cells - Coronary Artery	1917
+tpm.Smooth Muscle Cells - Esophageal	1920
+tpm.Smooth Muscle Cells - Internal Thoracic Artery	1922
+tpm.Smooth Muscle Cells - Intestinal	1925
+tpm.Smooth Muscle Cells - Prostate	1926
+tpm.Smooth Muscle Cells - Pulmonary Artery	1929
+tpm.Smooth Muscle Cells - Subclavian Artery	1932
+tpm.Smooth Muscle Cells - Tracheal	1935
+tpm.Smooth Muscle Cells - Umbilical Artery	1938
+tpm.Smooth Muscle Cells - Umbilical Vein	1941
+tpm.Smooth Muscle Cells - Uterine	1945
+tpm.spinal cord	2723
+tpm.spinal cord - adult	2722
+tpm.spleen	2725
+tpm.stomach	2727
+tpm.submaxillary gland	2728
+tpm.substantia nigra	2730
+tpm.substantia nigra - adult	2729
+tpm.Synoviocyte	1947
+tpm.temporal lobe	2731
+tpm.temporal lobe fetal	2732
+tpm.tenocyte	2009
+tpm.testis	2734
+tpm.thalamus	2737
+tpm.thalamus - adult	2736
+tpm.throat	2738
+tpm.thymus	2740
+tpm.thyroid	2742
+tpm.tongue	2745
+tpm.tongue epidermis (fungiform papillae)	2744
+tpm.tonsil	2747
+tpm.Trabecular Meshwork Cells	1950
+tpm.trachea	2748
+tpm.Tracheal Epithelial Cells	1953
+tpm.umbilical cord	2750
+tpm.Universal RNA - Human Normal Tissues Biochain	2607
+tpm.Urethra	2608
+tpm.Urothelial Cells	1956
+tpm.uterus	2751
+tpm.vagina	2753
+tpm.vein	2754
+tpm.Whole blood (ribopure)	1960
+transitional cell carcinoma cell line	1447
+transitional-cell carcinoma cell line	1448
+tridermal teratoma cell line	1450
+tubular adenocarcinoma cell line	1451
+Wilms' tumor cell line	1217
+xeroderma pigentosum b cell line	1452
