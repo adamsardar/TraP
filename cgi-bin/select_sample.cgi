@@ -73,7 +73,6 @@ use lib qw'/home/rackham/projects/TraP/lib';
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw(:all);
 
-
 #Deal with the CGI parameters here
 my $cgi = CGI->new;
 print $cgi->header();
