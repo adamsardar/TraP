@@ -1,4 +1,4 @@
-The question as to whether we should be using the logest transcipts for our analysis (as we do) as opposed to the full splicae varient may well be raised by a reviewer.
+The question as to whether we should be using the logest transcipts for our analysis (as we do) as opposed to the full splice varient may well be raised by a reviewer.
 
 Here is some data to shed light on the matter:
 
@@ -10,6 +10,8 @@ SELECT genome,name FROM genome WHERE taxon_id = 9606;
 | ht     | <i>Homo sapiens</i> <release>63_37</release>  (longest transcript per gene) | 
 | ps6    | <i>Homo sapiens</i> <release>58</release> (pseudogenes)                     | 
 +--------+-----------------------------------------------------------------------------+
+
+We shall study hs and ht.
 
 SELECT(COUNT(protein)) FROM protein WHERE genome = 'ht';
 +------------------+
@@ -24,6 +26,8 @@ mysql> SELECT(COUNT(protein)) FROM protein WHERE genome = 'hs';
 +------------------+
 |            90720 | 
 +------------------+
+
+# So there are many sequences to each 'full transcript'. Time four say.
 
 Study full architectures:
 
@@ -41,6 +45,8 @@ mysql> SELECT COUNT(DISTINCT(supra_id )) FROM len_supra  WHERE genome = 'hs' AND
 |                       7838 | 
 +----------------------------+
 
+# Less variation, less than double.
+
 Study supra-domains as well:
 
 mysql> SELECT COUNT(DISTINCT(supra_id )) FROM len_supra  WHERE genome = 'hs';
@@ -57,6 +63,8 @@ SELECT COUNT(DISTINCT(supra_id )) FROM len_supra  WHERE genome = 'ht';
 |                      82172 | 
 +----------------------------+
 
+#Less than 1.5. Not that we're using supra domains though ...
+
 Finally:
 
 Dom Archs:
@@ -67,6 +75,8 @@ SELECT COUNT(DISTINCT(supra_id )) FROM len_supra  WHERE genome = 'hs' AND ascomb
 +----------------------------+
 |                       3229 | 
 +----------------------------+
+
+#This is around 70% of the size of the longest-transcript dataset. So it is pretty significant.
 
 SELECT COUNT(DISTINCT(supra_id )) FROM len_supra  WHERE genome = 'ht' AND ascomb_prot_number >0 AND supra_id NOT IN (SELECT DISTINCT(supra_id) FROM len_supra WHERE genome = 'hs' AND ascomb_prot_number > 0);
 +----------------------------+
