@@ -73,8 +73,14 @@ use lib qw'/home/rackham/projects/TraP/lib';
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw(:all);
 
+
 #Deal with the CGI parameters here
 my $cgi = CGI->new;
+
+my $lim = $cgi->param('lim');
+unless(defined($lim)){
+        $lim =20;
+}
 
 my $genome = $cgi->param('genome');
 unless(defined($genome)){
@@ -102,8 +108,8 @@ if(defined($like)){
 }elsif(defined($order)){
 	if(defined($sort)){
 	my $dbh = dbConnect('trap');
-	my $sth = $dbh->prepare("select experiment_id from snapshot_evolution where genome = 'hs' and label =? order by proportion $sort limit 20;");
-	$sth->execute($order);
+	my $sth = $dbh->prepare("select experiment_id from snapshot_evolution where genome = 'hs' and label =? order by proportion $sort limit ?;");
+	$sth->execute($order,$lim);
 	while( my ($exp_id)=  $sth->fetchrow_array()){ 
 		push (@exps,$exp_id);
 	}
@@ -209,7 +215,9 @@ EOF
 	    
 		#Draw the labels
 		$diagram .= <<EOF
-		<text x="10" y="$down" text-anchor="right" style="font-size:10px">$name</text>
+		<a xlink:href="http://luca.cs.bris.ac.uk/~rackham/cgi-bin/cell_timeline.cgi?exp=$exp">
+		<text x="10" y="$down" text-anchor="right" style="font-size:25px">$name</text>
+		</a>
 EOF
 		;
 	
@@ -233,7 +241,7 @@ EOF
 		my $rotate = $dy - ($font/2);
 		$diagram .= <<EOF
 		<a xlink:href="http://luca.cs.bris.ac.uk/~rackham/cgi-bin/cell_timeline.cgi?order=$label">
-		<text x="$dx" y="$dy" text-anchor="right" style="font-size:10px" transform="rotate(90 $dx,$rotate)">$label</text>
+		<text x="$dx" y="$dy" text-anchor="right" style="font-size:20px" transform="rotate(90 $dx,$rotate)">$label</text>
 		</a>
 EOF
 		;
@@ -244,13 +252,16 @@ EOF
 		
 		my $color;
 		my $size;
+		my $barw =20;
+		my $bar_y = $timeline_y;
 		if($times->{$exp}{$time}{'size'} > 0){
 			if(($norms->{$time}{'max'} == 0)||($times{$exp}{$time}{'size'} == 0)){
 				$size = 0;
 			}else{
-			$size = abs(($times{$exp}{$time}{'size'}/$norms->{$time}{'max'})*($inc/2));
+			$size = (abs(($times{$exp}{$time}{'size'}/$norms->{$time}{'max'})*($inc/2)));
 			}
-			$color = 'green';
+			$color = 'cyan';
+			$bar_y = $bar_y - $size;
 		}else{
 			$color = 'red';
 			if(($norms->{$time}{'min'} == 0)||($times{$exp}{$time}{'size'} == 0)){
@@ -260,8 +271,13 @@ EOF
 			}
 		}
 		#Draw the circles
+		my $l = $times{$exp}{$time}{'label'};
+		
+		my $barx = $dx-($barw/2);
 		$diagram .= <<EOF
-		<circle cx="$dx" cy="$timeline_y" r="$size" fill-opacity="$size" stroke="black" stroke-width="1" fill="$color" opacity="0.6"/>
+		<a xlink:href="http://luca.cs.bris.ac.uk/~rackham/cgi-bin/sample_archs.cgi?label=$l&amp;sample_id=$exp">
+		<rect x="$barx" y="$bar_y" height="$size" width="20" fill="$color" opacity="0.6"/>
+		</a>
 EOF
 	}
 	$done = 1;
@@ -278,7 +294,7 @@ my $norm_times = get_norm_times();
 
 my $points = scalar(keys %{$norm_times});
 my $no_samples = scalar(keys %{$times});
-my $width = 600;
+my $width = 1000;
 my $inc = $width/($points+2);
 my $height = ($no_samples*$inc*2)+(6*$inc);
 print $cgi->header("image/svg+xml");
