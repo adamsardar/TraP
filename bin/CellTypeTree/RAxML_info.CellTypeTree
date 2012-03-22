@@ -1,0 +1,68 @@
+
+
+This is RAxML version 7.3.0 released by Alexandros Stamatakis in June 2011.
+
+With greatly appreciated code contributions by:
+Andre Aberer (HITS)
+Simon Berger (HITS)
+Nick Pattengale (Sandia)
+Wayne Pfeiffer (SDSC)
+Akifumi S. Tanabe (Univ. Tsukuba)
+
+
+Alignment has 4231 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+GAMMA model of rate heteorgeneity, ML estimate of alpha-parameter
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 4231
+Name: No Name Provided
+DataType: BINARY/MORPHOLOGICAL
+Substitution Matrix: Uncorrected
+
+
+
+
+RAxML was called as follows:
+
+raxmlHPC-PTHREADS-SSE3 -n CellTypeTree -T 20 -m BINGAMMA -s ./ExperimentCombsExpressed.alignment.phy -p 57832 
+
+
+Partition: 0 with name: No Name Provided
+Base frequencies: 0.412 0.588 
+
+Testing which likelihood implementation to use
+Standard Implementation full tree traversal time: 0.196091
+Subtree Equality Vectors for gap columns full tree traversal time: 0.196285
+... using standard implementation
+
+Inference[0]: Time 3742.852185 GAMMA-based likelihood -1417429.454829, best rearrangement setting 25
+alpha[0]: 0.875866 
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -1417429.061136 tree written to file /home/sardar/TraP/bin/CellTypeTree/RAxML_result.CellTypeTree
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -1417429.061136 .... 
+
+Final GAMMA-based Score of best tree -1417429.061136
+
+Program execution info written to /home/sardar/TraP/bin/CellTypeTree/RAxML_info.CellTypeTree
+Best-scoring ML tree written to: /home/sardar/TraP/bin/CellTypeTree/RAxML_bestTree.CellTypeTree
+
+Overall execution time: 3960.380486 secs or 1.100106 hours or 0.045838 days
+
