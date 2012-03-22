@@ -69,7 +69,7 @@ use CGI;
 use CGI::Carp qw(fatalsToBrowser); #Force error messages to be output as HTML
 use Data::Dumper;
 use DBI;
-use lib qw'/home/rackham/projects/TraP/lib';
+use lib 'lib';
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw(:all);
 
@@ -215,7 +215,7 @@ EOF
 	    
 		#Draw the labels
 		$diagram .= <<EOF
-		<a xlink:href="http://luca.cs.bris.ac.uk/~rackham/cgi-bin/cell_timeline.cgi?exp=$exp">
+		<a xlink:href="cell_timeline.cgi?exp=$exp">
 		<text x="10" y="$down" text-anchor="right" style="font-size:25px">$name</text>
 		</a>
 EOF
@@ -240,7 +240,7 @@ EOF
 		my $font = 10;
 		my $rotate = $dy - ($font/2);
 		$diagram .= <<EOF
-		<a xlink:href="http://luca.cs.bris.ac.uk/~rackham/cgi-bin/cell_timeline.cgi?order=$label">
+		<a xlink:href="cell_timeline.cgi?order=$label">
 		<text x="$dx" y="$dy" text-anchor="right" style="font-size:20px" transform="rotate(90 $dx,$rotate)">$label</text>
 		</a>
 EOF
@@ -275,7 +275,7 @@ EOF
 		
 		my $barx = $dx-($barw/2);
 		$diagram .= <<EOF
-		<a xlink:href="http://luca.cs.bris.ac.uk/~rackham/cgi-bin/sample_archs.cgi?label=$l&amp;sample_id=$exp">
+		<a xlink:href="sample_archs.cgi?label=$l&amp;sample_id=$exp">
 		<rect x="$barx" y="$bar_y" height="$size" width="20" fill="$color" opacity="0.6"/>
 		</a>
 EOF
