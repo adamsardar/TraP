@@ -62,7 +62,8 @@ limitations under the License.
 =cut
 
 #By default use the TraP libraries, assuming executing from the bin dir
-use lib qw'../../lib/';
+use lib qw'../../lib';
+use Statistics::Descriptive;
 use TraP::SQL::TissueMRCA qw/:all/;
 use Supfam::Utils qw/:all/;
 
@@ -136,24 +137,26 @@ print "More verbose\n" if $debug;
 
 my $Genomes = [qw(hs mm )];
 
-my ($taxon_id,$name,$rank) = calculate_MRCA_NCBI_placement($Genomes);
+my ($DistanceFromReference,$NCBIPlacement) = calculate_MRCA_NCBI_placement($Genomes);
 
-print $taxon_id."\n";
-print $name."\n";
-print $rank."\n";
+#print $taxon_id."\n";
+#print $name."\n";
+#print $rank."\n";
 
 my $Trait2GenomesHash = {};
 $Trait2GenomesHash->{"Trait"}=$Genomes;
 $Trait2GenomesHash->{"Awesome"} = [qw(hs dg mm dh)];
 
-my $SF2Genomes = sf_genomes([qw(56059 55594 53167 143597 158715 46911 52540)]);
-
-$SF2Genomes->{'test'}=[qw(mm xp)];
+my $SF2Genomes = supra_genomes([qw(30561)]);
 
 
-my $Supra2TreeDataHash = calculateMRCAstats($SF2Genomes,'hs');
+#print Dumper $SF2Genomes;
+#$SF2Genomes->{'test'}=[qw(mm xp)];
 
-EasyDump('Dump.out',$Supra2TreeDataHash);
+
+my ($Supra2TreeDataHash,$Supra2NCBIplacement) = calculateMRCAstats($SF2Genomes,'hs');
+
+EasyDump('Dump.out',$Supra2NCBIplacement);
 
 
 1;

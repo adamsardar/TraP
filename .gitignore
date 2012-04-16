@@ -1,0 +1,17 @@
+./data/
+#
+# Vim
+#
+
+# Ignore "backup" files which vim and emacs commonly create
+*~
+
+# Vim creates swapfiles for open files; ignore these
+.*.swp
+
+#
+# Data
+#
+
+data
+.*.dat
