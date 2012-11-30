@@ -11,9 +11,9 @@ use Data::Dumper;                     #Allow easy print dumps of datastructures 
 #use XML::Simple qw(:strict);          #Load a config file from the local directory
 use DBI;
 use Utils::SQL::Connect qw/:all/;
+use Supfam::Utils qw/:all/;
 
 my ( $dbh, $sth );
-my %samples;
 $dbh = dbConnect('trap','supfam2');
 
 
@@ -50,3 +50,25 @@ foreach my $epoch (keys %epochs){
 	}
 }
 #print Dumper \%proportion_of_architectures_per_epoch_per_sample;
+
+my $SampleZscoreHash = {};
+#A hash of structure $hash->{epoch_MRCA_taxon_id}{sample_id}{z_score}
+
+$sth =   $dbh->prepare( "select taxon_id,experiment.experiment_id,count(distinct(supra_id)) from experiment,snapshot_order_supra where experiment.experiment_id = snapshot_order_supra.experiment_id and experiment.include = 'y' group by taxon_id,experiment.experiment_id;"); 
+
+foreach my $MRCA (keys(%proportion_of_architectures_per_epoch_per_sample)){
+	
+	my $TempHash = calc_ZScore($proportion_of_architectures_per_epoch_per_sample{$MRCA});
+	$SampleZscoreHash->{$MRCA}=$TempHash;
+	
+
+	mkdir("../data");
+	open FH, ">../data/TaxonID.".$MRCA.".zscores.dat" or die $!.$?;
+	print FH join("\n",values(%$TempHash));
+	close FH;
+	
+	` Hist.py -f ../data/TaxonID.$MRCA.zscores.dat -o ../data/TaxonID.$MRCA.zscores.png -u 0` 
+
+}
+
+EasyDump('Zscores.dat',$SampleZscoreHash);
