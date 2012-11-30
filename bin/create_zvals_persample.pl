@@ -49,4 +49,4 @@ foreach my $epoch (keys %epochs){
 		}
 	}
 }
-print Dumper \%proportion_of_architectures_per_epoch_per_sample;
+#print Dumper \%proportion_of_architectures_per_epoch_per_sample;
