@@ -8,6 +8,8 @@ our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = (
 'all' => [ qw(
+	calc_ZScore
+	normalise_distribution
 	EasyDump
 	EasyUnDump
 	IntUnDiff
@@ -28,7 +30,9 @@ our $VERSION   = 1.00;
 
 use strict;
 use warnings;
-use List::Util qw(reduce);
+use List::Util qw(sum reduce);
+use List::MoreUtils qw(:all);
+use Statistics::Basic qw(:all);
 
 =head1 NAME
 
@@ -370,21 +374,29 @@ The input is a hash ref of $HAsh->{DataLAbel} = value. Mean and StdDev will be e
 
 =cut
 
-sub calculate_ZScore($){
+sub calc_ZScore($){
      
-     my ($ValuesHash) = @_;
+    my ($ValuesHash) = @_;
 
 	my $NumberValues = scalar(keys(%$ValuesHash));
 	
-	my $TotalSum = reduce{$a + $b}values(%$ValuesHash);
-	my $SampleMean = $TotalSum/$NumberValues;
-    my $TotalSumOfSquares = reduce{$a**2 + $b**2}values(%$ValuesHash);
-    my $SampleStDev = sqrt(abs($TotalSumOfSquares/$NumberValues - $SampleMean**2));
+#	my $TotalSum = reduce{$a + $b}values(%$ValuesHash);
+#	my $SampleMean = $TotalSum/$NumberValues;
+#    my $TotalSumOfSquares = reduce{$a**2 + $b**2}values(%$ValuesHash);
+#    my $SampleStDev = sqrt(abs($TotalSumOfSquares/$NumberValues - $SampleMean**2));
+	
+	my @SampleData = (values(%$ValuesHash));
+	
+	my $TotalSum = sum(@SampleData);
+	my $SampleMean = mean(@SampleData);
+    my $SampleStDev = stddev(@SampleData);
     
     my $ZscoresHash = {};
     
+    return(0) unless($SampleStDev);
+    
     foreach my $Label (keys(%$ValuesHash)){
-    	
+        	
     	my $datum = $ValuesHash->{$Label};
     	my $zscore = ($datum-$SampleMean)/$SampleStDev;
     	
@@ -398,6 +410,8 @@ sub calculate_ZScore($){
 
 
 =pod
+
+
 
 =back
 
