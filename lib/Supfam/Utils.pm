@@ -28,6 +28,7 @@ our $VERSION   = 1.00;
 
 use strict;
 use warnings;
+use List::Util qw(reduce);
 
 =head1 NAME
 
@@ -50,7 +51,7 @@ B<Matt Oates> - I<Matt.Oates@bristol.ac.uk>
 
 =head1 NOTICE
 
-B<Matt Oates> (2011) Longest common prefix string functions.
+B<Matt Oates> (2011)
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -335,6 +336,66 @@ sub lcp(@) {
 	
 	return $prefix;
 }
+
+=pod
+=item * normalise_distribution
+
+given a distribution in the form of a hash that is unnormalised, this function will normalise it so that the area sums to one. Note that this works on the hash passed in, so, nothing is returned.
+This is done so as to remain efficient with memory
+
+
+=cut
+
+sub normalise_distribution($){
+     
+     my ($distribution) = @_;
+
+     my $dist_area = reduce{$a + $b}values(%$distribution);
+     
+     return(1) if($dist_area == 1);
+     #If the area is already 1, we have nothing to worry about!
+     
+     foreach my $key (keys(%$distribution)){
+     	
+     	$distribution->{$key} = ($distribution->{$key}/$dist_area)
+     }
+}
+
+=pod
+=item * calculate_ZScore
+
+Calculates the number of stadrad deviations each data point is from the mean (aka the z-score). This does not assume normaility of input distribution.
+
+The input is a hash ref of $HAsh->{DataLAbel} = value. Mean and StdDev will be estimated from the vlaues of this hash.
+
+=cut
+
+sub calculate_ZScore($){
+     
+     my ($ValuesHash) = @_;
+
+	my $NumberValues = scalar(keys(%$ValuesHash));
+	
+	my $TotalSum = reduce{$a + $b}values(%$ValuesHash);
+	my $SampleMean = $TotalSum/$NumberValues;
+    my $TotalSumOfSquares = reduce{$a**2 + $b**2}values(%$ValuesHash);
+    my $SampleStDev = sqrt(abs($TotalSumOfSquares/$NumberValues - $SampleMean**2));
+    
+    my $ZscoresHash = {};
+    
+    foreach my $Label (keys(%$ValuesHash)){
+    	
+    	my $datum = $ValuesHash->{$Label};
+    	my $zscore = ($datum-$SampleMean)/$SampleStDev;
+    	
+    	$ZscoresHash->{$Label} = $zscore;
+    }
+    
+     return($ZscoresHash);
+}
+
+
+
 
 =pod
 
