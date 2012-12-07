@@ -123,7 +123,7 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 
 
 my ( $dbh, $sth );
-$dbh = dbConnect('trap','supfam2');
+$dbh = dbConnect();
 
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURE FROM ANY EPOCH FOR EACH SAMPLE#####################################
