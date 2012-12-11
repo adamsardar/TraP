@@ -10,7 +10,7 @@ ExperimentReplicaStudy.pl
 =head1 SYNOPSIS
 
 ExperimentReplicaStudy.pl -o --outputfile OUTFILE -t --threshold THRESHOLD_VALUE -c --cutoff EXPRESSION_CUTOFF_VALUE -r --replicates FLAG_FOR_STIPULATING_REPLICATES
-
+-conv --convert Flag for creating a SQL compatible dump of Domain architectures from gene ids
  Basic Options:
   -h --help Get full man page output
   -v --verbose Verbose output with details of mutations
