@@ -128,7 +128,10 @@ $dbh = dbConnect();
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURE FROM ANY EPOCH FOR EACH SAMPLE#####################################
 my %distinct_archictectures_per_sample;
-$sth =   $dbh->prepare( "select experiment.experiment_id,count(distinct(supra_id)) from experiment,snapshot_order_supra where experiment.experiment_id = snapshot_order_supra.experiment_id and experiment.include = 'y' group by experiment.experiment_id;"); 
+$sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
+						FROM snapshot_order_comb,comb_MRCA 
+						WHERE comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+						GROUP BY comb_MRCA.taxon_id;"); 
         $sth->execute;
 while (my @temp = $sth->fetchrow_array ) {
 	$distinct_archictectures_per_sample{$temp[0]} = $temp[1];
@@ -138,7 +141,10 @@ while (my @temp = $sth->fetchrow_array ) {
 my %distinct_architectures_per_epoch_per_sample;
 my %epochs;
 my %samples;
-$sth =   $dbh->prepare( "select taxon_id,experiment.experiment_id,count(distinct(supra_id)) from experiment,snapshot_order_supra where experiment.experiment_id = snapshot_order_supra.experiment_id and experiment.include = 'y' group by taxon_id,experiment.experiment_id;"); 
+$sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,snapshot_order_comb.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
+						FROM snapshot_order_comb,comb_MRCA 
+						WHERE comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+						GROUP BY comb_MRCA.taxon_id,snapshot_order_comb.sample_name;"); 
         $sth->execute;
 while (my @temp = $sth->fetchrow_array ) {
 	$distinct_architectures_per_epoch_per_sample{$temp[0]}{$temp[1]} = $temp[2];
