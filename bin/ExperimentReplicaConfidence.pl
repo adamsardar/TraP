@@ -110,6 +110,7 @@ my $outfile;
 my $threshold = 0.75; #A default theshold value of 3/4 majority consesnsu to decide if soemthing is expressed or not.
 my $cutoff = 2 ;
 my $replicates = 1; #Should a sample have replicates in order to be counted? Default is 'TRUE'
+my $convert = 0;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -119,6 +120,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "threshold|t:f" => \$threshold,
            "cutoff|c:f" => \$cutoff,
            "replicates|r!" => \$replicates,
+           "comnvert2DA|conv!" => \$convert,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -133,6 +135,11 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 assert_positive($threshold, "Threshold proportion for majority rules consensus must be between 0 and 1\n");
 assert($threshold <= 1,"Threshold proportion for majority rules consensus must be between 0 and 1\n");
 assert_positive($cutoff, "Cut off, which is the log(expression) value for which we should call something as 'expressed'  or not must be positive\n");
+
+print STDERR "Using an expression cutoff of log(expression) >= $cutoff\n";
+print STDERR "Using a majority rules conesensus of $threshold as to whether a gene is expressed by a cell-type or not \n";
+print STDERR "Outputting a dump of sample name and gene_id to comb_id ready to be read into a SQL database \n" if($convert);
+
 
 my $dbh = dbConnect();
 
@@ -217,6 +224,78 @@ if ($verbose){
 	EasyDump('./file.dat',$BinaryExpressionHashREF);
 }
 
+#If requested, convert all of the per experiemnt gene assignments, following QC, into domain architecture (comb) assignements. These are outputted so as to update an SQL table
+
+if($convert){
+	
+	print STDERR "Printing a dump of experiment_id & gene_id to comb_id and frequency of expression to filename SQLsnashopordercomb.dat\n";
+	
+	$sth=$dbh->prepare("SELECT comb_id FROM entrez_longest_comb_all_species WHERE gene_id = ?;");
+	
+	my $Gene_id2CombIDHashRef = {};
+	#A lookup hash, so as to minimise the calls to the database
+
+	open SNAPSHOTCOMB, ">./SQLsnashopordercomb.dat" or die $!." ".$?;
+	my $UnmappedGeneIDs = {};
+	
+	foreach my $UniqSampleName (keys(%$BinaryExpressionHashREF)){
+	
+		my @GeneIDs = keys(%{$BinaryExpressionHashREF->{$UniqSampleName}});
+		
+		my @Sample_combs;
+		
+		my $CombsExpressedHashRef = {};
+		
+		foreach my $GeneID (@GeneIDs){
+			
+			unless(exists($Gene_id2CombIDHashRef->{$GeneID}) || exists($UnmappedGeneIDs->{$GeneID})){
+			
+				$sth->execute($GeneID);
+				
+				my $nrecords = $sth->rows;
+				
+				if($nrecords == 0){
+					
+					$UnmappedGeneIDs->{$GeneID}++;
+					next;		
+				}
+				
+				die "GeneID to Comb_id should be a unique mapping! This is not true for $GeneID \n" unless ($sth->rows == 1);
+				my ($combID) = $sth->fetchrow_array();
+				$Gene_id2CombIDHashRef->{$GeneID} = $combID;
+			}
+			#Pull datat from the database, unless we've already seen it before
+			
+			unless(exists($UnmappedGeneIDs->{$GeneID})){
+				
+				my $comb_id = $Gene_id2CombIDHashRef->{$GeneID};
+				$CombsExpressedHashRef->{$comb_id}++;
+			}
+			#Check if the gene has already been shown to have no mapping. If it does have a mapping, stick it into the mapped hash
+			
+		}
+		
+		foreach my $ProcessedGeneID (keys(%$Gene_id2CombIDHashRef)){
+			
+			my $comb = $Gene_id2CombIDHashRef->{$ProcessedGeneID};
+			next unless(exists($CombsExpressedHashRef->{$comb}));
+			#Only include combs that are actually expressed.
+			
+			my $CopyNumberExpressed = $CombsExpressedHashRef->{$comb};
+			
+			print SNAPSHOTCOMB $ProcessedGeneID."\t".$UniqSampleName."\t".$comb."\t".$CopyNumberExpressed."\n";
+		}	
+	}
+	
+	close SNAPSHOTCOMB;
+	
+	open UNMAPPED, ">UnmappedGene2CombIDs.dat" or die $!." ".$?;
+	print UNMAPPED join("\n", keys(%$UnmappedGeneIDs));
+	close UNMAPPED;
+	
+}
+
+$sth->finish;
 dbDisconnect($dbh);
 
 __END__

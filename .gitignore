@@ -16,3 +16,6 @@
 data
 .*.dat
 
+
+bin/SQLsnashopordercomb.dat
+bin/*.dat

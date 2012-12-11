@@ -210,17 +210,5 @@ if($SQLdump){
 	close SQL;
 }
 
-=head1 TODO
-
-=over 4
-
-=item Edit this file removing all the default skeleton.pl comments!
-
-=back
-
-=cut
-
-1;
-
 __END__
 

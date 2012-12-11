@@ -487,17 +487,17 @@ sub calculate_MRCA_NCBI_placement{
 		
 		unless($taxonID ~~ undef){
 			
-			$sth = $dbh->prepare("SELECT ncbi_taxonomy_lite.name FROM ncbi_taxonomy_lite WHERE  ncbi_taxonomy_lite.taxon_id = ?;");
+			$sth = $dbh->prepare("SELECT ncbi_taxonomy_lite.name,ncbi_taxonomy_lite.taxon_id FROM ncbi_taxonomy_lite  WHERE  ncbi_taxonomy_lite.taxon_id = ?;");
 			$sth->execute($taxonID);
 		}else{
 			
-			$sth = $dbh->prepare("SELECT ncbi_taxonomy_lite.name FROM ncbi_taxonomy_lite JOIN tree ON tree.taxon_id = ncbi_taxonomy_lite.taxon_id 
+			$sth = $dbh->prepare("SELECT ncbi_taxonomy_lite.name,tree.taxon_id FROM ncbi_taxonomy_lite JOIN tree ON tree.taxon_id = ncbi_taxonomy_lite.taxon_id 
 			WHERE tree.left_id IN (SELECT MAX(left_id) FROM tree WHERE left_id < ? AND right_id > ? AND taxon_id IS NOT NULL);");
 			
 			$sth->execute($MRCAleftid,$MRCArightid);
 		}
 		
-		($NCBIPlacement) = $sth->fetchrow_array;
+		($NCBIPlacement,$taxonID) = $sth->fetchrow_array;
 			
 		$sth->finish;
 		
@@ -505,7 +505,7 @@ sub calculate_MRCA_NCBI_placement{
 	
 	dbDisconnect($dbh);
 	
-	return ($DistanceFromReference,$NCBIPlacement);
+	return ($DistanceFromReference,$NCBIPlacement,$taxonID);
 }
 
 =item * calculateMRCAstats
@@ -535,9 +535,9 @@ sub calculateMRCAstats {
 		
 		print STDERR "Reference Distance genome $ReferenceDistanceGenomes not in list of genomes passed in for Trait $Trait\n" unless(grep{$_ =~ /$ReferenceDistanceGenomes/}@TraitGenomes);
 		
-		my ($DistanceFromReference,$NCBIPlacement) = calculate_MRCA_NCBI_placement(\@TraitGenomes,$ReferenceDistanceGenomes);
+		my ($DistanceFromReference,$NCBIPlacement,$Taxon_Id) = calculate_MRCA_NCBI_placement(\@TraitGenomes,$ReferenceDistanceGenomes);
 		$Supra2TreeDistData->{$Trait}=$DistanceFromReference;
-		$Supra2TreePlacemenetData->{$Trait}=$NCBIPlacement;
+		$Supra2TreePlacemenetData->{$Trait}=[$NCBIPlacement,$Taxon_Id];
 		
 	}
 	
