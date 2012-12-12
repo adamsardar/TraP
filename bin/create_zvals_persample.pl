@@ -147,6 +147,9 @@ $sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,snapshot_order_comb.sample_na
 						GROUP BY comb_MRCA.taxon_id,snapshot_order_comb.sample_name;"); 
         $sth->execute;
 while (my @temp = $sth->fetchrow_array ) {
+	
+	next unless($temp[2]);
+	
 	$distinct_architectures_per_epoch_per_sample{$temp[0]}{$temp[1]} = $temp[2];
 	$epochs{$temp[0]} = 1;
 	$samples{$temp[1]} = 1;

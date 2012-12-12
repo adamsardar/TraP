@@ -9,8 +9,9 @@ ExperimentReplicaStudy.pl
 
 =head1 SYNOPSIS
 
-ExperimentReplicaStudy.pl -o --outputfile OUTFILE -t --threshold THRESHOLD_VALUE -c --cutoff EXPRESSION_CUTOFF_VALUE -r --replicates FLAG_FOR_STIPULATING_REPLICATES
+ExperimentReplicaStudy.pl [-h -v -d] -o --outputfile OUTFILE -t --threshold THRESHOLD_VALUE -c --cutoff EXPRESSION_CUTOFF_VALUE -r --replicates FLAG_FOR_STIPULATING_REPLICATES
 -conv --convert Flag for creating a SQL compatible dump of Domain architectures from gene ids
+
  Basic Options:
   -h --help Get full man page output
   -v --verbose Verbose output with details of mutations
@@ -20,7 +21,7 @@ ExperimentReplicaStudy.pl -o --outputfile OUTFILE -t --threshold THRESHOLD_VALUE
 
 This program is part of the TraP Project. We would like to produce a subset of experiments, clustered by experiment name,
 with each experiment possesing a single binary value - 1 (expressed) and 0 (not expressed). If, and there more often than not is,
-more than one replicate, use a majority conesus at threshold $threshold (DEFAULT 0.75).
+more than one replicate, use a majority conesus at threshold (DEFAULT 0.75).
 
 =head1 OPTIONS
 
@@ -134,7 +135,7 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 
 assert_positive($threshold, "Threshold proportion for majority rules consensus must be between 0 and 1\n");
 assert($threshold <= 1,"Threshold proportion for majority rules consensus must be between 0 and 1\n");
-assert_positive($cutoff, "Cut off, which is the log(expression) value for which we should call something as 'expressed'  or not must be positive\n");
+assert_positive($cutoff, "Cut off, which is the log(expression) value for which we should call something as 'expressed'  or not, must be positive (< 0 would mean that a cutoff of expression level 1 is acceptable)\n");
 
 print STDERR "Using an expression cutoff of log(expression) >= $cutoff\n";
 print STDERR "Using a majority rules conesensus of $threshold as to whether a gene is expressed by a cell-type or not \n";
@@ -228,14 +229,14 @@ if ($verbose){
 
 if($convert){
 	
-	print STDERR "Printing a dump of experiment_id & gene_id to comb_id and frequency of expression to filename SQLsnashopordercomb.dat\n";
+	print STDERR "Printing a dump of experiment_id & gene_id to comb_id and frequency of expression to filename SQLsnashopordercomb".$cutoff.".".$threshold.".dat\n";
 	
 	$sth=$dbh->prepare("SELECT comb_id FROM entrez_longest_comb_all_species WHERE gene_id = ?;");
 	
 	my $Gene_id2CombIDHashRef = {};
 	#A lookup hash, so as to minimise the calls to the database
 
-	open SNAPSHOTCOMB, ">./SQLsnashopordercomb.dat" or die $!." ".$?;
+	open SNAPSHOTCOMB, ">./SQLsnashopordercomb".$cutoff.".".$threshold.".dat" or die $!." ".$?;
 	my $UnmappedGeneIDs = {};
 	
 	foreach my $UniqSampleName (keys(%$BinaryExpressionHashREF)){
