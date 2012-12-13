@@ -99,7 +99,7 @@ use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw/:all/;
-
+use Carp;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
@@ -125,46 +125,63 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 my ( $dbh, $sth );
 $dbh = dbConnect();
 
-
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURE FROM ANY EPOCH FOR EACH SAMPLE#####################################
+
+print STDERR "Getting the number of distinct domain architectures from each epoch across all samples ...\n";
 my %distinct_archictectures_per_sample;
 $sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
-						FROM snapshot_order_comb,comb_MRCA 
-						WHERE comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+						FROM snapshot_order_comb JOIN comb_MRCA 
+						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+						WHERE comb_MRCA.taxon_id != 0
 						GROUP BY comb_MRCA.taxon_id;"); 
         $sth->execute;
-while (my @temp = $sth->fetchrow_array ) {
-	$distinct_archictectures_per_sample{$temp[0]} = $temp[1];
+        
+while (my ($taxid,$countCombID) = $sth->fetchrow_array ) {
+	die "Here\n" if($taxid == 0);
+	die "Here2\n" if($countCombID ~~ 0);
+	$distinct_archictectures_per_sample{$taxid} = $countCombID;
 }
+#NOTE: Some of the sequences do not map to superfamily comb_ids. Hence they have a taxon id of 0 and a taxon_id of 0 in the database
+
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURES AT EACH EPOCH FOR EACH SAMPLE######################################
+print STDERR "Getting the number of distinct domain architectures from each epoch for each samples ...\n";
 my %distinct_architectures_per_epoch_per_sample;
 my %epochs;
 my %samples;
+
 $sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,snapshot_order_comb.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
-						FROM snapshot_order_comb,comb_MRCA 
-						WHERE comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+						FROM snapshot_order_comb JOIN comb_MRCA 
+						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+						WHERE comb_MRCA.taxon_id != 0
 						GROUP BY comb_MRCA.taxon_id,snapshot_order_comb.sample_name;"); 
-        $sth->execute;
-while (my @temp = $sth->fetchrow_array ) {
+$sth->execute;
+
+while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 	
-	next unless($temp[2]);
+	next unless($countCombID);
 	
-	$distinct_architectures_per_epoch_per_sample{$temp[0]}{$temp[1]} = $temp[2];
-	$epochs{$temp[0]} = 1;
-	$samples{$temp[1]} = 1;
+	$distinct_architectures_per_epoch_per_sample{$taxid}{$samplename} = $countCombID;
+	$epochs{$taxid} = 1;
+	$samples{$samplename} = 1;
 }
+
+EasyDump("./ArchsPerEpochPerSampleHash.dat",\%distinct_architectures_per_epoch_per_sample) if($verbose);
+EasyDump("./ArchsPerEpochHash.dat",\%distinct_archictectures_per_sample) if($verbose);
+
 
 #################################DIVIDE THE NUMBER AT EACH EPOCH BY THE TOTAL NUMBER TO GET THE PROPORTION##########################################
 my %proportion_of_architectures_per_epoch_per_sample;
 
 foreach my $epoch (keys %epochs){
 	foreach my $sample (keys %samples){
-		if(exists($distinct_architectures_per_epoch_per_sample{$epoch}{$sample})){
-			$proportion_of_architectures_per_epoch_per_sample{$epoch}{$sample} = $distinct_architectures_per_epoch_per_sample{$epoch}{$sample}/$distinct_archictectures_per_sample{$sample};
-		}else{
-			$proportion_of_architectures_per_epoch_per_sample{$epoch}{$sample} = 0;
-		}
+		
+		my $distarchs = $distinct_archictectures_per_sample{$epoch};
+		
+		croak "Died at sampel $sample and epoch $epoch as number distinct archs =$distarchs \n" unless($distinct_archictectures_per_sample{$epoch});
+		croak "Uninitialized here\n" unless(exists($distinct_archictectures_per_sample{$epoch}));
+		
+		$proportion_of_architectures_per_epoch_per_sample{$epoch}{$sample} = $distinct_architectures_per_epoch_per_sample{$epoch}{$sample}/$distinct_archictectures_per_sample{$epoch};
 	}
 }
 #print Dumper \%proportion_of_architectures_per_epoch_per_sample;
@@ -172,13 +189,14 @@ foreach my $epoch (keys %epochs){
 my $SampleZscoreHash = {};
 #A hash of structure $hash->{epoch_MRCA_taxon_id}{sample_id}{z_score}
 
+print STDOUT "Outputting Z score data and hists" if($verbose);
+
 foreach my $MRCA (keys(%proportion_of_architectures_per_epoch_per_sample)){
 	
 	my $TempHash = calc_ZScore($proportion_of_architectures_per_epoch_per_sample{$MRCA});
 	$SampleZscoreHash->{$MRCA}=$TempHash;
 	
 	if($verbose){
-		print STDOUT "Outputting Z score data and hists";
 		
 		mkdir("../data");
 		open FH, ">../data/TaxonID.".$MRCA.".zscores.dat" or die $!.$?;
