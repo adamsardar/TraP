@@ -165,10 +165,12 @@ while (my ($exp_id, $sample_name, $gene_id, $raw_expression) = $sth->fetchrow_ar
 	#Only include a value if it has poisitive expression values. Otherwise include undef
 }
 
-print join("\t",keys(%$ExperimentReplicasHashREF)) if($debug);
+print join("\n",keys(%$ExperimentReplicasHashREF)) if($debug);
 print "\n";
 
 my $BinaryExpressionHashREF = {};
+
+my $ReplcateDetailsHashREF = {};
 
 my $nsamples_accepted = 0;
 my $total_samples = scalar(keys(%$ExperimentReplicasHashREF));
@@ -177,9 +179,11 @@ foreach my $UniqSampleName (keys(%$ExperimentReplicasHashREF)){
 	
 	my @ExperimentIDs = keys(%{$ExperimentReplicasHashREF->{$UniqSampleName}}); 
 	
+	$ReplcateDetailsHashREF->{$UniqSampleName} = scalar(@ExperimentIDs);
+	
 	if($replicates){
 		
-		next unless(scalar(@ExperimentIDs) > 1);
+		next unless($ReplcateDetailsHashREF->{$UniqSampleName} > 1);
 	}
 	#The flag $replicates specifies whether we wish to palce a restriction on experiments requiring replcates
 	
@@ -280,11 +284,14 @@ if($convert){
 			
 			my $comb = $Gene_id2CombIDHashRef->{$ProcessedGeneID};
 			next unless(exists($CombsExpressedHashRef->{$comb}));
-			#Only include combs that are actually expressed.
+			#Only include combs that are actually expressed. i.e. how many distinct genes map to this comb in our sample
 			
 			my $CopyNumberExpressed = $CombsExpressedHashRef->{$comb};
+			#Number of times that this COMB is expressed
+			my $Replicates = $ReplcateDetailsHashREF->{$UniqSampleName};
+			#Simply the number of replicates
 			
-			print SNAPSHOTCOMB $ProcessedGeneID."\t".$UniqSampleName."\t".$comb."\t".$CopyNumberExpressed."\n";
+			print SNAPSHOTCOMB $ProcessedGeneID."\t".$UniqSampleName."\t".$comb."\t".$CopyNumberExpressed."\t".$Replicates."\n";
 		}	
 	}
 	
