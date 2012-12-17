@@ -178,12 +178,12 @@ sub IntUnDiff($$){
 	 	 if ($UnionHash->{$element} == 2) {  #i.e if it's in both sets      
 	 	 	 push (@$Intersection, $element);     
 	 	 } else {     
-	 	 	no warnings 'uninitialized';
-	 	 	#This is to stop Perl moaning about elements not beining initialised in the lookup hash below
-	 	 
-	 	 	if ($ListALookup->{$element}){
+
+	 	 	if (exists($ListALookup->{$element})){
+
 	 	 		push(@$ListAExclusive, $element);   
 	 	 	}else {
+
 	 	 		push(@$ListBExclusive, $element); 
 	 	 	}
 	 	 } 

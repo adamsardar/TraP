@@ -107,12 +107,14 @@ my $verbose; #Flag for verbose output from command line opts
 my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
 my $SQLdump;
+my $translation_file;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
            "debug|d!"  => \$debug,
            "SQLdump|s!"  => \$SQLdump,
            "help|h!" => \$help,
+           "translate|tr:s" => \$translation_file,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -121,9 +123,25 @@ my @files= @ARGV;
 #Print out some help if it was asked for or if no arguments were given.
 pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 
-
 my ( $dbh, $sth );
 $dbh = dbConnect();
+
+
+my $Taxon_mapping ={};
+
+if($translation_file){
+	
+	open FH, "$translation_file" or die $!."\t".$?;
+ 	
+ 	while(my $line = <FH>){
+ 		
+ 		my ($from,$to)=split("\t",$line);
+ 		carp "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
+ 		$Taxon_mapping->{$from}=$to;
+ 	}
+}
+#This is a bit of a hack - it allows us to map from one many taxpn ids to many. So we can collapse homminnae, catharini etc together to primates
+
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURE FROM ANY EPOCH FOR EACH SAMPLE#####################################
 
@@ -134,12 +152,18 @@ $sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,COUNT(DISTINCT(snapshot_order
 						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id 
 						WHERE comb_MRCA.taxon_id != 0
 						GROUP BY comb_MRCA.taxon_id;"); 
-        $sth->execute;
+$sth->execute;
         
 while (my ($taxid,$countCombID) = $sth->fetchrow_array ) {
-	die "Here\n" if($taxid == 0);
-	die "Here2\n" if($countCombID ~~ 0);
-	$distinct_archictectures_per_sample{$taxid} = $countCombID;
+	
+	unless(exists($Taxon_mapping->{$taxid})){
+
+		$Taxon_mapping->{$taxid}=$taxid;
+		#So unless we have a mapping, set our taxid to map to itself	
+	}
+	
+	$taxid = $Taxon_mapping->{$taxid};
+	$distinct_archictectures_per_sample{$taxid} += $countCombID;
 }
 #NOTE: Some of the sequences do not map to superfamily comb_ids. Hence they have a taxon id of 0 and a taxon_id of 0 in the database
 
@@ -159,9 +183,9 @@ $sth->execute;
 
 while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 	
-	next unless($countCombID);
+	$taxid = $Taxon_mapping->{$taxid};
+	$distinct_architectures_per_epoch_per_sample{$taxid}{$samplename} += $countCombID;
 	
-	$distinct_architectures_per_epoch_per_sample{$taxid}{$samplename} = $countCombID;
 	$epochs{$taxid} = 1;
 	$samples{$samplename} = 1;
 }
@@ -169,19 +193,22 @@ while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 EasyDump("./ArchsPerEpochPerSampleHash.dat",\%distinct_architectures_per_epoch_per_sample) if($verbose);
 EasyDump("./ArchsPerEpochHash.dat",\%distinct_archictectures_per_sample) if($verbose);
 
-
 #################################DIVIDE THE NUMBER AT EACH EPOCH BY THE TOTAL NUMBER TO GET THE PROPORTION##########################################
 my %proportion_of_architectures_per_epoch_per_sample;
 
 foreach my $epoch (keys %epochs){
 	foreach my $sample (keys %samples){
 		
-		my $distarchs = $distinct_archictectures_per_sample{$epoch};
-		
-		croak "Died at sampel $sample and epoch $epoch as number distinct archs =$distarchs \n" unless($distinct_archictectures_per_sample{$epoch});
 		croak "Uninitialized here\n" unless(exists($distinct_archictectures_per_sample{$epoch}));
+		my $distarchs = $distinct_archictectures_per_sample{$epoch};
+		croak "Died at sampel $sample and epoch $epoch as number distinct archs =$distarchs \n" unless($distarchs > 0);
 		
-		$proportion_of_architectures_per_epoch_per_sample{$epoch}{$sample} = $distinct_architectures_per_epoch_per_sample{$epoch}{$sample}/$distinct_archictectures_per_sample{$epoch};
+		next unless(exists($distinct_architectures_per_epoch_per_sample{$epoch}{$sample}));
+
+		my $persampledistarchs = $distinct_architectures_per_epoch_per_sample{$epoch}{$sample};
+		croak "Died at sample $sample and epoch $epoch as number distinct archs = $persampledistarchs \n" unless($persampledistarchs > 0);
+		
+		$proportion_of_architectures_per_epoch_per_sample{$epoch}{$sample} = $distinct_architectures_per_epoch_per_sample{$epoch}{$sample}/$distarchs;
 	}
 }
 #print Dumper \%proportion_of_architectures_per_epoch_per_sample;
