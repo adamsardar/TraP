@@ -119,7 +119,7 @@ if($translation_file){
  	while(my $line = <FH>){
  		
  		chomp($line);
- 		my ($from,$to,$taxon_name)=split(/\t+/,$line);
+ 		my ($from,$to,$taxon_name)=split(/\s+/,$line);
  		carp "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
  		$Taxon_mapping->{$from}=$to;
  	}
@@ -164,6 +164,15 @@ mkdir("../data");
 my @SampleNames = keys(%$distinct_archictectures_per_sample); #A list of all the indivual sample names
 my @epochs = uniq(values(%$Taxon_mapping)); #A list of all the unique taxon ids
 
+$sth->finish;
+
+
+
+$sth =   $dbh->prepare( "SELECT label 
+						FROM taxon_details
+						WHERE taxon_id = ?;");
+#Extract the common name from the database so as to label files 
+
 foreach my $epoch (@epochs){
 
 	my $Epoch_All_vs_All_Comparison = {};
@@ -185,12 +194,17 @@ foreach my $epoch (@epochs){
 				$Epoch_All_vs_All_Comparison->{$sample1}{$sample2}=$NumDAsInCommon;
 		}
 }
-	
+
+
+
+$sth->execute($epoch);
+my ($taxa_name) = $sth->fetchrow_array;
+$sth->finish;
 	
 	#Dump heat maps to files for use in R
-	print STDERR "Print heatmap for $epoch .... \n";
+	print STDERR "Print heatmap for $epoch - $taxa_name .... \n";
 	
-	open HEATMAP, ">../data/Heatmap.".$epoch.".dat" or die $!."\t".$?; 
+	open HEATMAP, ">../data/Heatmap.".$taxa_name.$epoch.".dat" or die $!."\t".$?; 
 	
 	print HEATMAP join("\t",('SAMPLE',@SampleNames));
 	print HEATMAP "\n";

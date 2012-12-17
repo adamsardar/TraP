@@ -1,5 +1,6 @@
 9606	9606	Homo sapiens
 207598	9443	Homininae
+314295  9443  Hominidae
 9604	9443	Hominidae
 9526	9443	Catarrhini
 314293	9443	Simiiformes
@@ -12,6 +13,8 @@
 32524	32524	Amniota
 32523	32523	Tetrapoda
 117571	117571	Euteleostomi
+8287  7711 Sarcopterygii
+7742  7711  Verterbrata
 7711	7711	Chordata
 33511	33511	Deuterostomia
 33316	33316	Coelomata

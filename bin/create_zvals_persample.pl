@@ -136,7 +136,7 @@ if($translation_file){
  	while(my $line = <FH>){
  		
  		chomp($line);
- 		my ($from,$to,$taxon_name)=split(/\t+/,$line);
+ 		my ($from,$to,$taxon_name)=split(/\s+/,$line);
  		carp "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
  		$Taxon_mapping->{$from}=$to;
  	}
@@ -147,7 +147,7 @@ if($translation_file){
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURE FROM ANY EPOCH FOR EACH SAMPLE#####################################
 
 print STDERR "Getting the number of distinct domain architectures from each epoch across all samples ...\n";
-my %distinct_archictectures_per_sample;
+my $distinct_archictectures_per_sample = {};
 $sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
 						FROM snapshot_order_comb JOIN comb_MRCA 
 						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id 
@@ -164,14 +164,14 @@ while (my ($taxid,$countCombID) = $sth->fetchrow_array ) {
 	}
 	
 	$taxid = $Taxon_mapping->{$taxid};
-	$distinct_archictectures_per_sample{$taxid} += $countCombID;
+	$distinct_archictectures_per_sample->{$taxid} += $countCombID;
 }
 #NOTE: Some of the sequences do not map to superfamily comb_ids. Hence they have a taxon id of 0 and a taxon_id of 0 in the database
 
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURES AT EACH EPOCH FOR EACH SAMPLE######################################
 print STDERR "Getting the number of distinct domain architectures from each epoch for each samples ...\n";
-my %distinct_architectures_per_epoch_per_sample;
+my $distinct_architectures_per_epoch_per_sample={};
 my %epochs;
 my %samples;
 
@@ -185,31 +185,37 @@ $sth->execute;
 while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 	
 	$taxid = $Taxon_mapping->{$taxid};
-	$distinct_architectures_per_epoch_per_sample{$taxid}{$samplename} += $countCombID;
+	$distinct_architectures_per_epoch_per_sample->{$taxid}={} unless(exists($distinct_architectures_per_epoch_per_sample->{$taxid}));
+	$distinct_architectures_per_epoch_per_sample->{$taxid}{$samplename} += $countCombID;
 	
 	$epochs{$taxid} = 1;
 	$samples{$samplename} = 1;
 }
 
-EasyDump("./ArchsPerEpochPerSampleHash.dat",\%distinct_architectures_per_epoch_per_sample) if($verbose);
-EasyDump("./ArchsPerEpochHash.dat",\%distinct_archictectures_per_sample) if($verbose);
+EasyDump("./ArchsPerEpochPerSampleHash.dat",$distinct_architectures_per_epoch_per_sample) if($verbose);
+EasyDump("./ArchsPerEpochHash.dat",$distinct_archictectures_per_sample) if($verbose);
 
 #################################DIVIDE THE NUMBER AT EACH EPOCH BY THE TOTAL NUMBER TO GET THE PROPORTION##########################################
-my %proportion_of_architectures_per_epoch_per_sample;
+my $proportion_of_architectures_per_epoch_per_sample = {};
 
 foreach my $epoch (keys %epochs){
+	
+	$proportion_of_architectures_per_epoch_per_sample->{$epoch}={};
+	
 	foreach my $sample (keys %samples){
 		
-		croak "Uninitialized here\n" unless(exists($distinct_archictectures_per_sample{$epoch}));
-		my $distarchs = $distinct_archictectures_per_sample{$epoch};
-		croak "Died at sampel $sample and epoch $epoch as number distinct archs =$distarchs \n" unless($distarchs > 0);
 		
-		next unless(exists($distinct_architectures_per_epoch_per_sample{$epoch}{$sample}));
+		croak "Uninitialized here\n" unless(exists($distinct_archictectures_per_sample->{$epoch}));
+		my $distarchs = $distinct_archictectures_per_sample->{$epoch};
+		croak "Died at sample $sample and epoch $epoch as number distinct archs =$distarchs \n" unless($distarchs > 0);
+		
+		next unless(exists($distinct_architectures_per_epoch_per_sample->{$epoch}{$sample}));
 
-		my $persampledistarchs = $distinct_architectures_per_epoch_per_sample{$epoch}{$sample};
+		my $persampledistarchs = $distinct_architectures_per_epoch_per_sample->{$epoch}{$sample};
 		croak "Died at sample $sample and epoch $epoch as number distinct archs = $persampledistarchs \n" unless($persampledistarchs > 0);
 		
-		$proportion_of_architectures_per_epoch_per_sample{$epoch}{$sample} = $distinct_architectures_per_epoch_per_sample{$epoch}{$sample}/$distarchs;
+		$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = $persampledistarchs/$distarchs;
+		#Divide the number of domain architectures used by the sample at that stage by the total number of distinct architectures at that epoch
 	}
 }
 #print Dumper \%proportion_of_architectures_per_epoch_per_sample;
@@ -217,15 +223,17 @@ foreach my $epoch (keys %epochs){
 my $SampleZscoreHash = {};
 #A hash of structure $hash->{epoch_MRCA_taxon_id}{sample_id}{z_score}
 
-print STDOUT "Outputting Z score data and hists" if($verbose);
+print STDERR "Outputting Z score data and hists" if($verbose);
 
-foreach my $MRCA (keys(%proportion_of_architectures_per_epoch_per_sample)){
+foreach my $MRCA (keys(%$proportion_of_architectures_per_epoch_per_sample)){
 	
-	my $TempHash = calc_ZScore($proportion_of_architectures_per_epoch_per_sample{$MRCA});
+	print STDERR "Processing $MRCA ...\n";
+	 	
+	my $TempHash = calc_ZScore($proportion_of_architectures_per_epoch_per_sample->{$MRCA});
+	#Hash structure is of $Hash{Tax_id}{samples}= proportion
 	$SampleZscoreHash->{$MRCA}=$TempHash;
 	
 	if($verbose){
-		
 		mkdir("../data");
 		open FH, ">../data/TaxonID.".$MRCA.".zscores.dat" or die $!.$?;
 		print FH join("\n",values(%$TempHash));
@@ -240,9 +248,9 @@ EasyDump('../data/Zscores.dat',$SampleZscoreHash) if($verbose);
 if($SQLdump){
 	
 	mkdir("../data");
-	print STDOUT "Creating an SQL tab-sep compatable dump labelled: exp_id\tproportion\ttaxon_id\tepochsize\n";
+	print STDOUT "Creating an SQL tab-sep compatable dump labelled: sample_name\tproportion\ttaxon_id\tepochsize\n";
 	
-	open SQL, ">SQLData.dat" or die $!.$?;
+	open SQL, ">../data/ZvalsSQLData.dat" or die $!."\t".$?;
 	
 	foreach my $tax_id (keys(%$SampleZscoreHash)){
 		
@@ -251,9 +259,9 @@ if($SQLdump){
 			my $proportion = $SampleZscoreHash->{$tax_id}{$expid};
 			my $epoch_size;
 			
-			if(exists($distinct_architectures_per_epoch_per_sample{$tax_id}{$expid})){
+			if(exists($distinct_architectures_per_epoch_per_sample->{$tax_id}{$expid})){
 				
-				$epoch_size = $distinct_architectures_per_epoch_per_sample{$tax_id}{$expid};
+				$epoch_size = $distinct_architectures_per_epoch_per_sample->{$tax_id}{$expid};
 			}else{
 				$epoch_size = 0;
 			}

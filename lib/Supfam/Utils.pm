@@ -379,12 +379,7 @@ sub calc_ZScore($){
     my ($ValuesHash) = @_;
 
 	my $NumberValues = scalar(keys(%$ValuesHash));
-	
-#	my $TotalSum = reduce{$a + $b}values(%$ValuesHash);
-#	my $SampleMean = $TotalSum/$NumberValues;
-#    my $TotalSumOfSquares = reduce{$a**2 + $b**2}values(%$ValuesHash);
-#    my $SampleStDev = sqrt(abs($TotalSumOfSquares/$NumberValues - $SampleMean**2));
-	
+
 	my @SampleData = (values(%$ValuesHash));
 	
 	my $TotalSum = sum(@SampleData);
@@ -393,7 +388,8 @@ sub calc_ZScore($){
     
     my $ZscoresHash = {};
     
-    return(0) unless($SampleStDev);
+    die "Sample Dev $SampleStDev is less that 10**-10 for sample mean $SampleMean nsamples = $NumberValues" if($SampleStDev <= 10 **-10);
+   # return(0) unless($SampleStDev >= 10**-10);
     
     foreach my $Label (keys(%$ValuesHash)){
         	
