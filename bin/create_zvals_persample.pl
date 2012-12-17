@@ -135,7 +135,8 @@ if($translation_file){
  	
  	while(my $line = <FH>){
  		
- 		my ($from,$to)=split("\t",$line);
+ 		chomp($line);
+ 		my ($from,$to,$taxon_name)=split(/\t+/,$line);
  		carp "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
  		$Taxon_mapping->{$from}=$to;
  	}
