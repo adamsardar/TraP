@@ -99,6 +99,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "SQLdump|s!"  => \$SQLdump,
            "help|h!" => \$help,
            "translate|tr:s" => \$translation_file,
+           "disallowed|df:s" => \,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -138,6 +139,7 @@ $sth =   $dbh->prepare( "SELECT DISTINCT(snapshot_order_comb.comb_id),comb_MRCA.
 						;"); 
 $sth->execute;
 
+my $SamplesNamesHash = {};
 
 ##################################COLLECT DATABASE VALUES AND STORE THEM IN A HASH - AN ARRAY OF COMB IDS PER SAMPLENAME PER EPOCH#####################################
 
@@ -150,6 +152,8 @@ while (my ($CombID,$taxid,$samplename) = $sth->fetchrow_array ) {
 	}
 	
 	$taxid = $Taxon_mapping->{$taxid};
+	$SamplesNamesHash->{$samplename}=undef;
+	#We jsut want a list of all the sample names
 	
 	$distinct_archictectures_per_sample->{$samplename}={} unless(exists($distinct_archictectures_per_sample->{$samplename}));
 	$distinct_archictectures_per_sample->{$samplename}{$taxid}=[] unless(exists($distinct_archictectures_per_sample->{$samplename}{$taxid}));
@@ -161,11 +165,10 @@ while (my ($CombID,$taxid,$samplename) = $sth->fetchrow_array ) {
 
 
 mkdir("../data");
-my @SampleNames = keys(%$distinct_archictectures_per_sample); #A list of all the indivual sample names
-my @epochs = uniq(values(%$Taxon_mapping)); #A list of all the unique taxon ids
+my @epochs = uniq(values(%$Taxon_mapping));
+my @SampleNames =keys(%$SamplesNamesHash); #A list of all the unique taxon ids
 
 $sth->finish;
-
 
 
 $sth =   $dbh->prepare( "SELECT label 
@@ -206,7 +209,7 @@ $sth->finish;
 	
 	open HEATMAP, ">../data/Heatmap.".$taxa_name.$epoch.".dat" or die $!."\t".$?; 
 	
-	print HEATMAP join("\t",('SAMPLE',@SampleNames));
+	print HEATMAP join("\t",@SampleNames);
 	print HEATMAP "\n";
 	
 	foreach my $OutputSampleName (@SampleNames){
