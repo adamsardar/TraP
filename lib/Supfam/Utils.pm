@@ -33,6 +33,7 @@ use warnings;
 use List::Util qw(sum reduce);
 use List::MoreUtils qw(:all);
 use Statistics::Basic qw(:all);
+use Carp;
 
 =head1 NAME
 
@@ -388,13 +389,21 @@ sub calc_ZScore($){
     
     my $ZscoresHash = {};
     
-    die "Sample Dev $SampleStDev is less that 10**-10 for sample mean $SampleMean nsamples = $NumberValues" if($SampleStDev <= 10 **-10);
-   # return(0) unless($SampleStDev >= 10**-10);
-    
+    croak "Sample Dev $SampleStDev is less that 10**-10 for sample mean $SampleMean nsamples = $NumberValues" if($SampleStDev <= 10 **-10);
+   
     foreach my $Label (keys(%$ValuesHash)){
-        	
+        
+        
     	my $datum = $ValuesHash->{$Label};
-    	my $zscore = ($datum-$SampleMean)/$SampleStDev;
+    	my $zscore;
+    	
+    	unless($SampleStDev <= 10 **-10){
+    		
+    		$zscore = ($datum-$SampleMean)/$SampleStDev;
+    	}else{
+    		
+    		$zscore = 0;
+    	}  	
     	
     	$ZscoresHash->{$Label} = $zscore;
     }
