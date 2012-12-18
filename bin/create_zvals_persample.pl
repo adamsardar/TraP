@@ -108,6 +108,7 @@ my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
 my $SQLdump;
 my $translation_file;
+my $DisallowedSampleFile;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -115,6 +116,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "SQLdump|s!"  => \$SQLdump,
            "help|h!" => \$help,
            "translate|tr:s" => \$translation_file,
+           "disallowed|df:s" => \$DisallowedSampleFile,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -131,17 +133,37 @@ my $Taxon_mapping ={};
 
 if($translation_file){
 	
+	print STDERR "Creating a mapping between taxon_ids ....\n";
 	open FH, "$translation_file" or die $!."\t".$?;
  	
  	while(my $line = <FH>){
  		
  		chomp($line);
  		my ($from,$to,$taxon_name)=split(/\s+/,$line);
- 		carp "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
+ 		croak "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
  		$Taxon_mapping->{$from}=$to;
  	}
+ 	
+ 	close FH;
 }
-#This is a bit of a hack - it allows us to map from one many taxpn ids to many. So we can collapse homminnae, catharini etc together to primates
+
+
+my $DisallowedSamples = {};
+
+if($DisallowedSampleFile){
+	
+	print STDERR "Creating a list of diassallowed sample names ....\n";
+	open DISALLOWED, "$DisallowedSampleFile" or die $!."\t".$?;
+ 	
+ 	while(my $line = <DISALLOWED>){
+ 		
+ 		chomp($line);
+ 		croak "Incorrect disallowed file. Expecting a new line seperated file of sample_name\n" if($line ~~ undef);
+ 		$DisallowedSamples->{$line}=undef
+ 	}
+	
+	close DISALLOWED;
+}
 
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURE FROM ANY EPOCH FOR EACH SAMPLE#####################################
@@ -184,6 +206,8 @@ $sth->execute;
 
 while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 	
+	next if(exists($DisallowedSamples->{$samplename}));	
+
 	$taxid = $Taxon_mapping->{$taxid};
 	$distinct_architectures_per_epoch_per_sample->{$taxid}={} unless(exists($distinct_architectures_per_epoch_per_sample->{$taxid}));
 	$distinct_architectures_per_epoch_per_sample->{$taxid}{$samplename} += $countCombID;
