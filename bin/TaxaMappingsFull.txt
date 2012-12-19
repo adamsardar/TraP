@@ -13,14 +13,14 @@
 32524	32524	Amniota
 32523	32523	Tetrapoda
 117571	117571	Euteleostomi
-8287  7711 Sarcopterygii
-7742  7711  Verterbrata
+8287	7711	Sarcopterygii
+7742	7711	Verterbrata
 7711	7711	Chordata
 33511	33511	Deuterostomia
 33316	33316	Coelomata
 33213	33213	Bilateria
 6072	6072	Eumetazoa
-6072	6072	Metazoa
+33208	6072	Metazoa
 33154	33154	Opisthokonta
 2759	2759	Eukaryota
 131567	131567	CellularOrganisms

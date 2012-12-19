@@ -5,11 +5,11 @@ use warnings;
 
 =head1 NAME
 
-create_zvals_persample
+create_zvals_persample.pl 
 
 =head1 SYNOPSIS
 
-skeleton [options] <file>...
+create_zvals_persample [-h -v -d] -tr --translate taxon_mapping_file -df --disallowed disallowed_sample_names
 
  Basic Options:
   -h --help Get full man page output
@@ -40,19 +40,12 @@ Verbose output showing how the text is changing.
 
 =head1 EXAMPLES
 
-To get some help output do:
+create_zvals_persample.pl -s -tr ./TaxaMappingsCollapsed.txt 
 
-skeleton --help
+ ... TO OUTPUT AN SQL DUMP OF TABLE
 
-To list the files in the current directory do:
-
-skeleton *
 
 =head1 AUTHOR
-
-DELETE AS APPROPRIATE!
-
-B<Matt Oates> - I<Matt.Oates@bristol.ac.uk>
 
 B<Owen Rackham> - I<Owen.Rackham@bristol.ac.uk>
 
@@ -60,11 +53,7 @@ B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
 
 =head1 NOTICE
 
-DELETE AS APPROPRIATE!
-
 =over 4
-
-=item B<Matt Oates> (2011) First features added.
 
 =item B<Owen Rackham> (2011) First features added.
 
@@ -108,6 +97,7 @@ my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
 my $SQLdump;
 my $translation_file;
+my $DisallowedSampleFile;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -115,6 +105,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "SQLdump|s!"  => \$SQLdump,
            "help|h!" => \$help,
            "translate|tr:s" => \$translation_file,
+           "disallowed|df:s" => \$DisallowedSampleFile,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -131,17 +122,37 @@ my $Taxon_mapping ={};
 
 if($translation_file){
 	
+	print STDERR "Creating a mapping between taxon_ids ....\n";
 	open FH, "$translation_file" or die $!."\t".$?;
  	
  	while(my $line = <FH>){
  		
  		chomp($line);
  		my ($from,$to,$taxon_name)=split(/\s+/,$line);
- 		carp "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
+ 		croak "Incorrect translation file. Expecting a tab seperated file of 'from' 'to'\n" if($Taxon_mapping ~~ undef || $to ~~ undef);
  		$Taxon_mapping->{$from}=$to;
  	}
+ 	
+ 	close FH;
 }
-#This is a bit of a hack - it allows us to map from one many taxpn ids to many. So we can collapse homminnae, catharini etc together to primates
+
+
+my $DisallowedSamples = {};
+
+if($DisallowedSampleFile){
+	
+	print STDERR "Creating a list of diassallowed sample names ....\n";
+	open DISALLOWED, "$DisallowedSampleFile" or die $!."\t".$?;
+ 	
+ 	while(my $line = <DISALLOWED>){
+ 		
+ 		chomp($line);
+ 		croak "Incorrect disallowed file. Expecting a new line seperated file of sample_name\n" if($line ~~ undef);
+ 		$DisallowedSamples->{$line}=undef
+ 	}
+	
+	close DISALLOWED;
+}
 
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURE FROM ANY EPOCH FOR EACH SAMPLE#####################################
@@ -172,6 +183,7 @@ while (my ($taxid,$countCombID) = $sth->fetchrow_array ) {
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURES AT EACH EPOCH FOR EACH SAMPLE######################################
 print STDERR "Getting the number of distinct domain architectures from each epoch for each samples ...\n";
 my $distinct_architectures_per_epoch_per_sample={};
+my $PerSampleTotalNumberDistinctCombsExpressed = {};
 my %epochs;
 my %samples;
 
@@ -184,9 +196,13 @@ $sth->execute;
 
 while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 	
+	next if(exists($DisallowedSamples->{$samplename}));	
+
 	$taxid = $Taxon_mapping->{$taxid};
 	$distinct_architectures_per_epoch_per_sample->{$taxid}={} unless(exists($distinct_architectures_per_epoch_per_sample->{$taxid}));
+	
 	$distinct_architectures_per_epoch_per_sample->{$taxid}{$samplename} += $countCombID;
+	$PerSampleTotalNumberDistinctCombsExpressed->{$samplename}+=$countCombID;
 	
 	$epochs{$taxid} = 1;
 	$samples{$samplename} = 1;
@@ -204,19 +220,19 @@ foreach my $epoch (keys %epochs){
 	
 	foreach my $sample (keys %samples){
 		
-		
-		croak "Uninitialized here\n" unless(exists($distinct_archictectures_per_sample->{$epoch}));
-		my $distarchs = $distinct_archictectures_per_sample->{$epoch};
-		croak "Died at sample $sample and epoch $epoch as number distinct archs =$distarchs \n" unless($distarchs > 0);
+		my $sampleexpresseddistarchs = $PerSampleTotalNumberDistinctCombsExpressed->{$sample};
+		croak "Died at sample $sample and epoch $epoch as number distinct archs = $sampleexpresseddistarchs \n" unless($sampleexpresseddistarchs > 0);
 		
 		next unless(exists($distinct_architectures_per_epoch_per_sample->{$epoch}{$sample}));
 
 		my $persampledistarchs = $distinct_architectures_per_epoch_per_sample->{$epoch}{$sample};
 		croak "Died at sample $sample and epoch $epoch as number distinct archs = $persampledistarchs \n" unless($persampledistarchs > 0);
 		
-		$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = $persampledistarchs/$distarchs;
-		#Divide the number of domain architectures used by the sample at that stage by the total number of distinct architectures at that epoch
-	}
+		$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = $persampledistarchs/$sampleexpresseddistarchs;
+		#Divide the number of domain architectures used by the sample at that stage by the total number of distinct architectures that architecture expresses. So what proportion of it's expression is at that stage
+		# Think of this value as - "Hom much the repertoire available does it express at this time, and what proportion of its total expression does this represent"
+	}	
+
 }
 #print Dumper \%proportion_of_architectures_per_epoch_per_sample;
 
