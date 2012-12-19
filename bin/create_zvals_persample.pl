@@ -5,11 +5,11 @@ use warnings;
 
 =head1 NAME
 
-create_zvals_persample
+create_zvals_persample.pl 
 
 =head1 SYNOPSIS
 
-skeleton [options] <file>...
+create_zvals_persample [-h -v -d] -tr --translate taxon_mapping_file -df --disallowed disallowed_sample_names
 
  Basic Options:
   -h --help Get full man page output
@@ -40,19 +40,12 @@ Verbose output showing how the text is changing.
 
 =head1 EXAMPLES
 
-To get some help output do:
+create_zvals_persample.pl -s -tr ./TaxaMappingsCollapsed.txt 
 
-skeleton --help
+ ... TO OUTPUT AN SQL DUMP OF TABLE
 
-To list the files in the current directory do:
-
-skeleton *
 
 =head1 AUTHOR
-
-DELETE AS APPROPRIATE!
-
-B<Matt Oates> - I<Matt.Oates@bristol.ac.uk>
 
 B<Owen Rackham> - I<Owen.Rackham@bristol.ac.uk>
 
@@ -60,11 +53,7 @@ B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
 
 =head1 NOTICE
 
-DELETE AS APPROPRIATE!
-
 =over 4
-
-=item B<Matt Oates> (2011) First features added.
 
 =item B<Owen Rackham> (2011) First features added.
 
@@ -194,6 +183,7 @@ while (my ($taxid,$countCombID) = $sth->fetchrow_array ) {
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURES AT EACH EPOCH FOR EACH SAMPLE######################################
 print STDERR "Getting the number of distinct domain architectures from each epoch for each samples ...\n";
 my $distinct_architectures_per_epoch_per_sample={};
+my $PerSampleTotalNumberDistinctCombsExpressed = {};
 my %epochs;
 my %samples;
 
@@ -210,7 +200,9 @@ while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 
 	$taxid = $Taxon_mapping->{$taxid};
 	$distinct_architectures_per_epoch_per_sample->{$taxid}={} unless(exists($distinct_architectures_per_epoch_per_sample->{$taxid}));
+	
 	$distinct_architectures_per_epoch_per_sample->{$taxid}{$samplename} += $countCombID;
+	$PerSampleTotalNumberDistinctCombsExpressed->{$samplename}+=$countCombID;
 	
 	$epochs{$taxid} = 1;
 	$samples{$samplename} = 1;
@@ -228,19 +220,19 @@ foreach my $epoch (keys %epochs){
 	
 	foreach my $sample (keys %samples){
 		
-		
-		croak "Uninitialized here\n" unless(exists($distinct_archictectures_per_sample->{$epoch}));
-		my $distarchs = $distinct_archictectures_per_sample->{$epoch};
-		croak "Died at sample $sample and epoch $epoch as number distinct archs =$distarchs \n" unless($distarchs > 0);
+		my $sampleexpresseddistarchs = $PerSampleTotalNumberDistinctCombsExpressed->{$sample};
+		croak "Died at sample $sample and epoch $epoch as number distinct archs = $sampleexpresseddistarchs \n" unless($sampleexpresseddistarchs > 0);
 		
 		next unless(exists($distinct_architectures_per_epoch_per_sample->{$epoch}{$sample}));
 
 		my $persampledistarchs = $distinct_architectures_per_epoch_per_sample->{$epoch}{$sample};
 		croak "Died at sample $sample and epoch $epoch as number distinct archs = $persampledistarchs \n" unless($persampledistarchs > 0);
 		
-		$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = $persampledistarchs/$distarchs;
-		#Divide the number of domain architectures used by the sample at that stage by the total number of distinct architectures at that epoch
-	}
+		$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = $persampledistarchs/$sampleexpresseddistarchs;
+		#Divide the number of domain architectures used by the sample at that stage by the total number of distinct architectures that architecture expresses. So what proportion of it's expression is at that stage
+		# Think of this value as - "Hom much the repertoire available does it express at this time, and what proportion of its total expression does this represent"
+	}	
+
 }
 #print Dumper \%proportion_of_architectures_per_epoch_per_sample;
 
