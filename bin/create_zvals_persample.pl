@@ -248,7 +248,7 @@ EasyDump('../data/Zscores.dat',$SampleZscoreHash) if($verbose);
 if($SQLdump){
 	
 	mkdir("../data");
-	print STDOUT "Creating an SQL tab-sep compatable dump labelled: sample_name\tproportion\ttaxon_id\tepochsize\n";
+	print STDOUT "Creating an SQL tab-sep compatable dump in the Trap/data directory labelled: sample_name\tproportion\ttaxon_id\tepochsize\n";
 	
 	open SQL, ">../data/ZvalsSQLData.dat" or die $!."\t".$?;
 	
@@ -263,11 +263,12 @@ if($SQLdump){
 				
 				$epoch_size = $distinct_architectures_per_epoch_per_sample->{$tax_id}{$expid};
 			}else{
+				
 				$epoch_size = 0;
 			}
 			
 			print SQL $expid."\t".$proportion."\t".$tax_id."\t".$epoch_size."\n";
-		}		
+		}
 	}
 	
 	close SQL;
