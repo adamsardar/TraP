@@ -284,7 +284,7 @@ if($SQLdump){
 		
 		foreach my $samp (keys(%{$SampleZscoreHash->{$tax_id}})){
 			
-			my $proportion = $SampleZscoreHash->{$tax_id}{$samp};
+			my $zscore = $SampleZscoreHash->{$tax_id}{$samp};
 			my $epoch_size;
 			
 			if(exists($distinct_architectures_per_epoch_per_sample->{$tax_id}{$samp})){
@@ -295,12 +295,45 @@ if($SQLdump){
 				$epoch_size = 0;
 			}
 			
-			print SQL $samp."\t".$proportion."\t".$tax_id."\t".$epoch_size."\n";
+			print SQL $samp."\t".$zscore."\t".$tax_id."\t".$epoch_size."\n";
 		}
 	}
 	
 	close SQL;
 }
+
+
+if($verbose){
+	
+	mkdir("../data");
+	print STDOUT "Creating a reference file of all the data that we have calculated so far, in the Trap/data directory labelled: sample_name\tproportion\ttaxon_id\tepochsize\n";
+	
+	open COMPLETE, ">../data/completeAscores.check.dat" or die $!."\t".$?;
+	
+	foreach my $tax_id (keys(%$SampleZscoreHash)){
+		
+		foreach my $samp (keys(%{$SampleZscoreHash->{$tax_id}})){
+			
+			my $zscore = $SampleZscoreHash->{$tax_id}{$samp};
+			my $proportion = $proportion_of_architectures_per_epoch_per_sample->{$tax_id}{$samp};
+			my $epoch_size;
+			
+			if(exists($distinct_architectures_per_epoch_per_sample->{$tax_id}{$samp})){
+				
+				$epoch_size = $distinct_architectures_per_epoch_per_sample->{$tax_id}{$samp};
+			}else{
+				
+				$epoch_size = 0;
+			}
+			
+			print COMPLETE $samp."\t".$proportion."\t".$zscore."\t".$tax_id."\t".$epoch_size."\n";
+		}
+	}
+	
+	close COMPLETE;
+}
+
+
 
 __END__
 
