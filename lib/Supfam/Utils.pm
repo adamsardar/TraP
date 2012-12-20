@@ -34,6 +34,7 @@ use List::Util qw(sum reduce);
 use List::MoreUtils qw(:all);
 use Statistics::Basic qw(:all);
 use Carp;
+use Carp::Assert::More;
 
 =head1 NAME
 
@@ -378,7 +379,8 @@ The input is a hash ref of $HAsh->{DataLAbel} = value. Mean and StdDev will be e
 sub calc_ZScore($){
      
     my ($ValuesHash) = @_;
-
+	assert_hashref($ValuesHash,"calc_ZScore should be provided with a hashref Hash->{label}=score ...\n");
+	
 	my $NumberValues = scalar(keys(%$ValuesHash));
 
 	my @SampleData = (values(%$ValuesHash));
@@ -392,7 +394,6 @@ sub calc_ZScore($){
     croak "Sample Dev $SampleStDev is less that 10**-10 for sample mean $SampleMean nsamples = $NumberValues" if($SampleStDev <= 10 **-10);
    
     foreach my $Label (keys(%$ValuesHash)){
-        
         
     	my $datum = $ValuesHash->{$Label};
     	my $zscore;

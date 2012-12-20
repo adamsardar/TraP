@@ -5,7 +5,7 @@ use warnings;
 
 =head1 NAME
 
-test_Zscoregeneration.pl
+test_Zscoregeneration.pl -f --file 'File Of Observations to calculate zscores on'
 
 =head1 SYNOPSIS
 
@@ -129,11 +129,17 @@ use Supfam::Utils qw/:all/;
 my $verbose; #Flag for verbose output from command line opts
 my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
+my $mu = 0;
+my $sd = 1;
+my $file;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
            "debug|d!"  => \$debug,
            "help|h!" => \$help,
+          "mean|m:f" => \$mu,
+          "std|s:f" => \$sd,
+           "file|f:s" => \$file
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -142,11 +148,32 @@ my @files= @ARGV;
 #Print out some help if it was asked for or if no arguments were given.
 pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 
-my @NormalRandomData = random_poisson(10000,20,0.9);
+
 
 my $c =0;
 my $NormalRandomHash = {};
-map{$NormalRandomHash->{$c++}=$_}@NormalRandomData;
+
+
+unless($file){
+	
+	#my @NormalRandomData = random_poisson(10000,20,0.9);
+	my @NormalRandomData = random_normal(100000,$mu,$sd);
+	map{$NormalRandomHash->{$_}=$_}@NormalRandomData;
+
+}else{
+	
+	open FH, "<$file" or die $!."\t".$?;
+	
+	while (my $line = <FH>){
+		
+		chomp($line);
+		my ($label,$val)=split("\t",$line);
+		$NormalRandomHash->{$label}=$val;
+		
+	}
+	
+	close FH;
+}
 
 print STDERR "Testing ...\n";
 
@@ -156,7 +183,13 @@ my $Zscores = calc_ZScore($NormalRandomHash);
 
 EasyDump('Zscores.dat',$Zscores);
 
-map{print STDOUT $_."\n"}values(%$Zscores);
+while (my ($label, $zed) = each %$Zscores){
+	
+	my $datum = $NormalRandomHash->{$label};
+	print STDOUT $label."\t".$datum."\t".$zed."\n"	
+}
+
+print STDERR "Label"."\t"."Datum"."\t"."Zscore"."\n";
 
 =pod
 

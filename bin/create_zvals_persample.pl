@@ -89,6 +89,7 @@ use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw/:all/;
 use Carp;
+use Carp::Assert::More;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
@@ -180,14 +181,12 @@ while (my ($taxid,$countCombID) = $sth->fetchrow_array ) {
 	$distinct_archictectures_per_sample->{$taxid} += $countCombID;
 }
 #NOTE: Some of the sequences do not map to superfamily comb_ids. Hence they have a taxon id of 0 and a taxon_id of 0 in the database
-
+$sth->finish();
 
 ##################################GET THE NUMBER OF DISTINCT DOMAIN ARCHITECTURES AT EACH EPOCH FOR EACH SAMPLE######################################
 print STDERR "Getting the number of distinct domain architectures from each epoch for each samples ...\n";
 my $distinct_architectures_per_epoch_per_sample={};
 my $PerSampleTotalNumberDistinctCombsExpressed = {};
-my %epochs;
-my %samples;
 
 $sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,snapshot_order_comb.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
 						FROM snapshot_order_comb JOIN comb_MRCA 
@@ -196,33 +195,52 @@ $sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,snapshot_order_comb.sample_na
 						GROUP BY comb_MRCA.taxon_id,snapshot_order_comb.sample_name;"); 
 $sth->execute;
 
-while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
+while (my ($tax,$samplename,$countCombID) = $sth->fetchrow_array ) {
 	
 	next if(exists($DisallowedSamples->{$samplename}));	
 
-	$taxid = $Taxon_mapping->{$taxid};
+	my 	$taxid = $Taxon_mapping->{$tax};
 	$distinct_architectures_per_epoch_per_sample->{$taxid}={} unless(exists($distinct_architectures_per_epoch_per_sample->{$taxid}));
 	
 	$distinct_architectures_per_epoch_per_sample->{$taxid}{$samplename} += $countCombID;
-	$PerSampleTotalNumberDistinctCombsExpressed->{$samplename}+=$countCombID;
-	
-	$epochs{$taxid} = undef;
-	$samples{$samplename} = undef;
+	#$PerSampleTotalNumberDistinctCombsExpressed->{$samplename} += $countCombID;
 }
+
+$sth->finish();
+
+
+################################## Get a count of the number of architectures expressed per sample   ################################## 
+
+ 
+$sth =   $dbh->prepare( "SELECT snapshot_order_comb.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
+						FROM snapshot_order_comb
+						GROUP BY snapshot_order_comb.sample_name;"); 
+$sth->execute;
+
+while (my ($tax,$samplename,$countCombID) = $sth->fetchrow_array ) {
+	
+	next if(exists($DisallowedSamples->{$samplename}));	
+
+	$PerSampleTotalNumberDistinctCombsExpressed->{$samplename} = $countCombID;
+}
+
+$sth->finish();
 
 EasyDump("../data/ArchsPerEpochPerSampleHash.dat",$distinct_architectures_per_epoch_per_sample) if($verbose);
 EasyDump("../data/ArchsPerEpochHash.dat",$distinct_archictectures_per_sample) if($verbose);
+EasyDump("../data/PersampleCount.dat",$PerSampleTotalNumberDistinctCombsExpressed) if($verbose);
+
 
 #################################DIVIDE THE NUMBER AT EACH EPOCH BY THE TOTAL NUMBER TO GET THE PROPORTION##########################################
 my $proportion_of_architectures_per_epoch_per_sample = {};
 
 print STDERR "Not includeding zeroes in z score calcs - " unless($IncludeZero);
 
-foreach my $epoch (keys %epochs){
+foreach my $epoch (keys %$distinct_architectures_per_epoch_per_sample){
 	
 	$proportion_of_architectures_per_epoch_per_sample->{$epoch}={};
 	
-	foreach my $sample (keys %samples){
+	foreach my $sample (keys %$PerSampleTotalNumberDistinctCombsExpressed){
 		
 		my $sampleexpresseddistarchs = $PerSampleTotalNumberDistinctCombsExpressed->{$sample};
 		croak "Died at sample $sample and epoch $epoch as number distinct archs = $sampleexpresseddistarchs \n" unless($sampleexpresseddistarchs > 0);
@@ -254,9 +272,12 @@ print STDERR "Outputting Z score data and hists ..." if($verbose);
 foreach my $MRCA (keys(%$proportion_of_architectures_per_epoch_per_sample)){
 	
 	print STDERR "Processing $MRCA ...";
-	 	
-	my $TempHash = calc_ZScore($proportion_of_architectures_per_epoch_per_sample->{$MRCA});
+	
+	my $TempProportionsHash = $proportion_of_architectures_per_epoch_per_sample->{$MRCA};
+	my $TempHash = calc_ZScore($TempProportionsHash);
 	#Hash structure is of $Hash{Tax_id}{samples}= proportion
+	assert_hashref($TempHash,"calc_ZScore should return a hashref ...\n");
+	
 	$SampleZscoreHash->{$MRCA}=$TempHash;
 	
 	print STDERR scalar(keys(%$TempHash))." samples\n";
@@ -276,7 +297,7 @@ EasyDump('../data/Zscores.dat',$SampleZscoreHash) if($verbose);
 if($SQLdump){
 	
 	mkdir("../data");
-	print STDOUT "Creating an SQL tab-sep compatable dump in the Trap/data directory labelled: sample_name\tproportion\ttaxon_id\tepochsize\n";
+	print STDOUT "Creating an SQL tab-sep compatable dump in the Trap/data directory labelled: sample_name\tz_score\ttaxon_id\tepochsize\n";
 	
 	open SQL, ">../data/ZvalsSQLData.dat" or die $!."\t".$?;
 	
@@ -306,7 +327,7 @@ if($SQLdump){
 if($verbose){
 	
 	mkdir("../data");
-	print STDOUT "Creating a reference file of all the data that we have calculated so far, in the Trap/data directory labelled: sample_name\tproportion\ttaxon_id\tepochsize\n";
+	print STDOUT "Creating a reference file of all the data that we have calculated so far, in the Trap/data directory labelled: sample_name\tproportion\tzscore\ttaxon_id\tepochsize\tDomArchcount\n";
 	
 	open COMPLETE, ">../data/completeAscores.check.dat" or die $!."\t".$?;
 	
@@ -316,6 +337,10 @@ if($verbose){
 			
 			my $zscore = $SampleZscoreHash->{$tax_id}{$samp};
 			my $proportion = $proportion_of_architectures_per_epoch_per_sample->{$tax_id}{$samp};
+			my $DomArchCountPerSample = $PerSampleTotalNumberDistinctCombsExpressed->{$samp};
+			my $DomArchCountPerEpoch = $distinct_archictectures_per_sample->{$tax_id};
+			
+			
 			my $epoch_size;
 			
 			if(exists($distinct_architectures_per_epoch_per_sample->{$tax_id}{$samp})){
@@ -326,7 +351,7 @@ if($verbose){
 				$epoch_size = 0;
 			}
 			
-			print COMPLETE $samp."\t".$proportion."\t".$zscore."\t".$tax_id."\t".$epoch_size."\n";
+			print COMPLETE $samp."\t".$proportion."\t".$zscore."\t".$tax_id."\t".$epoch_size."\t".$DomArchCountPerSample."\t".$DomArchCountPerEpoch."\n";
 		}
 	}
 	
