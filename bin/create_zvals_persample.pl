@@ -9,7 +9,7 @@ create_zvals_persample.pl
 
 =head1 SYNOPSIS
 
-create_zvals_persample [-h -v -d] -tr --translate taxon_mapping_file -df --disallowed disallowed_sample_names
+create_zvals_persample [-h -v -d] -tr --translate taxon_mapping_file -df --disallowed disallowed_sample_names -iz --includezero include_zero_scores_in_zscores
 
  Basic Options:
   -h --help Get full man page output
@@ -98,6 +98,7 @@ my $help;    #Same again but this time should we output the POD man page defined
 my $SQLdump;
 my $translation_file;
 my $DisallowedSampleFile;
+my $IncludeZero = 1;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -106,6 +107,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "help|h!" => \$help,
            "translate|tr:s" => \$translation_file,
            "disallowed|df:s" => \$DisallowedSampleFile,
+           "includezero|iz!" => \$IncludeZero,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -204,15 +206,17 @@ while (my ($taxid,$samplename,$countCombID) = $sth->fetchrow_array ) {
 	$distinct_architectures_per_epoch_per_sample->{$taxid}{$samplename} += $countCombID;
 	$PerSampleTotalNumberDistinctCombsExpressed->{$samplename}+=$countCombID;
 	
-	$epochs{$taxid} = 1;
-	$samples{$samplename} = 1;
+	$epochs{$taxid} = undef;
+	$samples{$samplename} = undef;
 }
 
-EasyDump("./ArchsPerEpochPerSampleHash.dat",$distinct_architectures_per_epoch_per_sample) if($verbose);
-EasyDump("./ArchsPerEpochHash.dat",$distinct_archictectures_per_sample) if($verbose);
+EasyDump("../data/ArchsPerEpochPerSampleHash.dat",$distinct_architectures_per_epoch_per_sample) if($verbose);
+EasyDump("../data/ArchsPerEpochHash.dat",$distinct_archictectures_per_sample) if($verbose);
 
 #################################DIVIDE THE NUMBER AT EACH EPOCH BY THE TOTAL NUMBER TO GET THE PROPORTION##########################################
 my $proportion_of_architectures_per_epoch_per_sample = {};
+
+print STDERR "Not includeding zeroes in z score calcs - " unless($IncludeZero);
 
 foreach my $epoch (keys %epochs){
 	
@@ -222,32 +226,40 @@ foreach my $epoch (keys %epochs){
 		
 		my $sampleexpresseddistarchs = $PerSampleTotalNumberDistinctCombsExpressed->{$sample};
 		croak "Died at sample $sample and epoch $epoch as number distinct archs = $sampleexpresseddistarchs \n" unless($sampleexpresseddistarchs > 0);
+				
+		if(exists($distinct_architectures_per_epoch_per_sample->{$epoch}{$sample})){
+			
+			my $PerSampleDistarchs  = $distinct_architectures_per_epoch_per_sample->{$epoch}{$sample};
+			croak "Died at sample $sample and epoch $epoch as number distinct archs = $PerSampleDistarchs \n" unless($PerSampleDistarchs > 0);
+			$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = $PerSampleDistarchs/$sampleexpresseddistarchs
+			#Divide the number of domain architectures used by the sample at that stage by the total number of distinct architectures that architecture expresses. So what proportion of it's expression is at that stage
 		
-		next unless(exists($distinct_architectures_per_epoch_per_sample->{$epoch}{$sample}));
-
-		my $persampledistarchs = $distinct_architectures_per_epoch_per_sample->{$epoch}{$sample};
-		croak "Died at sample $sample and epoch $epoch as number distinct archs = $persampledistarchs \n" unless($persampledistarchs > 0);
-		
-		$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = $persampledistarchs/$sampleexpresseddistarchs;
-		#Divide the number of domain architectures used by the sample at that stage by the total number of distinct architectures that architecture expresses. So what proportion of it's expression is at that stage
+		}else{
+			
+			$proportion_of_architectures_per_epoch_per_sample->{$epoch}{$sample} = 0 if($IncludeZero);
+		}
 		# Think of this value as - "Hom much the repertoire available does it express at this time, and what proportion of its total expression does this represent"
 	}	
 
 }
 #print Dumper \%proportion_of_architectures_per_epoch_per_sample;
 
+EasyDump("../data/ArchProportion.dat",$proportion_of_architectures_per_epoch_per_sample) if($verbose);
+
 my $SampleZscoreHash = {};
 #A hash of structure $hash->{epoch_MRCA_taxon_id}{sample_id}{z_score}
 
-print STDERR "Outputting Z score data and hists" if($verbose);
+print STDERR "Outputting Z score data and hists ..." if($verbose);
 
 foreach my $MRCA (keys(%$proportion_of_architectures_per_epoch_per_sample)){
 	
-	print STDERR "Processing $MRCA ...\n";
+	print STDERR "Processing $MRCA ...";
 	 	
 	my $TempHash = calc_ZScore($proportion_of_architectures_per_epoch_per_sample->{$MRCA});
 	#Hash structure is of $Hash{Tax_id}{samples}= proportion
 	$SampleZscoreHash->{$MRCA}=$TempHash;
+	
+	print STDERR scalar(keys(%$TempHash))." samples\n";
 	
 	if($verbose){
 		mkdir("../data");
@@ -270,20 +282,20 @@ if($SQLdump){
 	
 	foreach my $tax_id (keys(%$SampleZscoreHash)){
 		
-		foreach my $expid (keys(%{$SampleZscoreHash->{$tax_id}})){
+		foreach my $samp (keys(%{$SampleZscoreHash->{$tax_id}})){
 			
-			my $proportion = $SampleZscoreHash->{$tax_id}{$expid};
+			my $proportion = $SampleZscoreHash->{$tax_id}{$samp};
 			my $epoch_size;
 			
-			if(exists($distinct_architectures_per_epoch_per_sample->{$tax_id}{$expid})){
+			if(exists($distinct_architectures_per_epoch_per_sample->{$tax_id}{$samp})){
 				
-				$epoch_size = $distinct_architectures_per_epoch_per_sample->{$tax_id}{$expid};
+				$epoch_size = $distinct_architectures_per_epoch_per_sample->{$tax_id}{$samp};
 			}else{
 				
 				$epoch_size = 0;
 			}
 			
-			print SQL $expid."\t".$proportion."\t".$tax_id."\t".$epoch_size."\n";
+			print SQL $samp."\t".$proportion."\t".$tax_id."\t".$epoch_size."\n";
 		}
 	}
 	
