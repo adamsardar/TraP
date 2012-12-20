@@ -19,8 +19,8 @@
 33511	33511	Deuterostomia
 33316	33316	Coelomata
 33213	33213	Bilateria
-6072	6072	Eumetazoa
-33208	6072	Metazoa
+6072	33208	Eumetazoa
+33208	33208	Metazoa
 33154	33154	Opisthokonta
 2759	2759	Eukaryota
 131567	131567	CellularOrganisms
