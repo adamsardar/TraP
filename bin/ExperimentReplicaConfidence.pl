@@ -20,8 +20,10 @@ ExperimentReplicaStudy.pl [-h -v -d] -o --outputfile OUTFILE -t --threshold THRE
 =head1 DESCRIPTION
 
 This program is part of the TraP Project. We would like to produce a subset of experiments, clustered by experiment name,
-with each experiment possesing a single binary value - 1 (expressed) and 0 (not expressed). If, and there more often than not is,
+with each experiment possesing a single binary value : 1 (expressed) and 0 (not expressed) - with an expression cutoff (DEFAULT log_e(express)) >= 2). If, and there more often than not is,
 more than one replicate, use a majority conesus at threshold (DEFAULT 0.75).
+
+This is how we create the database table snapshot_order_comb.
 
 =head1 OPTIONS
 
@@ -110,7 +112,7 @@ my $help;    #Same again but this time should we output the POD man page defined
 my $outfile;
 my $threshold = 0.75; #A default theshold value of 3/4 majority consesnsu to decide if soemthing is expressed or not.
 my $cutoff = 2 ;
-my $replicates = 1; #Should a sample have replicates in order to be counted? Default is 'TRUE'
+my $replicates = 0; #Should a sample have replicates in order to be counted? Default is 'TRUE'
 my $convert = 0;
 
 #Set command line flags and parameters.
@@ -142,6 +144,9 @@ print STDERR "Using a majority rules conesensus of $threshold as to whether a ge
 print STDERR "Outputting a dump of sample name and gene_id to comb_id ready to be read into a SQL database \n" if($convert);
 
 
+################################################### GET A LIST OF ALL SAMPLES, ALL EXPERIMENTS AND ALL GENES EXPRESSED WITHIN ###################################################
+
+
 my $dbh = dbConnect();
 
 my $sth=$dbh->prepare("SELECT experiment.experiment_id, experiment.sample_name, cell_snapshot.gene_id, cell_snapshot.raw_expression
@@ -154,7 +159,9 @@ my $ExperimentReplicasHashREF = {};
 
 $sth->execute();
 
-while (my ($exp_id, $sample_name, $gene_id, $raw_expression) = $sth->fetchrow_array()){
+while (my ($exp_id, $samp, $gene_id, $raw_expression) = $sth->fetchrow_array()){
+	
+	my $sample_name = lc($samp);
 	
 	$ExperimentReplicasHashREF->{$sample_name} = {} unless(exists($ExperimentReplicasHashREF->{$sample_name}));
 	$ExperimentReplicasHashREF->{$sample_name}{$exp_id}={} unless(exists($ExperimentReplicasHashREF->{$sample_name}{$exp_id}));
@@ -169,8 +176,10 @@ print join("\n",keys(%$ExperimentReplicasHashREF)) if($debug);
 print "\n";
 
 my $BinaryExpressionHashREF = {};
-
 my $ReplcateDetailsHashREF = {};
+#Two hashes that will contain the 'sanitised' data - using cutoff and threshold provided (or defaults)
+
+################################################### PROCESS SAMPLES: APPLY EXPRESSION CUTOFF AND MAJPRITY RULES THRESHOLD ###################################################
 
 my $nsamples_accepted = 0;
 my $total_samples = scalar(keys(%$ExperimentReplicasHashREF));
@@ -189,6 +198,8 @@ foreach my $UniqSampleName (keys(%$ExperimentReplicasHashREF)){
 	
 	my $UniqGeneIDs = {};
 	map{$UniqGeneIDs->{$_}=undef}map{keys(%$_)}@{$ExperimentReplicasHashREF->{$UniqSampleName}}{@ExperimentIDs};
+	#Create a list of ALL the gene ids across all experiments of a given unique samplename
+	
 	my @GeneIDs = keys(%$UniqGeneIDs);
 	
 	foreach my $Gene (@GeneIDs){
@@ -200,9 +211,10 @@ foreach my $UniqSampleName (keys(%$ExperimentReplicasHashREF)){
 			if(exists($ExperimentReplicasHashREF->{$UniqSampleName}{$experiment}{$Gene})){
 
 				my $LogValExp = $ExperimentReplicasHashREF->{$UniqSampleName}{$experiment}{$Gene};
-				push(@LogExpressionValues,$LogValExp);	
+				push(@LogExpressionValues,$LogValExp);
 			}
 		}
+		#Construct an array of all the log_e(expression) values of genes in a sample
 		
 		next if (scalar(@LogExpressionValues) == 0);
 		
@@ -211,9 +223,11 @@ foreach my $UniqSampleName (keys(%$ExperimentReplicasHashREF)){
 		print join("\t",@NoUndefsLogExpressionValues) if($debug);
 	
 		map{$NumberAboveThreshold++ if($_ >= $cutoff)}@NoUndefsLogExpressionValues;
+		#A simple count to see how many log expression values are above cutoff. This is the first part of the data santitisation
 		
 		my $ThresholdConesus = ($NumberAboveThreshold/scalar(@LogExpressionValues) >= $threshold)?1:0;
-		#If there are more values above cuttoff than the majority-rules threshold, set the value as 1. Otherwsie 0.
+		#If there are more values above cuttoff than the majority-rules threshold, set the value as 1. Otherwsie 0. This is the second part of the data sanitisation
+		
 		$nsamples_accepted++ if($ThresholdConesus);
 		$BinaryExpressionHashREF->{$UniqSampleName}{$Gene} = $ThresholdConesus if($ThresholdConesus);
 	}
@@ -228,28 +242,37 @@ if ($verbose){
 	
 	EasyDump('./file.dat',$BinaryExpressionHashREF);
 }
-
 #If requested, convert all of the per experiemnt gene assignments, following QC, into domain architecture (comb) assignements. These are outputted so as to update an SQL table
+
+################################################### IF ASKED, CONVERT ALL THESE GENE IDS TO COMBS IN SUPERFAMILY AND OUTPUT AN SQL COMPATIBLE DUMP ###################################################
+
 
 if($convert){
 	
 	print STDERR "Printing a dump of experiment_id & gene_id to comb_id and frequency of expression to filename SQLsnashopordercomb".$cutoff.".".$threshold.".dat\n";
 	
-	$sth=$dbh->prepare("SELECT comb_id FROM entrez_longest_comb_all_species WHERE gene_id = ?;");
+	#Create an id mapper of uniq sample name to sample_id
+	my $sample_index = 0;
+	my $sample_index_hash = {};
+	map{$sample_index_hash->{$_} = $sample_index++ }keys(%$BinaryExpressionHashREF);
 	
+	$sth=$dbh->prepare("SELECT comb_id FROM entrez_longest_comb_all_species WHERE gene_id = ?;");
 	my $Gene_id2CombIDHashRef = {};
 	#A lookup hash, so as to minimise the calls to the database
-
-	open SNAPSHOTCOMB, ">./SQLsnashopordercomb".$cutoff.".".$threshold.".dat" or die $!." ".$?;
+	
+	mkdir('../data');
+	open SNAPSHOTCOMB, ">../data/SQLsnashopordercomb".$cutoff.".".$threshold.".dat" or die $!." ".$?;
 	my $UnmappedGeneIDs = {};
 	
 	foreach my $UniqSampleName (keys(%$BinaryExpressionHashREF)){
-	
+		
+		#PER SAMPLE
+		
 		my @GeneIDs = keys(%{$BinaryExpressionHashREF->{$UniqSampleName}});
-		
 		my @Sample_combs;
-		
 		my $CombsExpressedHashRef = {};
+		
+		#Process each gene and map it to a SUPERFAMILY comb_id
 		
 		foreach my $GeneID (@GeneIDs){
 			
@@ -276,10 +299,10 @@ if($convert){
 				my $comb_id = $Gene_id2CombIDHashRef->{$GeneID};
 				$CombsExpressedHashRef->{$comb_id}++;
 			}
-			#Check if the gene has already been shown to have no mapping. If it does have a mapping, stick it into the mapped hash
-			
+			#Check if the gene has already been shown to have no mapping. If it does have a mapping, stick it into the mapped hash	
 		}
 		
+		#For each gene tha t maps to a comb id,  output to a data file, alongside other data
 		foreach my $ProcessedGeneID (keys(%$Gene_id2CombIDHashRef)){
 			
 			my $comb = $Gene_id2CombIDHashRef->{$ProcessedGeneID};
@@ -290,17 +313,26 @@ if($convert){
 			#Number of times that this COMB is expressed
 			my $Replicates = $ReplcateDetailsHashREF->{$UniqSampleName};
 			#Simply the number of replicates
-			
-			print SNAPSHOTCOMB $ProcessedGeneID."\t".$UniqSampleName."\t".$comb."\t".$CopyNumberExpressed."\t".$Replicates."\n";
-		}	
+			my $sample_index = $sample_index_hash->{$UniqSampleName};
+						
+			print SNAPSHOTCOMB $ProcessedGeneID."\t".$sample_index."\t".$UniqSampleName."\t".$comb."\t".$CopyNumberExpressed."\t".$Replicates."\n";
+		}
 	}
 	
 	close SNAPSHOTCOMB;
+
+	open IDMAP, ">../data/SampNam2ID.dat" or die $!." ".$?;
 	
-	open UNMAPPED, ">UnmappedGene2CombIDs.dat" or die $!." ".$?;
+	while(my ($sampnam,$sampind) = each(%$sample_index_hash)){
+		
+		my $Replicates = $ReplcateDetailsHashREF->{$sampnam};
+		print IDMAP $sampnam."\t".$sampind."\t".$Replicates."\n";	
+	}
+	close IDMAP;
+
+	open UNMAPPED, ">../data/UnmappedGene2CombIDs.dat" or die $!." ".$?;
 	print UNMAPPED join("\n", keys(%$UnmappedGeneIDs));
 	close UNMAPPED;
-	
 }
 
 $sth->finish;

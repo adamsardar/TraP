@@ -188,14 +188,21 @@ print STDERR "Getting the number of distinct domain architectures from each epoc
 my $distinct_architectures_per_epoch_per_sample={};
 my $PerSampleTotalNumberDistinctCombsExpressed = {};
 
-$sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,snapshot_order_comb.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
-						FROM snapshot_order_comb JOIN comb_MRCA 
-						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+$sth =   $dbh->prepare( "SELECT comb_MRCA.taxon_id,sample_index.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)), snapshot_order_comb.sample_id
+						FROM snapshot_order_comb 
+						JOIN comb_MRCA 
+						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id
+						JOIN sample_index
+						ON snapshot_order_comb.sample_id = sample_index.sample_id
 						WHERE comb_MRCA.taxon_id != 0
-						GROUP BY comb_MRCA.taxon_id,snapshot_order_comb.sample_name;"); 
+						GROUP BY comb_MRCA.taxon_id,snapshot_order_comb.sample_id;"); 
 $sth->execute;
 
-while (my ($tax,$samplename,$countCombID) = $sth->fetchrow_array ) {
+my $sample_name2Index = {};
+
+while (my ($tax,$samplename,$countCombID,$sampleID) = $sth->fetchrow_array ) {
+	
+	$sample_name2Index->{$samplename}=$sampleID unless(exists($sample_name2Index->{$samplename}));
 	
 	next if(exists($DisallowedSamples->{$samplename}));	
 
@@ -212,12 +219,14 @@ $sth->finish();
 ################################## Get a count of the number of architectures expressed per sample   ################################## 
 
  
-$sth =   $dbh->prepare( "SELECT snapshot_order_comb.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
+$sth =   $dbh->prepare( "SELECT sample_index.sample_name,COUNT(DISTINCT(snapshot_order_comb.comb_id)) 
 						FROM snapshot_order_comb
-						GROUP BY snapshot_order_comb.sample_name;"); 
+						JOIN sample_index
+						ON snapshot_order_comb.sample_id = sample_index.sample_id
+						GROUP BY sample_index.sample_name;"); 
 $sth->execute;
 
-while (my ($tax,$samplename,$countCombID) = $sth->fetchrow_array ) {
+while (my ($samplename,$countCombID) = $sth->fetchrow_array ) {
 	
 	next if(exists($DisallowedSamples->{$samplename}));	
 
@@ -226,10 +235,12 @@ while (my ($tax,$samplename,$countCombID) = $sth->fetchrow_array ) {
 
 $sth->finish();
 
-EasyDump("../data/ArchsPerEpochPerSampleHash.dat",$distinct_architectures_per_epoch_per_sample) if($verbose);
-EasyDump("../data/ArchsPerEpochHash.dat",$distinct_archictectures_per_sample) if($verbose);
-EasyDump("../data/PersampleCount.dat",$PerSampleTotalNumberDistinctCombsExpressed) if($verbose);
+if($verbose){
 
+	EasyDump("../data/ArchsPerEpochPerSampleHash.dat",$distinct_architectures_per_epoch_per_sample);
+	EasyDump("../data/ArchsPerEpochHash.dat",$distinct_archictectures_per_sample);
+	EasyDump("../data/PersampleCount.dat",$PerSampleTotalNumberDistinctCombsExpressed);
+ }
 
 #################################DIVIDE THE NUMBER AT EACH EPOCH BY THE TOTAL NUMBER TO GET THE PROPORTION##########################################
 my $proportion_of_architectures_per_epoch_per_sample = {};
@@ -351,7 +362,9 @@ if($verbose){
 				$epoch_size = 0;
 			}
 			
-			print COMPLETE $samp."\t".$proportion."\t".$zscore."\t".$tax_id."\t".$epoch_size."\t".$DomArchCountPerSample."\t".$DomArchCountPerEpoch."\n";
+			my $sampID = $sample_name2Index->{$samp};
+			
+			print COMPLETE $samp."\t".$samp."\t".$proportion."\t".$zscore."\t".$tax_id."\t".$epoch_size."\t".$DomArchCountPerSample."\t".$DomArchCountPerEpoch."\n";
 		}
 	}
 	
