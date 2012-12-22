@@ -364,7 +364,7 @@ if($verbose){
 			
 			my $sampID = $sample_name2Index->{$samp};
 			
-			print COMPLETE $samp."\t".$samp."\t".$proportion."\t".$zscore."\t".$tax_id."\t".$epoch_size."\t".$DomArchCountPerSample."\t".$DomArchCountPerEpoch."\n";
+			print COMPLETE $samp."\t".$sampID."\t".$proportion."\t".$zscore."\t".$tax_id."\t".$epoch_size."\t".$DomArchCountPerSample."\t".$DomArchCountPerEpoch."\n";
 		}
 	}
 	
