@@ -92,6 +92,7 @@ my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
 my $SQLdump;
 my $translation_file;
+my $disallowedfile;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -99,7 +100,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "SQLdump|s!"  => \$SQLdump,
            "help|h!" => \$help,
            "translate|tr:s" => \$translation_file,
-           "disallowed|df:s" => \,
+           "disallowed|df:s" => \$disallowedfile,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -132,11 +133,15 @@ if($translation_file){
 
 my $distinct_archictectures_per_sample={};
 
-$sth =   $dbh->prepare( "SELECT DISTINCT(snapshot_order_comb.comb_id),comb_MRCA.taxon_id,snapshot_order_comb.sample_name 
-						FROM snapshot_order_comb JOIN comb_MRCA 
-						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id 
+$sth =   $dbh->prepare( "SELECT DISTINCT(snapshot_order_comb.comb_id), comb_MRCA.taxon_id, sample_index.sample_name 
+						FROM snapshot_order_comb 
+						JOIN comb_MRCA 
+						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id
+						JOIN sample_index
+						ON  snapshot_order_comb.sample_id = sample_index.sample_id
 						WHERE comb_MRCA.taxon_id != 0;
 						;"); 
+						
 $sth->execute;
 
 my $SamplesNamesHash = {};
