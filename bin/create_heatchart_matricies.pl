@@ -84,6 +84,7 @@ use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw/:all/;
 use Carp;
 use List::MoreUtils qw(uniq);
+use Carp::Assert::More;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
@@ -184,26 +185,30 @@ $sth =   $dbh->prepare( "SELECT label
 foreach my $epoch (@epochs){
 
 	my $Epoch_All_vs_All_Comparison = {};
+	#this is the number of domain architectures that the two samples have in common
+	my $Epoch_All_vs_All_Ratio = {};
+	#This is the same number, only divided through by the first samples TOTAL number of architectures expressed at this timepoint
 		
 	foreach my $sample1 (@SampleNames){
 			
 			$Epoch_All_vs_All_Comparison->{$sample1}={};
+			$Epoch_All_vs_All_Ratio->{$sample1}={};
 			
 			foreach my $sample2 (@SampleNames){
 				
 				my $NumDAsInCommon = 0;
+				$Epoch_All_vs_All_Ratio->{$sample1}{$sample2}=0;
 				
 				if(exists($distinct_archictectures_per_sample->{$epoch}{$sample1}) && exists($distinct_archictectures_per_sample->{$epoch}{$sample2})){
-					
+										
 					my (undef,$intersection,undef,undef) = IntUnDiff($distinct_archictectures_per_sample->{$epoch}{$sample1},$distinct_archictectures_per_sample->{$epoch}{$sample2});
 					$NumDAsInCommon = scalar(@$intersection);
+					$Epoch_All_vs_All_Ratio->{$sample1}{$sample2}=$NumDAsInCommon/scalar(@{$distinct_archictectures_per_sample->{$epoch}{$sample1}});
 				}
 			
-				$Epoch_All_vs_All_Comparison->{$sample1}{$sample2}=$NumDAsInCommon;
+				$Epoch_All_vs_All_Comparison->{$sample1}{$sample2}=$NumDAsInCommon;				
 		}
 }
-
-
 
 $sth->execute($epoch);
 my ($taxa_name) = $sth->fetchrow_array;
@@ -212,19 +217,29 @@ $sth->finish;
 	#Dump heat maps to files for use in R
 	print STDERR "Print heatmap for $epoch - $taxa_name .... \n";
 	
-	open HEATMAP, ">../data/Heatmap.".$taxa_name.$epoch.".dat" or die $!."\t".$?; 
+	open RATIOMAP, ">../data/Ratiomap.".$taxa_name.$epoch.".dat" or die $!."\t".$?; 
+	open HEATMAP, ">../data/Heatmap.".$taxa_name.$epoch.".dat" or die $!."\t".$?;
+	
+	print RATIOMAP join("\t",@SampleNames);
+	print RATIOMAP "\n";
 	
 	print HEATMAP join("\t",@SampleNames);
 	print HEATMAP "\n";
 	
 	foreach my $OutputSampleName (@SampleNames){
 	
+		print RATIOMAP $OutputSampleName."\t";
+		print RATIOMAP join("\t",@{$Epoch_All_vs_All_Ratio->{$OutputSampleName}}{@SampleNames});
+		print RATIOMAP "\n";
+		
 		print HEATMAP $OutputSampleName."\t";
 		print HEATMAP join("\t",@{$Epoch_All_vs_All_Comparison->{$OutputSampleName}}{@SampleNames});
 		print HEATMAP "\n";
+		
 	}
-	
-	close HEATMAP;
+
+	close RATIOMAP;	
+	close HEATMAP;	
 }
 
 
