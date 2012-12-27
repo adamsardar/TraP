@@ -36,7 +36,7 @@ boxplot(Zscores[c("Homo sapiens",
 "Opisthokonta",
 "Eukaryota",
 "CellularOrganisms"
-)],
+)],)
 
 
 par(cex=0.8,las=3)
@@ -81,7 +81,6 @@ hc = hclust(dist(cosZscores))
 # load code of A2R function
 #source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
 # colored dendrogram
-
 
 op = par(bg="white")
 A2Rplot(hc, k=24, boxes = FALSE, show.labels=TRUE,
