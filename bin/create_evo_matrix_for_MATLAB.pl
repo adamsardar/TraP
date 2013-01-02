@@ -163,19 +163,23 @@ sub create_matrix {
 		$cols{$data[0]} = 1;
 		$rows{$data[2]} = 1;
 	}
+	
+	my @SortedCols = sort keys %cols;
+	my @SortedRows = sort keys %rows;
+	
 	open COLS,'>../data/cols.tab';
-	foreach my $c (sort keys %cols){
+	foreach my $c (@SortedCols){
 		print COLS "$c\n";
 	}
 	
 	open ROWS,'>../data/rows.tab';
-	foreach my $r (sort keys %rows){
+	foreach my $r (@SortedRows){
 		print ROWS "$r\n";
 	}
 	
 	open MATRIX,'>../data/matrix.tab' or die $!."\t".$?;
-	foreach my $c (sort keys %cols){
-		foreach my $r (sort keys %rows){
+	foreach my $c (@SortedCols){
+		foreach my $r (@SortedRows){
 			if(exists($matrix{$c}{$r})){
 				print MATRIX "$matrix{$c}{$r}\t";
 			}else{
