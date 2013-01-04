@@ -201,10 +201,10 @@ foreach my $sampid (keys(%$PerSampleDetailedCount)){
 
 close PERSAMDA;
 
-my $samsize = total_size($PerSampleDetailedCount)/1024**2;
-
-print "HAsh occupies".$samsize." MB \n";
-
+if($debug){
+	my $samsize = total_size($PerSampleDetailedCount)/1024**2;
+	print "Hash occupies".$samsize." MB \n";
+}
 
 ($PerSamp_tf,$PerSamp_idf,$PerSampleHash,$PerSampleDetailedCount) = (undef,undef,undef,undef);
 #Release memory back to the system
@@ -234,11 +234,11 @@ while (my ($CombID,$clus_id) = $sth->fetchrow_array ) {
 	$PerClusterDetailedCount->{$clus_id}{$CombID}++;	
 }
 
+if($debug){
 
-my $clussize = total_size($PerClusterDetailedCount)/1024**2;
-
-print "HAsh occupies".$clussize." MB \n";
-
+	my $clussize = total_size($PerClusterDetailedCount)/1024**2;
+	print "Hash occupies".$clussize." MB \n";
+}
 
 foreach my $doc (keys(%$PerClusterDetailedCount)){
 	
