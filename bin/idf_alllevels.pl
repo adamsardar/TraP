@@ -4,11 +4,11 @@ use Modern::Perl;
 
 =head1 NAME
 
-test_TFIDF.pl
+tfidf_alllevels.pl
 
 =head1 SYNOPSIS
 
-skeleton [options] <file>...
+tfidf_alllevels.pl [options]
 
  Basic Options:
   -h --help Get full man page output
@@ -17,34 +17,22 @@ skeleton [options] <file>...
 
 =head1 DESCRIPTION
 
-This program is part of the TraP Project suite.
+Using term frequency / inverse document frequncy as a measure of enrichement, provides enrichement statistics for GO terms and domain architectures
+at the levels of per sample, per cluster and per cluster neuron.
 
 =head1 EXAMPLES
 
+tfidf_alllevels.pl -v -d
 
 =head1 AUTHOR
 
-B<Matt Oates> - I<Matt.Oates@bristol.ac.uk>
+B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
 
 B<Owen Rackham> - I<Owen.Rackham@bristol.ac.uk>
 
-B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
-
-=head1 NOTICE
-
-=over 4
-
-=item B<Matt Oates> (2011) First features added.
-
-=item B<Owen Rackham> (2011) First features added.
-
-=item B<Adam Sardar> (2011) First features added.
-
-=back
-
 =head1 LICENSE AND COPYRIGHT
 
-B<Copyright 2011 Matt Oates, Owen Rackham, Adam Sardar>
+B<Copyright 2012 Matt Oates, Owen Rackham, Adam Sardar>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -118,35 +106,20 @@ my $TotalTic = Time::HiRes::time;
 
 
 
-#TODO Go Term Analysis
-
-##### GO terms #####
-
-########## Per Sample ##########
-
-########## Per Cluster ##########
-
-########## Per Neuron ##########
-
-
-
-#So just doing Da for the second, because it's an easier palce to start
-
+#Just doing Da for the second, because it's an easier palce to start
 
 ##### DA terms #####
 
 my ($dbh, $sth);
 $dbh = dbConnect();
 
-
 ########## Per Sample ##########
 
 my $PerSampleHash={};
-#Hash of structure $Hash->{DocumentName}=[list of potentially non-unque terms]
+#Hash of structure $Hash->{SampleName}=[list of potentially non-unque terms]
 
 my $PerSampleDetailedCount={};
 #Hash of structure $Hash->{DocumentName}{term} = count
-
 
 $sth =   $dbh->prepare( "SELECT snapshot_order_comb.comb_id,sample_index.sample_id,sample_index.sample_name
 						FROM snapshot_order_comb
@@ -154,10 +127,10 @@ $sth =   $dbh->prepare( "SELECT snapshot_order_comb.comb_id,sample_index.sample_
 						ON snapshot_order_comb.sample_id = sample_index.sample_id
 						AND snapshot_order_comb.comb_id != 1
 						;"); 
-						
 $sth->execute();
 
 my $SampleID2NameDict = {};
+#So as to allow the output to contain information of the sampel name, but whilst still workign with sampel IDs internally to the script
 
 while (my ($CombID,$samp_id,$sample_name) = $sth->fetchrow_array ) {
 	
@@ -172,10 +145,12 @@ foreach my $doc (keys(%$PerSampleDetailedCount)){
 	
 	$PerSampleHash->{$doc}=[keys(%{$PerSampleDetailedCount->{$doc}})];
 }
+#Prepare a hash ($PerSampleHash) to prepare idf upon
 
 my $PerSamp_idf = idf_calc($PerSampleHash);
 
 my @Terms = keys(%$PerSamp_idf);
+#A list of all the terms that we wish to calculate TF (term frequncy) upon
 
 my $PerSamp_tf = logtf_calc($PerSampleDetailedCount,\@Terms);
 
@@ -273,6 +248,20 @@ close PERCLUSDA;
 
 
 ########## Per Neuron ##########
+
+
+
+#TODO Go Term Analysis
+
+##### GO terms #####
+
+########## Per Sample ##########
+
+########## Per Cluster ##########
+
+########## Per Neuron ##########
+
+
 
 
 
