@@ -84,6 +84,7 @@ use Carp::Assert::More;
 use DBI;
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw/:all/;
+ use Statistics::Basic qw(:all);
 use Carp;
 use Carp::Assert;
 use Carp::Assert::More;
@@ -469,12 +470,19 @@ sub enrichment_output {
 	#Calculate a tf or both linear and log terms
 	my $doubleflag= 0; #Almost pointless really, but it adds debug info
 	
-	foreach my $sampid (keys(%$detaileddocumenthash)){
+	my $TraitTFIDFScoreHash = {};
+	#A hash to keep a record of all the tf-idf scores. This will be used to output a summary file with candidate enriched values. Just using linnear scores at current
+	
+	my @SampleIDs = keys(%$detaileddocumenthash);
+	
+	foreach my $sampid (@SampleIDs){
 		
 		assert_hashref($detaileddocumenthash->{$sampid},"Detailed document hash shoudl be a hahs of structure hash->{docname}{term}=count\n");
 
 		#Output DA information
 		foreach my $trait (keys(%{$detaileddocumenthash->{$sampid}})){
+			
+			$TraitTFIDFScoreHash->{$trait}={} unless(exists($TraitTFIDFScoreHash->{$trait}));
 			
 			print FH $sampid."\t";
 			
@@ -504,13 +512,65 @@ sub enrichment_output {
 			my $logtfidf = $logtf*$idf;
 			my $lintfidf = $lintf*$idf;
 			
+			$TraitTFIDFScoreHash->{$trait}{$sampid} = $lintfidf;
+			
 			print FH $trait."\t".$logtfidf."\t".$lintfidf."\n";
 		}
 	}
 	carp "By The Way: trait and sample_id are both present in the dictionary. Should be OK ... but just a heads up!\n" if($doubleflag);
-			
-	
+		
 	close FH;
+
+	open ONESIGSUMMARY, ">$filename.OneSig.summary" or die $?."\t".$!;
+	#Look for significant enriched terms
+	open HIGHSIGSUMMARY, ">$filename.HIGHSig.summary" or die $?."\t".$!;
+	#Look for HIGHLY enriched terms
+	
+	foreach my $term (@$terms){
+		
+		my @tf_idf_scores = @{$TraitTFIDFScoreHash->{$term}}{@SampleIDs};
+		
+		my $mean = mean(@tf_idf_scores);
+		my $stddev   = stddev(@tf_idf_scores);
+		
+		foreach my $sample (keys(%{$TraitTFIDFScoreHash->{$term}})){
+			
+			my $score = $TraitTFIDFScoreHash->{$term}{$sample};
+
+				if($score > ($mean+$stddev)){
+					
+					print ONESIGSUMMARY $sample."\t";
+					print HIGHSIGSUMMARY $sample."\t" if ($score > 2*($mean+$stddev));
+					
+					if(defined($dictionary)){
+					
+						if(exists($dictionary->{$sample})){
+							
+							my $extra = $dictionary->{$sample};
+							print ONESIGSUMMARY $extra."\t";
+							print HIGHSIGSUMMARY $extra."\t" if ($score > 2*($mean+$stddev));
+							
+						}elsif(exists($dictionary->{$term})){
+							
+							my $extra = $dictionary->{$term};
+							print ONESIGSUMMARY $extra."\t";
+							print HIGHSIGSUMMARY $extra."\t" if ($score > 1.5*($mean+$stddev));
+						}
+				}
+				#Dictionary is present so that you can output additional information if you so desire
+				
+				my $normedscore = ($score-$mean)/$stddev;
+				
+				print ONESIGSUMMARY $score."\t".$normedscore."\t".$term."\n";
+				print HIGHSIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($score > 2*($mean+$stddev));
+				
+			}	
+		}
+	}
+	
+	close ONESIGSUMMARY;
+	close HIGHSIGSUMMARY;
+	
 }
 
 
