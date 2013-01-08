@@ -252,7 +252,7 @@ print STDERR "Now processing a per cluster statistic ...\n" if($verbose);
 my $PerClusterDADetailedCount={};
 #Hash of structure $Hash->{DocumentName}{term} = count
 
-$sth =   $dbh->prepare( "SELECT snapshot_order_comb.comb_id,experiment_cluster.unit_id
+$sth =   $dbh->prepare( "SELECT snapshot_order_comb.comb_id,experiment_cluster.cluster_id
 						FROM experiment_cluster
 						JOIN snapshot_order_comb
 						ON experiment_cluster.sample_id = snapshot_order_comb.sample_id
@@ -347,7 +347,7 @@ print STDERR "Now processing a per neuron statistic ...\n" if($verbose);
 my $PerNeuronDADetailedCount={};
 #Hash of structure $Hash->{DocumentName}{term} = count
 
-$sth =   $dbh->prepare( "SELECT snapshot_order_comb.comb_id,experiment_cluster.cluster_id
+$sth =   $dbh->prepare( "SELECT snapshot_order_comb.comb_id,experiment_cluster.unit_id
 						FROM experiment_cluster
 						JOIN snapshot_order_comb
 						ON experiment_cluster.sample_id = snapshot_order_comb.sample_id

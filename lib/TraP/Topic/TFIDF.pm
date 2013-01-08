@@ -121,7 +121,7 @@ sub idf_calc {
 		
 		if(exists($DocumentTermFrequency->{$term})){
 			
-			$idf->{$term}=log($CorpusSize/($DocumentTermFrequency->{$term}))
+			$idf->{$term}=log(1+$CorpusSize/($DocumentTermFrequency->{$term}))
 			
 		}else{
 			
@@ -495,8 +495,7 @@ sub enrichment_output {
 			}
 			#Dictionary is present so that you can output additional information if you so desire
 			
-			carp "By The Way: trait and sample_id are both present in the dictionary. Should be OK ... but just a heads up!\n" if($doubleflag);
-			
+
 			my $logtf = $logtf_hash->{$sampid}{$trait};
 			my $lintf = $lintf_hash->{$sampid}{$trait};
 			
@@ -508,6 +507,8 @@ sub enrichment_output {
 			print FH $trait."\t".$logtfidf."\t".$lintfidf."\n";
 		}
 	}
+	carp "By The Way: trait and sample_id are both present in the dictionary. Should be OK ... but just a heads up!\n" if($doubleflag);
+			
 	
 	close FH;
 }
