@@ -10,6 +10,14 @@ our %EXPORT_TAGS = (
 'all' => [ qw(
 			idf_calc
 			logtf_calc
+			linneartf_calc
+			PO_table_info
+			PO_query_construct
+			PO_detailed_info
+			GO_table_info
+			GO_query_construct
+			GO_detailed_info
+			enrichment_output
 ) ],
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -28,7 +36,7 @@ TraP::Topic::TFIDF v1.0 - Module to calculate Term Frequency v Inverse Document 
 
 This module has been released as part of the TraP Project code base.
 
-Module to calculate TFIDF weightings for all input.
+Module to calculate TFIDF weightings for all input. Also contains functions for extracting PO and GO terms from superfamily
 
 =head1 EXAMPLES
 
@@ -63,7 +71,7 @@ limitations under the License.
 =cut
 
 
-#use lib '~/lib';
+use lib '../../../lib';
 
 =head1 DEPENDANCY
 
@@ -73,13 +81,19 @@ B<Data::Dumper> Used for debug output.
 use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 use List::MoreUtils qw/ uniq /;
 use Carp::Assert::More;
-
+use DBI;
+use Utils::SQL::Connect qw/:all/;
+use Supfam::Utils qw/:all/;
+use Carp;
+use Carp::Assert;
+use Carp::Assert::More;
 
 =head1 FUNCTIONS DEFINED
 
 
 =item * idf_calc
 
+Given a hash of documents and (not neccerserily unique) terms within them, calculate and idf using a log score
 
 =cut
 
@@ -105,7 +119,17 @@ sub idf_calc {
 	
 	foreach my $term (@DocumentTerms){
 		
-		$idf->{$term}=log($CorpusSize/(1+$DocumentTermFrequency->{$term}))
+		if(exists($DocumentTermFrequency->{$term})){
+			
+			$idf->{$term}=log($CorpusSize/($DocumentTermFrequency->{$term}))
+			
+		}else{
+			
+			$idf->{$term}=4;
+			#If a term is not in the corpus, then set the idf as 1 so that it has a positive score
+			#This is equivlent to a subset of the corpus having the term such that Card_D/n_d = e^2
+		}
+		
 	}
 	
 	return($idf);
@@ -114,6 +138,7 @@ sub idf_calc {
 
 =item * logtf_calc
 
+log transformed term frequency
 
 =cut
 
@@ -135,7 +160,7 @@ sub logtf_calc {
 		
 			if(exists($DocumentTermsHash->{$Document}{$term})){
 				
-				$logtf->{$Document}{$term}=1+log($DocumentTermsHash->{$Document}{$term});
+				$logtf->{$Document}{$term}=0.1+log($DocumentTermsHash->{$Document}{$term});
 				
 			}else{
 				
@@ -147,19 +172,346 @@ sub logtf_calc {
 	return $logtf;	
 }
 
-=pod
 
-=back
+=item * linneartf_calc
 
-=head1 TODO
-
-=over 4
-
-=item Add feature here...
-
-=back
+linnear addition of term frequency
 
 =cut
+
+sub linneartf_calc {
+	
+	my ($DocumentTermsHash,$Terms) = @_;
+	
+	assert_hashref($DocumentTermsHash,"Expecting a hash of structure DocumentTermsHash->{Document name}{term}=termcount\n");
+	assert_listref($Terms,"Expecting an arrayref of a list of terms to calculate tf upon\n");
+	
+	my $lintf = {};
+	
+	foreach my $Document (keys(%$DocumentTermsHash)){
+		
+		$lintf->{$Document}={};
+		assert_hashref($DocumentTermsHash->{$Document},"Expecting a hash of structure DocumentTermsHash->{Document name}{term}=termcount\n");
+		
+		foreach my $term (@$Terms){
+		
+			if(exists($DocumentTermsHash->{$Document}{$term})){
+				
+				$lintf->{$Document}{$term}=$DocumentTermsHash->{$Document}{$term};
+				
+			}else{
+				
+				$lintf->{$Document}{$term}=0;
+			}
+		}
+	}
+	
+	return $lintf;	
+}
+
+
+=item * PO_query_construct
+
+A function to contruct a query handle for extracting data from superfamily PO mapping table
+
+=cut
+
+sub PO_query_construct{
+	
+	my ($dbh) = @_;
+	
+	unless(defined($dbh)){
+		
+		$dbh = dbConnect('superfamily');
+	}
+	
+	my $supfam_POsth =   $dbh->prepare_cached( "SELECT DISTINCT(PO_mapping_supra.po),PO_mapping_supra.obo
+								FROM PO_mapping_supra 
+								JOIN PO_ic_supra
+								ON PO_ic_supra.po = PO_mapping_supra.po
+								WHERE (PO_mapping_supra.inherited_from IS NOT NULL OR PO_mapping_supra.inherited_from != '')
+								AND PO_mapping_supra.id = ?
+								AND PO_ic_supra.include >= 3
+								AND (PO_mapping_supra.obo = 'HP' OR PO_mapping_supra.obo = 'DO')
+								AND PO_mapping_supra.po IS NOT NULL;"); 
+	
+	return($supfam_POsth);
+}
+
+
+=item * PO_table_info
+
+Given a list of supra ids, extract HP (human phenotype) and DO (disease ontology) information. Returned are two hashes, one for HP and one for DO (respectively) of structure $hash->{combid}=[list of terms]
+
+=cut
+
+sub PO_table_info {
+	
+	my ($Supra_ids,$sth) = @_;
+	
+	unless(defined($sth)){
+		
+		my $dbh = dbConnect('superfamily');
+		$sth = PO_query_construct($dbh);
+	}
+	
+	assert_listref($Supra_ids,"Expecting an arrayref of a list of comb/supra ids which to extract data for\n");
+	
+	my $Comb2HPList = {};
+	my $Comb2DOList = {};
+	#Hashes of structure hash->{combID}=[list of DO/HP terms]
+	
+	foreach my $supra_id (@$Supra_ids){
+		
+		$sth->execute($supra_id);
+		
+		while (my ($PO_term,$PO_type) = $sth->fetchrow_array){
+			
+			if($PO_type ~~ 'HP'){
+				
+				$Comb2HPList->{$supra_id}=[] unless(exists($Comb2HPList->{$supra_id}));
+				push(@{$Comb2HPList->{$supra_id}},$PO_term);
+				
+			}elsif($PO_type ~~ 'DO'){
+				
+				$Comb2DOList->{$supra_id}=[] unless(exists($Comb2DOList->{$supra_id}));
+				push(@{$Comb2DOList->{$supra_id}},$PO_term);
+				
+			}else{
+				
+				die "Only HP and DO are expected as obo types from SUPERFAMILY\n;";
+			}
+			
+		}
+	}
+	
+	return($Comb2HPList,$Comb2DOList);	
+}
+
+
+=item * PO_detailed_info
+
+Extract detailed information from the superfamily database regarding a tonne of GO terms
+
+=cut
+
+sub PO_detailed_info {
+	
+	my ($PO_terms) = @_;
+	
+
+	my $dbh = dbConnect('superfamily');
+	my $sth = $dbh->prepare_cached( "SELECT PO_info.name
+								FROM PO_info 
+								WHERE PO_info.po = ?;"); 
+
+	assert_listref($PO_terms,"Expecting an arrayref of a list of comb/supra ids which to extract data for\n");
+
+	my $POID2Details= {};
+	#Hashes of structure hash->{combID}=[list of DO/HP terms]
+	
+	foreach my $PO_term (@$PO_terms){
+		
+		$sth->execute($PO_term);
+		
+		while (my ($PO_details) = $sth->fetchrow_array){
+	
+			$POID2Details->{$PO_term}=$PO_details;
+				
+		}
+	}
+	
+	return($POID2Details);	
+}
+
+
+=item * GO_query_construct
+
+A function to contruct a query handle for extracting data from superfamily GO mapping table
+
+=cut
+
+sub GO_query_construct{
+	
+	my ($dbh) = @_;
+	
+	unless(defined($dbh)){
+		
+		$dbh = dbConnect('superfamily');
+	}
+	
+	my $supfam_GOsth =   $dbh->prepare_cached( "SELECT GO_mapping_supra.go
+								FROM GO_mapping_supra
+								JOIN GO_ic_supra
+								ON GO_ic_supra.go = GO_mapping_supra.go
+								WHERE (GO_mapping_supra.inherited_from IS NOT NULL OR GO_mapping_supra.inherited_from != '')
+								AND GO_mapping_supra.id = ?
+								AND GO_ic_supra.include >= 3
+								AND GO_mapping_supra.go IS NOT NULL;"); 
+	
+	return($supfam_GOsth);
+}
+
+
+=item * GO_table_info
+
+Given a list of supra ids, extract GO information. Returned is a hash of supra id to an arrayref of GO terms
+
+The source of these GO terms is as follows i.) check DC GO annotation and then (if no record is found) ii.) look for experiemntal validated data
+=cut
+
+sub GO_table_info {
+	
+	my ($Supra_ids,$sth) = @_;
+	
+	unless(defined($sth)){
+		
+		my $dbh = dbConnect('superfamily');
+		$sth = GO_query_construct($dbh);
+	}
+	
+	assert_listref($Supra_ids,"Expecting an arrayref of a list of comb/supra ids which to extract data for\n");
+
+	my $experimental_dbh = dbConnect('trap');
+	my $experimental_sth = $experimental_dbh->prepare_cached( "SELECT comb_go_mapping.go_id
+								FROM comb_go_mapping 
+								WHERE comb_go_mapping.comb_id = ?;"); 
+
+	my $Comb2GOList = {};
+	#Hashes of structure hash->{combID}=[list of DO/HP terms]
+	
+	foreach my $supra_id (@$Supra_ids){
+		
+		$sth->execute($supra_id);
+		
+		if($sth->rows){
+		
+			while (my ($GO_term) = $sth->fetchrow_array){
+		
+				$Comb2GOList->{$supra_id}=[] unless(exists($Comb2GOList->{$supra_id}));
+				push(@{$Comb2GOList->{$supra_id}},$GO_term);
+			}
+			#If there is an entry in DC GO for the supra_id in question, then add the GO term assignmenets
+			
+		}else{
+			
+			$experimental_sth->execute($supra_id);
+			
+			while (my ($GO_term) = $experimental_sth->fetchrow_array){
+		
+				$Comb2GOList->{$supra_id}=[] unless(exists($Comb2GOList->{$supra_id}));
+				push(@{$Comb2GOList->{$supra_id}},$GO_term);
+			}
+			#Else check for the comb_go_mapping table entry
+		}
+		
+	}
+	
+	return($Comb2GOList);	
+}
+
+=item * GO_detailed_info
+
+Extract detailed information from the superfamily database regarding a tonne of GO terms
+
+=cut
+
+sub GO_detailed_info {
+	
+	my ($GO_terms) = @_;
+	
+
+	my $supfam_dbh = dbConnect('superfamily');
+	
+	my $supfam_sth = $supfam_dbh->prepare_cached( "SELECT GO_info.name
+								FROM GO_info 
+								WHERE GO_info.go = ?;"); 
+
+	assert_listref($GO_terms,"Expecting an arrayref of a list of comb/supra ids which to extract data for\n");
+
+	my $GOID2Details= {};
+	#Hashes of structure hash->{combID}=[list of DO/HP terms]
+	
+	foreach my $GO_term (@$GO_terms){
+		
+		$supfam_sth->execute($GO_term);
+		
+		while (my ($GO_details) = $supfam_sth->fetchrow_array){
+	
+			$GOID2Details->{$GO_term}=$GO_details;
+		}
+	}
+	
+	return($GOID2Details);	
+}
+
+=item * enrichment_output
+
+Having calculated an idf and decided on terms that we wish to analysise - output results to a file
+
+An optional argument *dictionary is provided so that you may output aditional information in relation to samples if you wish
+
+=cut
+
+sub enrichment_output {
+	
+	my ($filename,$detaileddocumenthash,$idf,$terms,$dictionary) = @_;
+	
+	assert_listref($terms,"Expected a reference to a list of terms to calculate tf-idf upon\n");
+	assert_hashref($detaileddocumenthash,"Detailed document hash shoudl be a hahs of structure hash->{docname}{term}=count\n");
+	assert_hashref($idf,"idf shoudl be a hash of form hash->{term}=val\n");
+	assert_hashref($dictionary,"Dictionary (an optional argument) shoudl be a has mapping from document name to another desited name\n") if(defined($dictionary));
+		
+	open FH, ">$filename" or die $?."\t".$!;
+	
+	my $logtf_hash = logtf_calc($detaileddocumenthash,$terms);
+	my $lintf_hash = linneartf_calc($detaileddocumenthash,$terms);
+	#Calculate a tf or both linear and log terms
+	my $doubleflag= 0; #Almost pointless really, but it adds debug info
+	
+	foreach my $sampid (keys(%$detaileddocumenthash)){
+		
+		assert_hashref($detaileddocumenthash->{$sampid},"Detailed document hash shoudl be a hahs of structure hash->{docname}{term}=count\n");
+
+		#Output DA information
+		foreach my $trait (keys(%{$detaileddocumenthash->{$sampid}})){
+			
+			print FH $sampid."\t";
+			
+			if(defined($dictionary)){
+				
+				if(exists($dictionary->{$sampid})){
+					
+					my $extra = $dictionary->{$sampid};
+					print FH $extra."\t";
+					
+				}elsif(exists($dictionary->{$trait})){
+					
+					my $extra = $dictionary->{$trait};
+					print FH $extra."\t";
+				}
+				
+				$doubleflag=1 if(exists($dictionary->{$trait}) && exists($dictionary->{$sampid}));
+			}
+			#Dictionary is present so that you can output additional information if you so desire
+			
+			carp "By The Way: trait and sample_id are both present in the dictionary. Should be OK ... but just a heads up!\n" if($doubleflag);
+			
+			my $logtf = $logtf_hash->{$sampid}{$trait};
+			my $lintf = $lintf_hash->{$sampid}{$trait};
+			
+			my $idf = $idf->{$trait};
+			
+			my $logtfidf = $logtf*$idf;
+			my $lintfidf = $lintf*$idf;
+			
+			print FH $trait."\t".$logtfidf."\t".$lintfidf."\n";
+		}
+	}
+	
+	close FH;
+}
+
 
 1;
 __END__
