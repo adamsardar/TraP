@@ -541,8 +541,8 @@ sub enrichment_output {
 			#Output all scores
 			
 			print FULL $sample."\t";
-			print ONESIGSUMMARY $sample."\t" if ($score > ($mean+$stddev));
-			print HIGHSIGSUMMARY $sample."\t" if ($score > 2*($mean+$stddev));
+			print ONESIGSUMMARY $sample."\t" if ($normedscore > 1);
+			print HIGHSIGSUMMARY $sample."\t" if ($normedscore > 2);
 			#Output higher quality scores if they are over 1 or 2 std devs from mean
 			
 			if(defined($dictionary)){
@@ -551,22 +551,22 @@ sub enrichment_output {
 							
 							my $extra = $dictionary->{$sample};
 							print FULL $extra."\t";
-							print ONESIGSUMMARY $extra."\t" if ($score > ($mean+$stddev));
-							print HIGHSIGSUMMARY $extra."\t" if ($score > 2*($mean+$stddev));
+							print ONESIGSUMMARY $extra."\t" if ($normedscore > 1);
+							print HIGHSIGSUMMARY $extra."\t" if ($normedscore > 2);
 							
 						}elsif(exists($dictionary->{$term})){
 							
 							my $extra = $dictionary->{$term};
 							print FULL $extra."\t";
-							print ONESIGSUMMARY $extra."\t" if ($score > ($mean+$stddev));
-							print HIGHSIGSUMMARY $extra."\t" if ($score > 2*($mean+$stddev));
+							print ONESIGSUMMARY $extra."\t" if ($normedscore > 1);
+							print HIGHSIGSUMMARY $extra."\t" if ($normedscore > 2);
 						}
 			}
 			#Dictionary is present so that you can output additional information if you so desire
 			
 			print FULL $score."\t".$normedscore."\t".$term."\n";
-			print ONESIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($score > ($mean+$stddev));
-			print HIGHSIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($score > 2*($mean+$stddev));
+			print ONESIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($normedscore > 1);
+			print HIGHSIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if  ($normedscore > 2);
 							
 		}
 	}
