@@ -8,7 +8,7 @@ dendrogramMatricies4R.pl
 
 =head1 SYNOPSIS
 
-skeleton [options] <file>...
+dendrogramMatricies4R.pl [options] <file>...
 
  Basic Options:
   -h --help Get full man page output
@@ -119,17 +119,20 @@ CPAN dependancies:
 use Getopt::Long; #Deal with command line options
 use Pod::Usage;   #Print a usage man page from the POD comments
 use Data::Dumper; #Allow easy print dumps of datastructures for debugging
+use Supfam::Utils qw/:all/;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
 my $verbose; #Flag for verbose output from command line opts
 my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
+my $dictionary;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
            "debug|d!"  => \$debug,
            "help|h!" => \$help,
+            "dict|t:s" => \$dictionary,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -152,6 +155,23 @@ Function to do something
 #-------------------------------------------------------------------------------
 
 my @TaxonIDOrder = qw(9606 32525 40674 32524 117571 7711 33511 33316 33213 6072 33154 2759 131567);
+my $dict = {};
+
+if($dictionary){
+	
+	open DICT,"<$dictionary" or die $!."\t".$?;
+	
+	while(<DICT>){
+		
+		chomp;
+		my ($key,$val)=split(/\t+/);
+		$dict->{$key}=$val;
+	}
+	
+	close DICT;	
+}
+
+EasyDump('./dictionary.dat',$dict)if($debug);
 
 foreach my $file (@files){
 	
@@ -159,7 +179,7 @@ foreach my $file (@files){
 	
 	my $MatrixHash = {};
 	
-	undef = <FH>;
+	my $temp = <FH>;
 	#First line is a tonne of guff	
 	
 	while (my $line  = <FH>){
@@ -167,17 +187,26 @@ foreach my $file (@files){
 		chomp $line;
 		my ($unit_id,$taxon_id,$Z_scor_av) = split(/\t/,$line);
 		
+		
+		if($dictionary){
+			
+			print $unit_id."\t" unless(exists($dict->{$unit_id}));
+		 	$unit_id = $dict->{$unit_id};
+		 }
+		
+		
 		$MatrixHash->{$unit_id}={} unless(exists($MatrixHash->{$unit_id}));
 		$MatrixHash->{$unit_id}{$taxon_id}=$Z_scor_av;
 	}
 	
 	close FH;	
 	
-	open OUT, "$file.mat" or die $!."\t".$?;
+	open OUT, ">$file.mat" or die $!."\t".$?;
 	print OUT join("\t",@TaxonIDOrder);
+	print OUT "\n";
 	
 	foreach my $unit (keys(%$MatrixHash)){
-		
+				
 		print OUT $unit."\t";
 		print OUT join("\t",@{$MatrixHash->{$unit}}{@TaxonIDOrder});
 		print OUT "\n";	

@@ -521,6 +521,7 @@ sub enrichment_output {
 		
 	close FH;
 
+	open FULL, ">$filename.AllSig.summary" or die $?."\t".$!;
 	open ONESIGSUMMARY, ">$filename.OneSig.summary" or die $?."\t".$!;
 	#Look for significant enriched terms
 	open HIGHSIGSUMMARY, ">$filename.HIGHSig.summary" or die $?."\t".$!;
@@ -531,46 +532,48 @@ sub enrichment_output {
 		my @tf_idf_scores = @{$TraitTFIDFScoreHash->{$term}}{@SampleIDs};
 		
 		my $mean = mean(@tf_idf_scores);
-		my $stddev   = stddev(@tf_idf_scores);
+		my $stddev = stddev(@tf_idf_scores);
 		
 		foreach my $sample (keys(%{$TraitTFIDFScoreHash->{$term}})){
 			
 			my $score = $TraitTFIDFScoreHash->{$term}{$sample};
-
-				if($score > ($mean+$stddev)){
-					
-					print ONESIGSUMMARY $sample."\t";
-					print HIGHSIGSUMMARY $sample."\t" if ($score > 2*($mean+$stddev));
-					
-					if(defined($dictionary)){
+			my $normedscore = ($score-$mean)/$stddev;
+			#Output all scores
+			
+			print FULL $sample."\t";
+			print ONESIGSUMMARY $sample."\t" if ($score > ($mean+$stddev));
+			print HIGHSIGSUMMARY $sample."\t" if ($score > 2*($mean+$stddev));
+			#Output higher quality scores if they are over 1 or 2 std devs from mean
+			
+			if(defined($dictionary)){
 					
 						if(exists($dictionary->{$sample})){
 							
 							my $extra = $dictionary->{$sample};
-							print ONESIGSUMMARY $extra."\t";
+							print FULL $extra."\t";
+							print ONESIGSUMMARY $extra."\t" if ($score > ($mean+$stddev));
 							print HIGHSIGSUMMARY $extra."\t" if ($score > 2*($mean+$stddev));
 							
 						}elsif(exists($dictionary->{$term})){
 							
 							my $extra = $dictionary->{$term};
-							print ONESIGSUMMARY $extra."\t";
-							print HIGHSIGSUMMARY $extra."\t" if ($score > 1.5*($mean+$stddev));
+							print FULL $extra."\t";
+							print ONESIGSUMMARY $extra."\t" if ($score > ($mean+$stddev));
+							print HIGHSIGSUMMARY $extra."\t" if ($score > 2*($mean+$stddev));
 						}
-				}
-				#Dictionary is present so that you can output additional information if you so desire
-				
-				my $normedscore = ($score-$mean)/$stddev;
-				
-				print ONESIGSUMMARY $score."\t".$normedscore."\t".$term."\n";
-				print HIGHSIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($score > 2*($mean+$stddev));
-				
-			}	
+			}
+			#Dictionary is present so that you can output additional information if you so desire
+			
+			print FULL $score."\t".$normedscore."\t".$term."\n";
+			print ONESIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($score > ($mean+$stddev));
+			print HIGHSIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($score > 2*($mean+$stddev));
+							
 		}
 	}
 	
 	close ONESIGSUMMARY;
 	close HIGHSIGSUMMARY;
-	
+	close FULL;
 }
 
 

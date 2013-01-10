@@ -39,8 +39,10 @@ boxplot(Zscores[c("Homo sapiens",
 )],)
 
 
-par(cex=0.8,las=3)
-vioplot(Zscores$"Homo sapiens",
+par(cex=0.6,las=3)
+
+vioplot(
+Zscores$"Homo sapiens",
 Zscores$"Theria",
 Zscores$"Mammalia",
 Zscores$"Amniota",
@@ -52,7 +54,7 @@ Zscores$"Bilateria",
 Zscores$"Eumetazoa",
 Zscores$"Opisthokonta",
 Zscores$"Eukaryota",
-Zscores$"CellularOrganisms",
+Zscores$"cellular organisms",
 names=c("Homo sapiens",
 "Theria",
 "Mammalia",
@@ -65,10 +67,11 @@ names=c("Homo sapiens",
 "Eumetazoa",
 "Opisthokonta",
 "Eukaryota",
-"CellularOrganisms"), wex=1.2, col='lightblue'
+"Cellular\nOrganisms"), wex=1.2, col='lightblue'
 )
 
 title(main="Violin Plot Of Epoch Comb Z-scores Collapsed to 13 Taxonomy Points")
+title(ylab = 'Z-score')
         
 source("../bin/A2Rcode.r")
         
@@ -86,4 +89,16 @@ op = par(bg="white")
 A2Rplot(hc, k=24, boxes = FALSE, show.labels=TRUE,
    col.up = "gray50", col.down = c("black","chartreuse4","red1","blue","darkgoldenrod1","black","red","grey","black","chartreuse4","blue","red1","darkgoldenrod1","black","red","grey","black","chartreuse4","blue","red1","darkgoldenrod1","black","red","grey"))
 par(op)
+
+
+data <- read.csv("./cluster_10.tsv.mat", header=TRUE,sep = "\t")
+cosZscores<-cosine(as.matrix(t(data)))
+heatmap.2(cosZscores,trace="none")
+hc=hclust(dist(cosZscores))
+plot(hc,cex=3,xlab='',main='Cluster 10',ylab='')
+
+
+library(ape)
+library(cluster) 
+plot(as.phylo(hclust(dist(cosZscores))),type="fan")
 
