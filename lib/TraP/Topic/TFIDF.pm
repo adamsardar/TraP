@@ -537,7 +537,16 @@ sub enrichment_output {
 		foreach my $sample (keys(%{$TraitTFIDFScoreHash->{$term}})){
 			
 			my $score = $TraitTFIDFScoreHash->{$term}{$sample};
-			my $normedscore = ($score-$mean)/$stddev;
+			
+			my $normedscore;
+			if ($stddev > 0){
+				
+				$normedscore = ($score-$mean)/$stddev;
+			}else{
+				
+				$normedscore = 0;
+			}
+			
 			#Output all scores
 			
 			print FULL $sample."\t";
