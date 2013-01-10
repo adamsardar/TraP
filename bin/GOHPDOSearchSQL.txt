@@ -1,0 +1,89 @@
+
+#For cross referencing experimental GO with supfam terms index of GO terms
+SELECT *
+FROM trap.comb_go_mapping as a
+JOIN superfamily.GO_info as b
+ON a.go_id = b.go
+JOIN superfamily.GO_ic as c
+ON c.go = b.go
+WHERE a.comb_id IN (33055)
+AND c.include >= 3;
+
+#For extracting MRCAs of Das
+SELECT comb_MRCA.taxon_id,count(comb_MRCA.taxon_id)
+FROM comb_MRCA
+WHERE comb_MRCA.comb_id IN 
+(33055)
+GROUP BY comb_MRCA.taxon_id;
+
+SELECT GO_info.go,supra.comb_id,supra.supra_id,GO_info.go,GO_info.name,GO_info.definition,GO_info.synonym
+FROM GO_mapping_supra
+JOIN supra
+ON GO_mapping_supra.id = supra.supra_id
+JOIN comb_index
+ON comb_index.id = supra.supra_id
+JOIN GO_ic
+ON GO_mapping_supra.go = GO_ic.go
+JOIN GO_info
+ON GO_mapping_supra.go = GO_info.go
+WHERE GO_ic.include > 3
+AND comb_index.length = 1
+AND supra.comb_id = 29648
+GROUP BY GO_info.go;
+
+
+#Grabbing all high quality PO terms associated with any superfamily within a group of combs
+SELECT DISTINCT(PO_info.po),supra.comb_id,supra.supra_id,PO_info.po,PO_info.name,PO_info.definition,PO_info.synonym
+FROM PO_mapping_supra
+JOIN supra
+ON PO_mapping_supra.id = supra.supra_id
+JOIN PO_ic
+ON PO_mapping_supra.po = PO_ic.po
+JOIN PO_info
+ON PO_mapping_supra.po = PO_info.po
+WHERE PO_ic.include > 3
+AND PO_info.obo = 'HP'
+AND supra.comb_id IN (558, 29316, 2166, 30032, 29657, 28864, 29318, 36974);
+
+
+#As above, but more detailed
+SELECT DISTINCT(PO_info.po),supra.comb_id,supra.supra_id,PO_info.po,PO_info.name,PO_info.definition,PO_info.synonym
+FROM PO_mapping_supra
+JOIN supra
+ON PO_mapping_supra.id = supra.supra_id
+JOIN PO_ic
+ON PO_mapping_supra.po = PO_ic.po
+JOIN PO_info
+ON PO_mapping_supra.po = PO_info.po
+WHERE PO_ic.include > 3
+AND PO_info.obo = 'HP'
+AND supra.comb_id IN (
+558, 29316, 2166, 30032, 29657, 28864, 29318, 36974
+);
+
+#Just the detailed PO names
+SELECT DISTINCT(PO_info.name)
+FROM PO_mapping_supra
+JOIN supra
+ON PO_mapping_supra.id = supra.supra_id
+JOIN PO_ic
+ON PO_mapping_supra.po = PO_ic.po
+JOIN PO_info
+ON PO_mapping_supra.po = PO_info.po
+WHERE PO_ic.include > 3
+AND PO_info.obo = 'DO'
+AND supra.comb_id IN (21001, 2325, 2957, 30067, 30192, 30457, 30699, 30992, 31302, 31729, 32106, 32255, 32658, 32661, 5003);
+
+
+
+SELECT DISTINCT(GO_info.name)
+FROM GO_mapping_supra
+JOIN supra
+ON GO_mapping_supra.id = supra.supra_id
+JOIN GO_ic
+ON GO_mapping_supra.go = GO_ic.go
+JOIN GO_info
+ON GO_mapping_supra.go = GO_info.go
+WHERE GO_ic.include > 3
+AND GO_info.namespace != 'biological_process'
+AND supra.comb_id IN (29648);
