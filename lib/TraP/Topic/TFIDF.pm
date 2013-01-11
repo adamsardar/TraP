@@ -456,16 +456,16 @@ An optional argument *dictionary is provided so that you may output aditional in
 
 sub enrichment_output {
 	
-	my ($filename,$detaileddocumenthash,$idf,$terms,$dictionary) = @_;
+	my ($filename,$detaileddocumenthash,$idf,$terms,$dictionary,$scaling) = @_;
 	
 	assert_listref($terms,"Expected a reference to a list of terms to calculate tf-idf upon\n");
 	assert_hashref($detaileddocumenthash,"Detailed document hash shoudl be a hahs of structure hash->{docname}{term}=count\n");
 	assert_hashref($idf,"idf shoudl be a hash of form hash->{term}=val\n");
 	assert_hashref($dictionary,"Dictionary (an optional argument) shoudl be a has mapping from document name to another desited name\n") if(defined($dictionary));
-		
+	assert_hashref($scaling,"Scalaing (an optional argument) should be a two level hash mapping from document name to another desited name\n") ;
+
 	open FH, ">$filename" or die $?."\t".$!;
-	
-	my $logtf_hash = logtf_calc($detaileddocumenthash,$terms);
+
 	my $lintf_hash = linneartf_calc($detaileddocumenthash,$terms);
 	#Calculate a tf or both linear and log terms
 	my $doubleflag= 0; #Almost pointless really, but it adds debug info
@@ -504,17 +504,23 @@ sub enrichment_output {
 			#Dictionary is present so that you can output additional information if you so desire
 			
 
-			my $logtf = $logtf_hash->{$sampid}{$trait};
 			my $lintf = $lintf_hash->{$sampid}{$trait};
 			
 			my $idf = $idf->{$trait};
-			
-			my $logtfidf = $logtf*$idf;
+
 			my $lintfidf = $lintf*$idf;
 			
-			$TraitTFIDFScoreHash->{$trait}{$sampid} = $lintfidf;
+			if(exists($scaling->{$trait}{$sampid})){
+				
+				my $scalingval = $scaling->{$trait}{$sampid};
+				$TraitTFIDFScoreHash->{$trait}{$sampid} = $lintfidf*$scalingval;
+				
+			}else{
 			
-			print FH $trait."\t".$logtfidf."\t".$lintfidf."\n";
+				$TraitTFIDFScoreHash->{$trait}{$sampid} = $lintfidf;
+			}
+			
+			print FH $trait."\t".$lintfidf."\n";
 		}
 	}
 	carp "By The Way: trait and sample_id are both present in the dictionary. Should be OK ... but just a heads up!\n" if($doubleflag);

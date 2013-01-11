@@ -89,11 +89,15 @@ use Time::HiRes;
 my $verbose; #Flag for verbose output from command line opts
 my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
+my $all = 0;
+my $zscale;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
            "debug|d!"  => \$debug,
            "help|h!" => \$help,
+           "all|a!" => \$all,
+           "zsclae|z" => \$zscale,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -106,6 +110,31 @@ my $TotalTic = Time::HiRes::time;
 
 #Connect to SUPERFAMILY usign a different dbh to that used below. Prepare a cached query so that we can extract GO terms per supra id that we provide
 #In each section, bung the GO terms into a hash similar to the detialed hashes
+
+
+my $zscalinghash = undef;
+
+if($zscale){
+	
+	$zscalinghash={};
+	
+	my ($zdbh, $zsth);
+	$zdbh = dbConnect();
+	
+	$zsth =   $zdbh->prepare( " SELECT z_score, sample_id, comb_id 
+	FROM snapshot_evolution_collapsed 
+	JOIN comb_MRCA 
+	ON snapshot_evolution_collapsed.taxon_id = comb_MRCA.taxon_id
+						;"); 
+	$zsth->execute();
+	
+	while (my ($z_score,$sampid,$combid) = $zsth->fetchrow_array){
+		
+		$zscalinghash->{$combid}={} unless(exists($zscalinghash->{$combid}));
+		$zscalinghash->{$combid}{$sampid}=abs($z_score);
+	}
+}
+
 
 my $sth_PO_queries = PO_query_construct;
 my $sth_GO_queries = GO_query_construct;
@@ -239,14 +268,41 @@ my $HPTerms = [keys(%$PerSampHP_idf)];
 my $GO_detailed = GO_detailed_info($GOTerms);
 my $PO_detailed = PO_detailed_info([@$DOTerms,@$HPTerms]);
 
-enrichment_output("../data/Enrichment/PerSample.DA.Enrichement.txt",$PerSampleDetailedCount,$PerSampDA_idf,$DATerms,$SampleID2NameDict);
-enrichment_output("../data/Enrichment/PerSample.GO.Enrichement.txt",$PerSampleGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
-enrichment_output("../data/Enrichment/PerSample.DO.Enrichement.txt",$PerSampleDODetailedCount,$PerSampDO_idf,$DOTerms,$PO_detailed);
-enrichment_output("../data/Enrichment/PerSample.HP.Enrichement.txt",$PerSampleHPDetailedCount,$PerSampHP_idf,$HPTerms,$PO_detailed);
-
+enrichment_output("../data/Enrichment/PerSample.DA.Enrichement.txt",$PerSampleDetailedCount,$PerSampDA_idf,$DATerms,$SampleID2NameDict,$zscalinghash);
+if($all){
+	enrichment_output("../data/Enrichment/PerSample.GO.Enrichement.txt",$PerSampleGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
+	enrichment_output("../data/Enrichment/PerSample.DO.Enrichement.txt",$PerSampleDODetailedCount,$PerSampDO_idf,$DOTerms,$PO_detailed);
+	enrichment_output("../data/Enrichment/PerSample.HP.Enrichement.txt",$PerSampleHPDetailedCount,$PerSampHP_idf,$HPTerms,$PO_detailed);
+}
 ########## Per Cluster ##########
 
 print STDERR "Now processing a per cluster statistic ...\n" if($verbose);
+
+
+if($zscale){
+	
+	$zscalinghash={};
+	
+	my ($zdbh, $zsth);
+	$zdbh = dbConnect();
+	
+	$zsth =   $zdbh->prepare( "  SELECT avg(snapshot_evolution_collapsed.z_score), experiment_cluster.cluster_id, comb_id 
+	FROM snapshot_evolution_collapsed 
+	JOIN comb_MRCA 
+	ON snapshot_evolution_collapsed.taxon_id = comb_MRCA.taxon_id
+	JOIN experiment_cluster
+	ON experiment_cluster.sample_id = snapshot_evolution_collapsed.sample_id
+	GROUP BY experiment_cluster.cluster_id, comb_id
+						;"); 
+	$zsth->execute();
+	
+	while (my ($z_score,$clus_id,$combid) = $zsth->fetchrow_array){
+		
+		$zscalinghash->{$combid}={} unless(exists($zscalinghash->{$combid}));
+		$zscalinghash->{$combid}{$clus_id}=abs($z_score);
+	}
+}
+
 
 #Hash of structure $Hash->{SampleName}=[list of potentially non-unque terms]
 my $PerClusterDADetailedCount={};
@@ -334,14 +390,41 @@ if($debug){
 }
 #A little debug information regarding sizes of hashes
 
-enrichment_output("../data/Enrichment/PerCluster.DA.Enrichement.txt",$PerClusterDADetailedCount,$PerSampDA_idf,$DATerms);
-enrichment_output("../data/Enrichment/PerCluster.GO.Enrichement.txt",$PerClusterGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
-enrichment_output("../data/Enrichment/PerCluster.DO.Enrichement.txt",$PerClusterDODetailedCount,$PerSampDO_idf,$DOTerms,$PO_detailed);
-enrichment_output("../data/Enrichment/PerCluster.HP.Enrichement.txt",$PerClusterHPDetailedCount,$PerSampHP_idf,$HPTerms,$PO_detailed);
-
+enrichment_output("../data/Enrichment/PerCluster.DA.Enrichement.txt",$PerClusterDADetailedCount,$PerSampDA_idf,$DATerms,undef,$zscalinghash);
+if($all){
+	
+	enrichment_output("../data/Enrichment/PerCluster.GO.Enrichement.txt",$PerClusterGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
+	enrichment_output("../data/Enrichment/PerCluster.DO.Enrichement.txt",$PerClusterDODetailedCount,$PerSampDO_idf,$DOTerms,$PO_detailed);
+	enrichment_output("../data/Enrichment/PerCluster.HP.Enrichement.txt",$PerClusterHPDetailedCount,$PerSampHP_idf,$HPTerms,$PO_detailed);
+}
 ########## Per Neuron ##########
 
 print STDERR "Now processing a per neuron statistic ...\n" if($verbose);
+
+
+if($zscale){
+	
+	$zscalinghash={};
+	
+	my ($zdbh, $zsth);
+	$zdbh = dbConnect();
+	
+	$zsth =   $zdbh->prepare( "  SELECT avg(snapshot_evolution_collapsed.z_score), experiment_cluster.unit_id, comb_id 
+	FROM snapshot_evolution_collapsed 
+	JOIN comb_MRCA 
+	ON snapshot_evolution_collapsed.taxon_id = comb_MRCA.taxon_id
+	JOIN experiment_cluster
+	ON experiment_cluster.sample_id = snapshot_evolution_collapsed.sample_id
+	GROUP BY experiment_cluster.unit_id, comb_id
+						;"); 
+	$zsth->execute();
+	
+	while (my ($z_score,$unit_id,$combid) = $zsth->fetchrow_array){
+		
+		$zscalinghash->{$combid}={} unless(exists($zscalinghash->{$combid}));
+		$zscalinghash->{$combid}{$unit_id}=abs($z_score);
+	}
+}
 
 #Hash of structure $Hash->{SampleName}=[list of potentially non-unque terms]
 my $PerNeuronDADetailedCount={};
@@ -388,6 +471,7 @@ foreach my $doc (keys(%$PerNeuronDADetailedCount)){
 
 	$PerNeuronDAHash->{$doc}=[@CombIDs];
 	
+
 	my (undef,$GOcombs,undef,undef) = IntUnDiff(\@CombIDs,[keys(%$Comb2GOList)]);
 	$PerNeuronGOHash->{$doc}=[map{@$_}@{$Comb2GOList}{@$GOcombs}];
 	$PerNeuronGODetailedCount->{$doc}={};
@@ -430,11 +514,13 @@ if($debug){
 }
 #A little debug information regarding sizes of hashes
 
-enrichment_output("../data/Enrichment/PerNeuron.DA.Enrichement.txt",$PerNeuronDADetailedCount,$PerSampDA_idf,$DATerms);
-enrichment_output("../data/Enrichment/PerNeuron.GO.Enrichement.txt",$PerNeuronGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
-enrichment_output("../data/Enrichment/PerNeuron.DO.Enrichement.txt",$PerNeuronDODetailedCount,$PerSampDO_idf,$DOTerms,$PO_detailed);
-enrichment_output("../data/Enrichment/PerNeuron.HP.Enrichement.txt",$PerNeuronHPDetailedCount,$PerSampHP_idf,$HPTerms,$PO_detailed);
+enrichment_output("../data/Enrichment/PerNeuron.DA.Enrichement.txt",$PerNeuronDADetailedCount,$PerSampDA_idf,$DATerms,undef,$zscalinghash);
 
+if($all){
+	enrichment_output("../data/Enrichment/PerNeuron.GO.Enrichement.txt",$PerNeuronGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
+	enrichment_output("../data/Enrichment/PerNeuron.DO.Enrichement.txt",$PerNeuronDODetailedCount,$PerSampDO_idf,$DOTerms,$PO_detailed);
+	enrichment_output("../data/Enrichment/PerNeuron.HP.Enrichement.txt",$PerNeuronHPDetailedCount,$PerSampHP_idf,$HPTerms,$PO_detailed);
+}
 ###################### STOP IT AND TIDY UP
 
 my $TotalToc = Time::HiRes::time;
