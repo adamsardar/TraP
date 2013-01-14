@@ -268,7 +268,13 @@ my $HPTerms = [keys(%$PerSampHP_idf)];
 my $GO_detailed = GO_detailed_info($GOTerms);
 my $PO_detailed = PO_detailed_info([@$DOTerms,@$HPTerms]);
 
-enrichment_output("../data/Enrichment/PerSample.DA.Enrichement.txt",$PerSampleDetailedCount,$PerSampDA_idf,$DATerms,$SampleID2NameDict,$zscalinghash);
+enrichment_output("../data/Enrichment/PerSample.DA.Enrichement.txt",$PerSampleDetailedCount,$PerSampDA_idf,$DATerms,$SampleID2NameDict);
+
+if($zscale){
+	enrichment_output("../data/Enrichment/PerSample.DA.zscore.Enrichement.txt",$PerSampleDetailedCount,$PerSampDA_idf,$DATerms,$SampleID2NameDict,$zscalinghash);
+}
+
+
 if($all){
 	enrichment_output("../data/Enrichment/PerSample.GO.Enrichement.txt",$PerSampleGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
 	enrichment_output("../data/Enrichment/PerSample.DO.Enrichement.txt",$PerSampleDODetailedCount,$PerSampDO_idf,$DOTerms,$PO_detailed);
@@ -390,7 +396,12 @@ if($debug){
 }
 #A little debug information regarding sizes of hashes
 
-enrichment_output("../data/Enrichment/PerCluster.DA.Enrichement.txt",$PerClusterDADetailedCount,$PerSampDA_idf,$DATerms,undef,$zscalinghash);
+enrichment_output("../data/Enrichment/PerCluster.DA.Enrichement.txt",$PerClusterDADetailedCount,$PerSampDA_idf,$DATerms);
+
+if($zscale){
+	enrichment_output("../data/Enrichment/PerCluster.DA.zscore.Enrichement.txt",$PerClusterDADetailedCount,$PerSampDA_idf,$DATerms,undef,$zscalinghash);
+}
+
 if($all){
 	
 	enrichment_output("../data/Enrichment/PerCluster.GO.Enrichement.txt",$PerClusterGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);
@@ -514,7 +525,11 @@ if($debug){
 }
 #A little debug information regarding sizes of hashes
 
-enrichment_output("../data/Enrichment/PerNeuron.DA.Enrichement.txt",$PerNeuronDADetailedCount,$PerSampDA_idf,$DATerms,undef,$zscalinghash);
+enrichment_output("../data/Enrichment/PerNeuron.DA.Enrichement.txt",$PerNeuronDADetailedCount,$PerSampDA_idf,$DATerms);
+
+if($zscale){
+	enrichment_output("../data/Enrichment/PerNeuron.DA.zscore.Enrichement.txt",$PerNeuronDADetailedCount,$PerSampDA_idf,$DATerms,undef,$zscalinghash);
+}
 
 if($all){
 	enrichment_output("../data/Enrichment/PerNeuron.GO.Enrichement.txt",$PerNeuronGODetailedCount,$PerSampGO_idf,$GOTerms,$GO_detailed);

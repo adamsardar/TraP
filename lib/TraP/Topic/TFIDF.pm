@@ -462,7 +462,7 @@ sub enrichment_output {
 	assert_hashref($detaileddocumenthash,"Detailed document hash shoudl be a hahs of structure hash->{docname}{term}=count\n");
 	assert_hashref($idf,"idf shoudl be a hash of form hash->{term}=val\n");
 	assert_hashref($dictionary,"Dictionary (an optional argument) shoudl be a has mapping from document name to another desited name\n") if(defined($dictionary));
-	assert_hashref($scaling,"Scalaing (an optional argument) should be a two level hash mapping from document name to another desited name\n") ;
+	assert_hashref($scaling,"Scalaing (an optional argument) should be a two level hash mapping from document name to another desited name\n") if(defined($scaling));
 
 	open FH, ">$filename" or die $?."\t".$!;
 
@@ -555,9 +555,9 @@ sub enrichment_output {
 			
 			#Output all scores
 			
-			print FULL $sample."\t";
-			print ONESIGSUMMARY $sample."\t" if ($normedscore > 1);
-			print HIGHSIGSUMMARY $sample."\t" if ($normedscore > 2);
+			print FULL $sample."\t".$term."\t";
+			print ONESIGSUMMARY $sample."\t".$term."\t" if ($normedscore > 1);
+			print HIGHSIGSUMMARY $sample."\t".$term."\t" if ($normedscore > 2);
 			#Output higher quality scores if they are over 1 or 2 std devs from mean
 			
 			if(defined($dictionary)){
@@ -579,9 +579,9 @@ sub enrichment_output {
 			}
 			#Dictionary is present so that you can output additional information if you so desire
 			
-			print FULL $score."\t".$normedscore."\t".$term."\n";
-			print ONESIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if ($normedscore > 1);
-			print HIGHSIGSUMMARY $score."\t".$normedscore."\t".$term."\n" if  ($normedscore > 2);
+			print FULL $score."\t".$normedscore."\n";
+			print ONESIGSUMMARY $score."\t".$normedscore."\n" if ($normedscore > 1);
+			print HIGHSIGSUMMARY $score."\t".$normedscore."\n" if  ($normedscore > 2);
 							
 		}
 	}
