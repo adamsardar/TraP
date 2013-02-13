@@ -98,6 +98,15 @@ hc=hclust(dist(cosZscores))
 plot(hc,cex=3,xlab='',main='Cluster 10',ylab='')
 
 
+
+Cluster2<-read.delim("./Cluster2Names.csv", header=FALSE)
+Clus2Z<-Zscores[as.matrix(Cluster2),]
+cosZscores<-cosine(as.matrix(t(Clus2Z)))
+
+hc = hclust(dist(cosZscores))
+
+plot(hc,xlab='',ylab='',main="Dendrogram Of Cluster 2 Cosine Distance Clusters")
+
 library(ape)
 library(cluster) 
 plot(as.phylo(hclust(dist(cosZscores))),type="fan")

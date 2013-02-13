@@ -45,6 +45,8 @@ WHERE PO_ic.include > 3
 AND PO_info.obo = 'HP'
 AND supra.comb_id IN (558, 29316, 2166, 30032, 29657, 28864, 29318, 36974);
 
+SELECT DISTINCT(PO_info.name) FROM superfamily.PO_mapping_supra JOIN supra ON superfamily.PO_mapping_supra.id = supra.supra_id JOIN superfamily.PO_ic ON PO_mapping_supra.po = PO_ic.po JOIN superfamily.PO_info ON PO_mapping_supra.po = PO_info.po WHERE PO_ic.include > 2 AND PO_info.obo = 'HP' AND supra.comb_id IN (SELECT comb_id FROM trap.tfidf_DA_cluster WHERE cluster_id = 3  AND taxon_tfidf_zrank > 2);
+
 
 #As above, but more detailed
 SELECT DISTINCT(PO_info.po),supra.comb_id,supra.supra_id,PO_info.po,PO_info.name,PO_info.definition,PO_info.synonym
