@@ -13,5 +13,10 @@
 # Data
 #
 
-data
-.*.dat
+data/*
+bin/Tests/*.dat
+bin/Tests/*.png
+
+
+bin/SQLsnashopordercomb.dat
+bin/*.dat

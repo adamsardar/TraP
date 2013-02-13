@@ -5,10 +5,8 @@ use warnings;
 
 =head1 NAME
 
-create_evo_matrix_for_MATLAB takes data from a tsv pulled from the database of the 
-snapshot_evolution table and then reformats it into a matrix so that the hierachical
-clustering can be run on it.x
-  
+test_Zscoregeneration.pl -f --file 'File Of Observations to calculate zscores on'
+
 =head1 SYNOPSIS
 
 skeleton [options] <file>...
@@ -20,7 +18,7 @@ skeleton [options] <file>...
 
 =head1 DESCRIPTION
 
-This program is part of the TraP Project suite.
+This script is designed to test the Zscore generation  subroutine.
 
 =head1 OPTIONS
 
@@ -93,7 +91,6 @@ limitations under the License.
 =cut
 
 #By default use the TraP libraries, assuming executing from the bin dir
-use lib qw'../lib';
 
 =head1 DEPENDANCY
 
@@ -119,121 +116,80 @@ CPAN dependancies:
 
 =cut
 
+use lib qw'../../lib';
+
 use Getopt::Long; #Deal with command line options
 use Pod::Usage;   #Print a usage man page from the POD comments
 use Data::Dumper; #Allow easy print dumps of datastructures for debugging
+use Math::Random qw(random_normal random_poisson random_binomial random_negative_binomial);
+use Supfam::Utils qw/:all/;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
 my $verbose; #Flag for verbose output from command line opts
 my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
+my $mu = 0;
+my $sd = 1;
+my $file;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
            "debug|d!"  => \$debug,
            "help|h!" => \$help,
+          "mean|m:f" => \$mu,
+          "std|s:f" => \$sd,
+           "file|f:s" => \$file
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
 my @files= @ARGV;
 
 #Print out some help if it was asked for or if no arguments were given.
-pod2usage(-exitstatus => 0, -verbose => 2) if not @files or $help;
+pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 
-=head1 FUNCTIONS DEFINED
 
-=over 4
 
-=cut
+my $c =0;
+my $NormalRandomHash = {};
 
-=item * func
-Function to do something
-=cut
-sub create_matrix {
-    my $input_file = shift;
-	open FILE,"<$input_file" or die $!."\t".$?;
-	my %matrix;
-	my %cols;
-	my %rows;
+
+unless($file){
 	
-	while (<FILE>){
-		my @data = split(/\t/,$_);
-		$matrix{$data[0]}{$data[2]} = $data[1];
-		$cols{$data[0]} = 1;
-		$rows{$data[2]} = 1;
+	#my @NormalRandomData = random_poisson(10000,20,0.9);
+	my @NormalRandomData = random_normal(100000,$mu,$sd);
+	map{$NormalRandomHash->{$_}=$_}@NormalRandomData;
+
+}else{
+	
+	open FH, "<$file" or die $!."\t".$?;
+	
+	while (my $line = <FH>){
+		
+		chomp($line);
+		my ($label,$val)=split("\t",$line);
+		$NormalRandomHash->{$label}=$val;
+		
 	}
 	
-	my @SortedCols = sort keys %cols;
-	my @SortedRows = sort keys %rows;
-	
-	open COLS,'>../data/cols.tab';
-	foreach my $c (@SortedCols){
-		print COLS "$c\n";
-	}
-	
-	open ROWS,'>../data/rows.tab';
-	foreach my $r (@SortedRows){
-		print ROWS "$r\n";
-	}
-	
-	open MATRIX,'>../data/matrix.tab' or die $!."\t".$?;
-	foreach my $c (@SortedCols){
-		foreach my $r (@SortedRows){
-			if(exists($matrix{$c}{$r})){
-				print MATRIX "$matrix{$c}{$r}\t";
-			}else{
-				print MATRIX "0\t";
-			}
-		}
-		print MATRIX "\n";
-	}
-	
-	
-	
+	close FH;
 }
 
-sub index_cols{
-	my $input_file = shift;
-	open FILE,"<$input_file";
-	my %matrix;
-	my %cols;
-	my %rows;
-	my $i = 1;
-	my $j = 1;
-	open COLS,'>../../data/trap/cols.txt';
-	open ROWS,'>../../data/trap/rows.txt';
-	while (<FILE>){
-		chomp;
-		my @data = split(/,/,$_);
-		unless(exists($cols{$data[0]})){
-			$cols{$data[0]} = $i++;
-			print COLS "$cols{$data[0]}\t$data[0]\n";
-		}
-		unless(exists($rows{$data[1]})){
-			$rows{$data[1]} = $j++;
-			print ROWS "$rows{$data[1]}\t$data[1]\n";
-		}
-		unless($data[2] == 0){
-			print "$cols{$data[0]}\t$rows{$data[1]}\t$data[2]\n";
-		}
-	}
+print STDERR "Testing ...\n";
+
+EasyDump('normal.dat',$NormalRandomHash);
+
+my $Zscores = calc_ZScore($NormalRandomHash);
+
+EasyDump('Zscores.dat',$Zscores);
+
+while (my ($label, $zed) = each %$Zscores){
 	
+	my $datum = $NormalRandomHash->{$label};
+	print STDOUT $label."\t".$datum."\t".$zed."\n"	
 }
 
-
-
-# Main Script Content
-#-------------------------------------------------------------------------------
-
-#Lets just echo back the argument list
-
-mkdir('../data');
-
-my $file = $ARGV[0];
-print create_matrix($file);
-
-
+print STDERR "Label"."\t"."Datum"."\t"."Zscore"."\n";
 
 =pod
 

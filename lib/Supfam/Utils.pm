@@ -8,6 +8,8 @@ our @ISA = qw(Exporter);
 
 our %EXPORT_TAGS = (
 'all' => [ qw(
+	calc_ZScore
+	normalise_distribution
 	EasyDump
 	EasyUnDump
 	IntUnDiff
@@ -28,6 +30,11 @@ our $VERSION   = 1.00;
 
 use strict;
 use warnings;
+use List::Util qw(sum reduce);
+use List::MoreUtils qw(:all);
+use Statistics::Basic qw(:all);
+use Carp;
+use Carp::Assert::More;
 
 =head1 NAME
 
@@ -50,7 +57,7 @@ B<Matt Oates> - I<Matt.Oates@bristol.ac.uk>
 
 =head1 NOTICE
 
-B<Matt Oates> (2011) Longest common prefix string functions.
+B<Matt Oates> (2011)
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -173,12 +180,12 @@ sub IntUnDiff($$){
 	 	 if ($UnionHash->{$element} == 2) {  #i.e if it's in both sets      
 	 	 	 push (@$Intersection, $element);     
 	 	 } else {     
-	 	 	no warnings 'uninitialized';
-	 	 	#This is to stop Perl moaning about elements not beining initialised in the lookup hash below
-	 	 
-	 	 	if ($ListALookup->{$element}){
+
+	 	 	if (exists($ListALookup->{$element})){
+
 	 	 		push(@$ListAExclusive, $element);   
 	 	 	}else {
+
 	 	 		push(@$ListBExclusive, $element); 
 	 	 	}
 	 	 } 
@@ -337,6 +344,80 @@ sub lcp(@) {
 }
 
 =pod
+=item * normalise_distribution
+
+given a distribution in the form of a hash that is unnormalised, this function will normalise it so that the area sums to one. Note that this works on the hash passed in, so, nothing is returned.
+This is done so as to remain efficient with memory
+
+
+=cut
+
+sub normalise_distribution($){
+     
+     my ($distribution) = @_;
+
+     my $dist_area = reduce{$a + $b}values(%$distribution);
+     
+     return(1) if($dist_area == 1);
+     #If the area is already 1, we have nothing to worry about!
+     
+     foreach my $key (keys(%$distribution)){
+     	
+     	$distribution->{$key} = ($distribution->{$key}/$dist_area)
+     }
+}
+
+=pod
+=item * calculate_ZScore
+
+Calculates the number of stadrad deviations each data point is from the mean (aka the z-score). This does not assume normaility of input distribution.
+
+The input is a hash ref of $HAsh->{DataLAbel} = value. Mean and StdDev will be estimated from the vlaues of this hash.
+
+=cut
+
+sub calc_ZScore($){
+     
+    my ($ValuesHash) = @_;
+	assert_hashref($ValuesHash,"calc_ZScore should be provided with a hashref Hash->{label}=score ...\n");
+	
+	my $NumberValues = scalar(keys(%$ValuesHash));
+
+	my @SampleData = (values(%$ValuesHash));
+	
+	my $TotalSum = sum(@SampleData);
+	my $SampleMean = mean(@SampleData);
+    my $SampleStDev = stddev(@SampleData);
+    
+    my $ZscoresHash = {};
+    
+    croak "Sample Dev $SampleStDev is less that 10**-10 for sample mean $SampleMean nsamples = $NumberValues" if($SampleStDev <= 10 **-10);
+   
+    foreach my $Label (keys(%$ValuesHash)){
+        
+    	my $datum = $ValuesHash->{$Label};
+    	my $zscore;
+    	
+    	unless($SampleStDev <= 10 **-10){
+    		
+    		$zscore = ($datum-$SampleMean)/$SampleStDev;
+    	}else{
+    		
+    		$zscore = 0;
+    	}  	
+    	
+    	$ZscoresHash->{$Label} = $zscore;
+    }
+    
+     return($ZscoresHash);
+}
+
+
+
+
+=pod
+
+
 
 =back
 

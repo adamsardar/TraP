@@ -1,0 +1,26 @@
+9606	9606	Homo sapiens
+207598	207598	Homininae
+314295  9604  Hominidae
+9604	9604	Hominidae
+9526	9526	Catarrhini
+314293	314293	Simiiformes
+376913	9443	Haplorrhini
+9443	9443	Primates
+314146	314146	Euarchontoglires
+9347	9347	Eutheria
+32525	32525	Theria
+40674	40674	Mammalia
+32524	32524	Amniota
+32523	32523	Tetrapoda
+117571	117571	Euteleostomi
+8287	7711	Sarcopterygii
+7742	7711	Verterbrata
+7711	7711	Chordata
+33511	33511	Deuterostomia
+33316	33316	Coelomata
+33213	33213	Bilateria
+6072	6072	Eumetazoa
+33208	6072	Metazoa
+33154	33154	Opisthokonta
+2759	2759	Eukaryota
+131567	131567	CellularOrganisms

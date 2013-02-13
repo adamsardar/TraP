@@ -1,17 +1,14 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
+use Modern::Perl;
 
 =head1 NAME
 
-create_evo_matrix_for_MATLAB takes data from a tsv pulled from the database of the 
-snapshot_evolution table and then reformats it into a matrix so that the hierachical
-clustering can be run on it.x
-  
+dendrogramMatricies4R.pl
+
 =head1 SYNOPSIS
 
-skeleton [options] <file>...
+dendrogramMatricies4R.pl [options] <file>...
 
  Basic Options:
   -h --help Get full man page output
@@ -122,17 +119,20 @@ CPAN dependancies:
 use Getopt::Long; #Deal with command line options
 use Pod::Usage;   #Print a usage man page from the POD comments
 use Data::Dumper; #Allow easy print dumps of datastructures for debugging
+use Supfam::Utils qw/:all/;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
 my $verbose; #Flag for verbose output from command line opts
 my $debug;   #As above for debug
 my $help;    #Same again but this time should we output the POD man page defined after __END__
+my $dictionary;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
            "debug|d!"  => \$debug,
            "help|h!" => \$help,
+            "dict|t:s" => \$dictionary,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -150,88 +150,72 @@ pod2usage(-exitstatus => 0, -verbose => 2) if not @files or $help;
 =item * func
 Function to do something
 =cut
-sub create_matrix {
-    my $input_file = shift;
-	open FILE,"<$input_file" or die $!."\t".$?;
-	my %matrix;
-	my %cols;
-	my %rows;
-	
-	while (<FILE>){
-		my @data = split(/\t/,$_);
-		$matrix{$data[0]}{$data[2]} = $data[1];
-		$cols{$data[0]} = 1;
-		$rows{$data[2]} = 1;
-	}
-	
-	my @SortedCols = sort keys %cols;
-	my @SortedRows = sort keys %rows;
-	
-	open COLS,'>../data/cols.tab';
-	foreach my $c (@SortedCols){
-		print COLS "$c\n";
-	}
-	
-	open ROWS,'>../data/rows.tab';
-	foreach my $r (@SortedRows){
-		print ROWS "$r\n";
-	}
-	
-	open MATRIX,'>../data/matrix.tab' or die $!."\t".$?;
-	foreach my $c (@SortedCols){
-		foreach my $r (@SortedRows){
-			if(exists($matrix{$c}{$r})){
-				print MATRIX "$matrix{$c}{$r}\t";
-			}else{
-				print MATRIX "0\t";
-			}
-		}
-		print MATRIX "\n";
-	}
-	
-	
-	
-}
-
-sub index_cols{
-	my $input_file = shift;
-	open FILE,"<$input_file";
-	my %matrix;
-	my %cols;
-	my %rows;
-	my $i = 1;
-	my $j = 1;
-	open COLS,'>../../data/trap/cols.txt';
-	open ROWS,'>../../data/trap/rows.txt';
-	while (<FILE>){
-		chomp;
-		my @data = split(/,/,$_);
-		unless(exists($cols{$data[0]})){
-			$cols{$data[0]} = $i++;
-			print COLS "$cols{$data[0]}\t$data[0]\n";
-		}
-		unless(exists($rows{$data[1]})){
-			$rows{$data[1]} = $j++;
-			print ROWS "$rows{$data[1]}\t$data[1]\n";
-		}
-		unless($data[2] == 0){
-			print "$cols{$data[0]}\t$rows{$data[1]}\t$data[2]\n";
-		}
-	}
-	
-}
-
-
 
 # Main Script Content
 #-------------------------------------------------------------------------------
 
-#Lets just echo back the argument list
+my @TaxonIDOrder = qw(9606 32525 40674 32524 117571 7711 33511 33316 33213 6072 33154 2759 131567);
+my $dict = {};
 
-mkdir('../data');
+if($dictionary){
+	
+	open DICT,"<$dictionary" or die $!."\t".$?;
+	
+	while(<DICT>){
+		
+		chomp;
+		my ($key,$val)=split(/\t+/);
+		$dict->{$key}=$val;
+	}
+	
+	close DICT;	
+}
 
-my $file = $ARGV[0];
-print create_matrix($file);
+EasyDump('./dictionary.dat',$dict)if($debug);
+
+foreach my $file (@files){
+	
+	open FH,"<$file" or die $!."\t".$?;
+	
+	my $MatrixHash = {};
+	
+	my $temp = <FH>;
+	#First line is a tonne of guff	
+	
+	while (my $line  = <FH>){
+		
+		chomp $line;
+		my ($unit_id,$taxon_id,$Z_scor_av) = split(/\t/,$line);
+		
+		
+		if($dictionary){
+			
+			print $unit_id."\t" unless(exists($dict->{$unit_id}));
+		 	$unit_id = $dict->{$unit_id};
+		 }
+		
+		
+		$MatrixHash->{$unit_id}={} unless(exists($MatrixHash->{$unit_id}));
+		$MatrixHash->{$unit_id}{$taxon_id}=$Z_scor_av;
+	}
+	
+	close FH;	
+	
+	open OUT, ">$file.mat" or die $!."\t".$?;
+	print OUT join("\t",@TaxonIDOrder);
+	print OUT "\n";
+	
+	foreach my $unit (keys(%$MatrixHash)){
+				
+		print OUT $unit."\t";
+		print OUT join("\t",@{$MatrixHash->{$unit}}{@TaxonIDOrder});
+		print OUT "\n";	
+	}
+	
+	
+	close OUT;
+	
+}
 
 
 

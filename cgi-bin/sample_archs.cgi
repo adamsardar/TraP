@@ -69,7 +69,7 @@ use CGI;
 use CGI::Carp qw(fatalsToBrowser); #Force error messages to be output as HTML
 use Data::Dumper;
 use DBI;
-use lib qw'/home/rackham/projects/TraP/lib';
+use lib qw'lib';
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw(:all);
 
@@ -98,7 +98,7 @@ my @ids = @{get_supras($label,$sample_id,$genome)};
 print "<table>";
 foreach my $id (@ids){
 	print "<tr><td> <h1>$id</h1> </td></tr>";
-	print "<tr><td> <object data=\"http://luca.cs.bris.ac.uk/~oates/cgi-bin/disorder.cgi?combids=$id&genome=hs&callouts=1\" type=\"image/svg+xml\"> </object><td></tr>";
+	print "<tr><td> <object data=\"archpic.cgi?combids=$id&genome=hs&callouts=1\" type=\"image/svg+xml\"> </object><td></tr>";
 	
 }
 print "</table>";
