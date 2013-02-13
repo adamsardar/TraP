@@ -191,6 +191,7 @@ sub create_matrix {
 }
 
 sub index_cols{
+	my $input_file = shift;
 	open FILE,"<$input_file";
 	my %matrix;
 	my %cols;
