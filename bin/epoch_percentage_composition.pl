@@ -10,7 +10,7 @@ have existed.
 
 =head1 SYNOPSIS
 
-epoch_percentage_composition.pl [options] -tr|--taxontranslate <TaxonRangesToMapBetween> -s --samples <SampleIDsFile>
+epoch_percentage_composition.pl [options] -tr|--taxontranslate <TaxonRangesToMapBetween> -u|--union flag_for_calculating_union -s --samples <SampleIDsFile>
 
  Basic Options:
   -h --help Get full man page output
@@ -109,6 +109,7 @@ use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw/:all/;
 use Carp;
 use Carp::Assert::More;
+use List::Compare;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
@@ -118,6 +119,7 @@ my $help;    #Same again but this time should we output the POD man page defined
 
 my $samplesfile;
 my $translation_file;
+my $union = 0;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -125,6 +127,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "help|h!" => \$help,
            "taxontranslate|tr:s" => \$translation_file,
            "samples|s=s" => \$samplesfile,
+           "union|u!" => \$union,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -135,9 +138,9 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 
 ###Main script
 
-my ( $dbh, $sth );
+my ( $dbh, $sth , $ebh, $tth);
 $dbh = dbConnect();
-
+$ebh = dbConnect();
 
 #Make a translation file to map between taxonomic ranges
 my $Taxon_mapping ={};
@@ -188,10 +191,16 @@ open TIMEPERCENTAGES, ">../data/EpochSampleGroupPercentages.dat" or die $!."\t".
 print TIMEPERCENTAGES join("\t",@SortedEpochs);
 print TIMEPERCENTAGES "\n";
 
-$sth = $dbh->prepare("SELECT DISTINCT(comb_MRCA.comb_id),comb_MRCA.taxon_id 
-						FROM comb_MRCA 
-						JOIN snapshot_order_comb ON comb_MRCA.comb_id = snapshot_order_comb.comb_id
-						WHERE sample_id IN (?)");
+
+
+
+$sth = $dbh->prepare("SELECT DISTINCT(comb_id) 
+						FROM snapshot_order_comb
+						WHERE sample_id = ?");
+						
+$tth = $ebh->prepare("SELECT comb_MRCA.taxon_id
+						FROM comb_MRCA
+						WHERE comb_id = ?");
 
 while(my $line = <SAMPLEIDS>){
 	
@@ -199,19 +208,53 @@ while(my $line = <SAMPLEIDS>){
 	my ($comment,$samids) = split(/\s+/,$line);
 	my @sampleids = split(',',$samids);
 	
+	my $SampleID2Combs = {};
+	#Grab a list of comb ids per sample and whack them into a hash
+	
+	foreach my $sample_id (@sampleids){
+	
+		$sth->execute($sample_id);
+		
+		while (my ($comb_id) = $sth->fetchrow_array()){
+			
+			$SampleID2Combs->{$sample_id}=[] unless(exists($SampleID2Combs->{$sample_id}));
+			push(@{$SampleID2Combs->{$sample_id}},$comb_id);
+		}
+	}
+
+	my $lc = List::Compare->new( {
+        lists    => [(values(%$SampleID2Combs))],
+        unsorted => 1,
+    } );
+	
+	my @DistinctCombIDs;
+	
+	unless($union){
+		
+		@DistinctCombIDs = $lc->get_intersection;
+	}else{
+		
+		@DistinctCombIDs = $lc->get_union;
+	}
+	
 	my $TaxID2DomArchCountHash ={};
+	my $DistinctDAcount=scalar(@DistinctCombIDs);
 	
-	my $DistinctDAcount=0;
-	$sth->execute($samids);
-	
-	while (my ($comb_id,$taxon_id) = $sth->fetchrow_array()){
+	foreach my $DA (@DistinctCombIDs){
+		
+		$tth->execute($DA);
+		#Use the comb_MRCA table to get the LCA of the comb
+		my ($taxon_id) = $tth->fetchrow_array();
 		
 		my $MappedTaxonID = $taxon_id;
 		$MappedTaxonID = $Taxon_mapping->{$taxon_id} if (exists($Taxon_mapping->{$taxon_id}));
+		#If we are using a mappig between epochs, use it to map the LCA to an epoch used
 		
 		$TaxID2DomArchCountHash->{$MappedTaxonID}++;
-		$DistinctDAcount++;
+		#Finally, uodate the hash
 	}
+	
+
 	
 	my $CumlativeEpochCount = 0;
 	
