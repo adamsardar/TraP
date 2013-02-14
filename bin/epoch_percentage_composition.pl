@@ -45,13 +45,8 @@ ImmuneSystemCells	12%:12%		34%:46%		...
 
 =head1 EXAMPLES
 
-To get some help output do:
+./epoch_percentage_composition.pl -s TestEpoch -tr TaxaMappingsCollapsed.txt
 
-skeleton --help
-
-To list the files in the current directory do:
-
-skeleton *
 
 B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
 
@@ -169,7 +164,7 @@ if($translation_file){
 
 my @SortedEpochs;
 
-$sth = $dbh->prepare("SELECT DISTINCT(taxon_id) FROM taxon_details ORDER BY distance ASC;");
+$sth = $dbh->prepare("SELECT DISTINCT(taxon_id) FROM taxon_details ORDER BY distance DESC;");
 
 $sth->execute();
 
@@ -183,6 +178,8 @@ while (my ($taxon_id) = $sth->fetchrow_array()){
 }
 
 #Need to construct these - pull them from the database.
+
+assert_defined($samplesfile,"You must procide a file to calculate statistics upon! See doc\n");
 
 open SAMPLEIDS, "<$samplesfile" or die $?."\t".$!;
 
@@ -199,7 +196,7 @@ $sth = $dbh->prepare("SELECT DISTINCT(comb_MRCA.comb_id),comb_MRCA.taxon_id
 while(my $line = <SAMPLEIDS>){
 	
 	chomp($line);
-	my ($comment,$samids) = split("\t",$line);
+	my ($comment,$samids) = split(/\s+/,$line);
 	my @sampleids = split(',',$samids);
 	
 	my $TaxID2DomArchCountHash ={};
@@ -218,12 +215,12 @@ while(my $line = <SAMPLEIDS>){
 	
 	my $CumlativeEpochCount = 0;
 	
+	print TIMEPERCENTAGES $comment."\t";
 	foreach my $Epoch (@SortedEpochs){
 		
 		my $EpochCount=0;
-		print TIMEPERCENTAGES $comment."\t";
 		
-		unless(exists($TaxID2DomArchCountHash->{$Epoch})){
+		if(exists($TaxID2DomArchCountHash->{$Epoch})){
 			
 			$EpochCount=$TaxID2DomArchCountHash->{$Epoch};
 		}
