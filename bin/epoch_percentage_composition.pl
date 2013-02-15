@@ -306,7 +306,7 @@ while(my $line = <SAMPLEIDS>){
 	print STDERR "Processing line $. of input ... \n";
 	
 	chomp($line);
-	my ($comment,$samids) = split(/\s+/,$line);
+	my ($comment,$samids) = split(/\t/,$line);
 	my @sampleids = split(',',$samids);
 	
 	my @DistinctCombIDs;
