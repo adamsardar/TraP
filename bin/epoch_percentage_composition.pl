@@ -1,12 +1,10 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
+use Modern::Perl;
 
 =head1 NAME
 
-epoch_percentage_composition.pl - A script for addressing the question of when a group of samples could
-have existed.
+epoch_percentage_composition.pl - A script for addressing the question of when a group of samples could have existed.
 
 =head1 SYNOPSIS
 
@@ -46,7 +44,10 @@ ImmuneSystemCells	12%:12%		34%:46%		...
 =head1 EXAMPLES
 
 ./epoch_percentage_composition.pl -s TestEpoch -tr TaxaMappingsCollapsed.txt
+#Studies domaina rchitectures that are common to all the samples in a group
 
+./epoch_percentage_composition.pl -s SampleIDsFile -r -tr TaxaMappingsCollapsed.txt
+# Removes domain architectures that are present in everything
 
 B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
 
@@ -108,6 +109,7 @@ use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw/:all/;
 use Carp;
+use Carp::Assert;
 use Carp::Assert::More;
 use List::Compare;
 
@@ -121,6 +123,9 @@ my $samplesfile;
 my $translation_file;
 my $union = 0;
 my $removeubiq = 0;
+my $UbiqFuzzyThreshold;
+#The percentage number of samples to hold a comb before we call it is a ubiqutous
+my $source = 1;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -130,10 +135,28 @@ GetOptions("verbose|v!"  => \$verbose,
            "samples|s=s" => \$samplesfile,
            "union|u!" => \$union,
            "removeubiq|r!" => \$removeubiq,
+           "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
+           "source|c:i" => \$source,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
 my @files= @ARGV;
+
+
+assert_in($source,[qw(1 2 3 NULL)],"Allowed options for -c|--source are 1,2,3 and NULL\n");
+
+if($UbiqFuzzyThreshold){
+	
+	$removeubiq =1 if($UbiqFuzzyThreshold);
+	assert_positive($UbiqFuzzyThreshold,"Threshold must be greater than 0 - a percentage\n");
+	assert($UbiqFuzzyThreshold <= 100,"Threshold must be less than 100 - a percetage\n");
+	
+}elsif($removeubiq){
+	$UbiqFuzzyThreshold = 100 if($removeubiq);
+	
+}
+
+
 
 #Print out some help if it was asked for or if no arguments were given.
 pod2usage(-exitstatus => 0, -verbose => 2) if $help;
@@ -208,7 +231,6 @@ my $SampleID2Combs = {};
 unless(-e "/tmp/SampleID2Combs.dat" && ! $debug){
 
 	print STDERR "Creating the hash SampleID2combs.dat and dumping it to file ...";
-	
 	$sth->execute();
 			
 	while (my ($sample_id,$comb_id) = $sth->fetchrow_array()){
@@ -218,8 +240,6 @@ unless(-e "/tmp/SampleID2Combs.dat" && ! $debug){
 	}
 
 	EasyDump("/tmp/SampleID2Combs.dat",$SampleID2Combs);
-
-
 	print STDERR " done.\n";
 
 }else{
@@ -234,7 +254,7 @@ unless(-e "/tmp/SampleID2Combs.dat" && ! $debug){
 my @UbiqCombs;
 if($removeubiq){
 	
-	unless(-e "/tmp/Ubiqcombs.dat" && ! $debug){
+	unless(-e "/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat" && ! $debug){
 
 		print STDERR "Creating the array UbiqCombs and dumping it to file ...";
 		my $TotalSampleCompare = List::Compare->new( {
@@ -242,20 +262,42 @@ if($removeubiq){
 			        unsorted => 1,
 			        accelerated => 1,
 			    });
-	
-		@UbiqCombs = $TotalSampleCompare->get_intersection;
-		EasyDump("/tmp/Ubiqcombs.dat",\@UbiqCombs);
+		
+		my $SampleNumberThreshold = POSIX::floor(scalar(keys(%$SampleID2Combs))*$UbiqFuzzyThreshold/100);
+		my @BagOfCombs = $TotalSampleCompare->get_bag;
+		
+		print STDERR "\n".scalar(@BagOfCombs) if($debug);
+		print STDERR " - Bag of combs size\n";
+		
+		my $Combcount = {};
+		
+		while (my $comb = shift(@BagOfCombs)){
+			#Try to stay smart on memory
+			
+			$Combcount->{$comb}++;
+		}
+		
+		foreach my $comb (keys(%$Combcount)){
+			
+			push(@UbiqCombs,$comb) if($Combcount->{$comb} >= $SampleNumberThreshold);
+		}
+
+		EasyDump("/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat",\@UbiqCombs);
 		print STDERR " done.\n";
+		print STDERR "(Threshold of $UbiqFuzzyThreshold translates to a sample number threshold of $SampleNumberThreshold)\n";
 		
 	}else{
 		
 		print STDERR "Using a dump of the uniqutous domains from an earlier run ...";
-		my $tmp = EasyUnDump("/tmp/Ubiqcombs.dat");
+		my $tmp = EasyUnDump("/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat");
 		@UbiqCombs = @$tmp;
 		print STDERR " loaded.\n";
 	}
 	
 	print STDERR "Number of ubiquitous domain archs:".scalar(@UbiqCombs)." - these shall be removed from the sample sets that you have inputted\n";
+	print STDERR join(",",@UbiqCombs) if($debug);
+	print STDERR "\n";
+		
 }
 
 #For each line of the input file, loop through, grab a list of sample ids and then work out what is in the interection of all of their comb ids
@@ -264,7 +306,7 @@ while(my $line = <SAMPLEIDS>){
 	print STDERR "Processing line $. of input ... \n";
 	
 	chomp($line);
-	my ($comment,$samids) = split(/\t+/,$line);
+	my ($comment,$samids) = split(/\s+/,$line);
 	my @sampleids = split(',',$samids);
 	
 	my @DistinctCombIDs;
@@ -305,6 +347,8 @@ while(my $line = <SAMPLEIDS>){
 	my $TaxID2DomArchCountHash ={};
 	my $DistinctDAcount=scalar(@DistinctCombIDs);
 	
+	print STDERR "DistinctDA count for ".$comment." is 0. Consider a higher unique threshold\n" unless($DistinctDAcount > 0);
+	
 	#Get the MRCA of each and every comb
 	foreach my $DA (@DistinctCombIDs){
 		
@@ -335,10 +379,14 @@ while(my $line = <SAMPLEIDS>){
 		
 		$CumlativeEpochCount+=$EpochCount;
 		
-		my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
-		my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
-			
-		print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+		if($DistinctDAcount > 0){
+			my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
+			my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
+			print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+		}else{
+			print TIMEPERCENTAGES "0:0\t";
+		}	
+		
 	}
 	print TIMEPERCENTAGES "\n";
 }
