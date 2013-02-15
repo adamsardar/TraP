@@ -262,7 +262,6 @@ if($removeubiq){
 		my $TotalSampleCompare = List::Compare->new( {
 			        lists    => [(@{$SampleID2Combs}{keys(%$SampleID2Combs)})],
 			        unsorted => 1,
-			        accelerated => 1,
 			    });
 		
 		my $NumberSamples = scalar(keys(%$SampleID2Combs));
@@ -277,6 +276,9 @@ if($removeubiq){
 			
 			$Combcount->{$comb}++;
 		}
+		
+		$TotalSampleCompare->print_subset_chart if($verbose);
+		$TotalSampleCompare->print_equivalence_chart if($verbose);
 		
 		foreach my $comb (keys(%$Combcount)){
 			
@@ -333,7 +335,7 @@ while(my $line = <SAMPLEIDS>){
 		
 	}else{
 		
-		@DistinctCombIDs = @{@{$SampleID2Combs->{$sampleids[0]}}};
+		@DistinctCombIDs = @{$SampleID2Combs->{$sampleids[0]}};
 	}
 	
 	#If asked to remove DAs that are present in all samples, we do that here
