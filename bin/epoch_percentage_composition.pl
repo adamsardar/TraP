@@ -216,8 +216,10 @@ open TIMEPERCENTAGES, ">../data/EpochSampleGroupPercentages.dat" or die $!."\t".
 print TIMEPERCENTAGES join("\t",@SortedEpochs);
 print TIMEPERCENTAGES "\n";
 
-$sth = $dbh->prepare("SELECT DISTINCT sample_id,comb_id 
-						FROM snapshot_order_comb;");
+$sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
+						FROM snapshot_order_comb
+						JOIN sample_index ON sample_index.sample_id = snapshot_order_comb.sample_id
+						AND sample_index.source = ?;");
 						
 $tth = $ebh->prepare("SELECT comb_MRCA.taxon_id
 						FROM comb_MRCA
@@ -231,7 +233,7 @@ my $SampleID2Combs = {};
 unless(-e "/tmp/SampleID2Combs.dat" && ! $debug){
 
 	print STDERR "Creating the hash SampleID2combs.dat and dumping it to file ...";
-	$sth->execute();
+	$sth->execute($source);
 			
 	while (my ($sample_id,$comb_id) = $sth->fetchrow_array()){
 				
@@ -263,13 +265,12 @@ if($removeubiq){
 			        accelerated => 1,
 			    });
 		
-		my $SampleNumberThreshold = POSIX::floor(scalar(keys(%$SampleID2Combs))*$UbiqFuzzyThreshold/100);
+		my $NumberSamples = scalar(keys(%$SampleID2Combs));
+		my $SampleNumberThreshold = POSIX::floor($NumberSamples*$UbiqFuzzyThreshold/100);
 		my @BagOfCombs = $TotalSampleCompare->get_bag;
 		
-		print STDERR "\n".scalar(@BagOfCombs) if($debug);
-		print STDERR " - Bag of combs size\n";
-		
 		my $Combcount = {};
+		print STDERR scalar(@BagOfCombs)." - Bag of combs size\n" if($debug);
 		
 		while (my $comb = shift(@BagOfCombs)){
 			#Try to stay smart on memory
@@ -284,7 +285,8 @@ if($removeubiq){
 
 		EasyDump("/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat",\@UbiqCombs);
 		print STDERR " done.\n";
-		print STDERR "(Threshold of $UbiqFuzzyThreshold translates to a sample number threshold of $SampleNumberThreshold)\n";
+		print STDERR "(Threshold of $UbiqFuzzyThreshold % translates to a sample number threshold of $SampleNumberThreshold , where the total corpus is $NumberSamples samples)\n";
+		
 		
 	}else{
 		
@@ -295,8 +297,6 @@ if($removeubiq){
 	}
 	
 	print STDERR "Number of ubiquitous domain archs:".scalar(@UbiqCombs)." - these shall be removed from the sample sets that you have inputted\n";
-	print STDERR join(",",@UbiqCombs) if($debug);
-	print STDERR "\n";
 		
 }
 
@@ -318,6 +318,10 @@ while(my $line = <SAMPLEIDS>){
 	        unsorted => 1,
 	        accelerated => 1,
 	    } );
+		
+		my @SampIdsInkeys = keys(%$SampleID2Combs);
+		map{assert_in($_,\@SampIdsInkeys,"Sample id from file at line $. isn't in the database as having a source id that matches\n")}@sampleids;
+		
 		
 		unless($union){
 			
