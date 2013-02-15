@@ -205,7 +205,7 @@ $tth = $ebh->prepare("SELECT comb_MRCA.taxon_id
 while(my $line = <SAMPLEIDS>){
 	
 	chomp($line);
-	my ($comment,$samids) = split(/\s+/,$line);
+	my ($comment,$samids) = split(/\t/,$line);
 	my @sampleids = split(',',$samids);
 	
 	my $SampleID2Combs = {};
@@ -273,7 +273,8 @@ while(my $line = <SAMPLEIDS>){
 		my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
 		my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
 			
-		print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+		#print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+		print TIMEPERCENTAGES $CumulativeEcpochPercent."\t";
 	}
 	print TIMEPERCENTAGES "\n";
 }

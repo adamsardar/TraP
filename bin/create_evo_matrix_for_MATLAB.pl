@@ -152,20 +152,30 @@ Function to do something
 =cut
 sub create_matrix {
     my $input_file = shift;
+    my $order_file = shift;
+	my @order;
+	open ORDER,"<$order_file" or die $!."\t".$?;
+	while (<ORDER>){
+		chomp;
+		push(@order,$_);
+	}
+	#print Dumper @order;
 	open FILE,"<$input_file" or die $!."\t".$?;
 	my %matrix;
 	my %cols;
 	my %rows;
 	
 	while (<FILE>){
+		chomp;
 		my @data = split(/\t/,$_);
-		$matrix{$data[0]}{$data[2]} = $data[1];
+		$matrix{$data[0]}{$data[1]} = $data[2];
 		$cols{$data[0]} = 1;
-		$rows{$data[2]} = 1;
+		$rows{$data[1]} = 1;
 	}
-	
+	print Dumper \%matrix;
 	my @SortedCols = sort keys %cols;
-	my @SortedRows = sort keys %rows;
+	#print Dumper \@SortedCols;
+	my @SortedRows = @order;
 	
 	open COLS,'>../data/cols.tab';
 	foreach my $c (@SortedCols){
@@ -179,7 +189,9 @@ sub create_matrix {
 	
 	open MATRIX,'>../data/matrix.tab' or die $!."\t".$?;
 	foreach my $c (@SortedCols){
+		#print $c;
 		foreach my $r (@SortedRows){
+		#print $r;
 			if(exists($matrix{$c}{$r})){
 				print MATRIX "$matrix{$c}{$r}\t";
 			}else{
@@ -231,7 +243,8 @@ sub index_cols{
 mkdir('../data');
 
 my $file = $ARGV[0];
-print create_matrix($file);
+my $order = $ARGV[1];
+print create_matrix($file,$order);
 
 
 
