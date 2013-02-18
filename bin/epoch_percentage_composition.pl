@@ -383,6 +383,7 @@ while(my $line = <SAMPLEIDS>){
 	
 	#Now for the output. For each epoch, print the percentage of our DA set that comes about at that time, alongside the rolling cumulative
 	print TIMEPERCENTAGES $comment."\t";
+	my $CumulativeFlagThres = 0;
 	foreach my $Epoch (@SortedEpochs){
 		
 		my $EpochCount=0;
@@ -398,7 +399,8 @@ while(my $line = <SAMPLEIDS>){
 			my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
 			my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
 			print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
-			print TIMESUMMARY $comment."\t".$Epoch."\n" if($CumulativeEcpochPercent > $summarythreshold);
+			print TIMESUMMARY $comment."\t".$Epoch."\n" if($CumulativeEcpochPercent > $summarythreshold && ! $CumulativeFlagThres);
+			$CumulativeFlagThres++ if($CumulativeEcpochPercent > $summarythreshold);
 		}else{
 			print TIMEPERCENTAGES "0:0\t";
 		}
