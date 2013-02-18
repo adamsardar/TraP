@@ -382,6 +382,8 @@ while(my $line = <SAMPLEIDS>){
 		#Finally, uodate the hash
 	}
 	
+	map{assert_in($_,keys(%$Taxon_mapping),"Your tax mapping needs to include $_ as at current it is unmapped\n")}keys(%$TaxID2DomArchCountHash);
+	
 	my $CumlativeEpochCount = 0;
 	
 	#Now for the output. For each epoch, print the percentage of our DA set that comes about at that time, alongside the rolling cumulative
