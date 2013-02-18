@@ -111,3 +111,12 @@ library(ape)
 library(cluster) 
 plot(as.phylo(hclust(dist(cosZscores))),type="fan")
 
+
+
+
+
+
+ward<-hclust(dist(cumalitive),method='ward')
+#Ward's method minimises variance between clusters
+heatmap.2(as.matrix(cumalitive), trace='none',Rowv=as.dendrogram(ward),Colv=FALSE,col=grey.colors(100,start=1,end=0),cexRow=0.15,cexCol=0.5,main="Greyscale Heatmap\n Of Cumulative Percentages\n Created By Epoch",symm=FALSE,dendrogram='row')
+
