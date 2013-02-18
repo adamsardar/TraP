@@ -127,6 +127,7 @@ my $UbiqFuzzyThreshold;
 #The percentage number of samples to hold a comb before we call it is a ubiqutous
 my $source = 1;
 my $out = "../data/EpochSampleGroupPercentages.dat";
+my $summarythreshold = 95;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -139,6 +140,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
            "source|c:i" => \$source,
           "output|o:s" => \$out,
+          "summthreshold|t:f" => \$summarythreshold,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -220,6 +222,8 @@ print STDOUT "Printing to outfile $out\n";
 open TIMEPERCENTAGES, ">$out" or die $!."\t".$?;
 print TIMEPERCENTAGES join("\t",@SortedEpochs);
 print TIMEPERCENTAGES "\n";
+
+open TIMESUMMARY, ">".$out.".sum" or die $!."\t".$?;
 
 $sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
 						FROM snapshot_order_comb
@@ -394,9 +398,10 @@ while(my $line = <SAMPLEIDS>){
 			my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
 			my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
 			print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+			print TIMESUMMARY $comment."\t".$Epoch."\n" if($CumulativeEcpochPercent > $summarythreshold);
 		}else{
 			print TIMEPERCENTAGES "0:0\t";
-		}	
+		}
 		
 	}
 	print TIMEPERCENTAGES "\n";
