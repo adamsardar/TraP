@@ -154,7 +154,11 @@ sub supra_genomes {
     foreach my $supra (@$ListOfSupraIDs){
     	
  	   my $dbh = dbConnect('superfamily');
-    	my $sth = $dbh->prepare("select distinct(len_supra.genome) from len_supra,genome where genome.genome = len_supra.genome and len_supra.supra_id = ? and genome.include = 'y';");
+    	my $sth = $dbh->prepare("SELECT DISTINCT(len_supra.genome) 
+    							FROM len_supra,genome 
+    							WHERE genome.genome = len_supra.genome 
+    							AND len_supra.supra_id = ? 
+    							AND genome.include = 'y';");
 
  	   $sth->execute($supra);
     
@@ -236,10 +240,19 @@ my ($dbh, $sth);
 print "connected\n";
 $dbh = dbConnect();
 
-$sth =   $dbh->prepare( "select distinct(len_supra.supra_id) from genome,comb,len_supra,(select distinct(protein)as p from 
-trap.cell_snapshot, trap.id_mapping where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.cell_snapshot.experiment_id 
-= $sample and trap.cell_snapshot.raw_expression > 10) as a where comb.protein=a.p and len_supra.ascomb_prot_number > 0 and comb.comb_id=len_supra.supra_id AND len_supra.genome = ?
- and len_supra.genome = genome.genome and genome.include = 'y';" );
+$sth =   $dbh->prepare( "SELECT DISTINCT(len_supra.supra_id) 
+						FROM genome,comb,len_supra,
+							(select distinct(protein) as p 
+							from trap.cell_snapshot, trap.id_mapping 
+							where trap.cell_snapshot.gene_id = trap.id_mapping.entrez 
+							and trap.cell_snapshot.experiment_id = $sample 
+							and trap.cell_snapshot.raw_expression > 10) AS a 
+						WHERE comb.protein=a.p 
+						AND len_supra.ascomb_prot_number > 0 
+						AND comb.comb_id=len_supra.supra_id 
+						AND len_supra.genome = ?
+ 						AND len_supra.genome = genome.genome 
+ 						AND genome.include = 'y';" );
         	$sth->execute($root_genome);
         	while (my ($supra) = $sth->fetchrow_array ) {
 				push @supras, $supra;
@@ -260,9 +273,12 @@ my $cutoff = shift;
 my %gene_distances;
 my ($dbh, $sth);
 $dbh = dbConnect();
-$sth =   $dbh->prepare( " select distinct(protein) as p, max(trap.cell_snapshot.`mogrify_gene_distance`) from trap.cell_snapshot, 
-trap.id_mapping where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and trap.cell_snapshot.`mogrify_gene_distance` > $cutoff 
-and trap.cell_snapshot.experiment_id = $sample group by p;" );
+$sth =   $dbh->prepare( "SELECT DISTINCT(protein) AS p, MAX(trap.cell_snapshot.`mogrify_gene_distance`) 
+						FROM trap.cell_snapshot, trap.id_mapping 
+						WHERE trap.cell_snapshot.gene_id = trap.id_mapping.entrez 
+						AND trap.cell_snapshot.`mogrify_gene_distance` > $cutoff 
+						AND trap.cell_snapshot.experiment_id = $sample 
+						GROUP BY p;" );
         	$sth->execute;
         	while (my ($protein,$gene_distance) = $sth->fetchrow_array ) {
         		if($gene_distance >= $cutoff){
@@ -354,11 +370,17 @@ my %prot_lookup;
 my %supra_lookup;
 $dbh = dbConnect();
 
-$sth =   $dbh->prepare( "select distinct(len_supra.supra_id),p from genome,comb,len_supra,(select distinct(protein)as p from 
-trap.cell_snapshot, trap.id_mapping,trap.experiment where trap.cell_snapshot.gene_id = trap.id_mapping.entrez and 
-trap.experiment.experiment_id = trap.cell_snapshot.experiment_id and trap.experiment.source_id = $source) as a where comb.protein=a.p 
-and len_supra.ascomb_prot_number > 0 and comb.comb_id=len_supra.supra_id AND genome.genome = ? and len_supra.genome = genome.genome
- and genome.include = 'y';");
+$sth =   $dbh->prepare( "SELECT DISTINCT(len_supra.supra_id),p 
+						FROM genome,comb,len_supra,
+							(select distinct(protein) as p from 
+							trap.cell_snapshot, trap.id_mapping,trap.experiment where trap.cell_snapshot.gene_id = trap.id_mapping.entrez 
+							and trap.experiment.experiment_id = trap.cell_snapshot.experiment_id and trap.experiment.source_id = $source) AS a 
+						WHERE comb.protein=a.p 
+						AND len_supra.ascomb_prot_number > 0 
+						AND comb.comb_id=len_supra.supra_id 
+						AND genome.genome = ? 
+						AND len_supra.genome = genome.genome
+ 						AND genome.include = 'y';");
         	$sth->execute($root_genome);
         	while (my ($supra,$protein) = $sth->fetchrow_array ) {
 				$supras{$supra} =1;

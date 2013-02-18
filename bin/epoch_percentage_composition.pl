@@ -1,16 +1,14 @@
 #!/usr/bin/env perl
 
-use strict;
-use warnings;
+use Modern::Perl;
 
 =head1 NAME
 
-epoch_percentage_composition.pl - A script for addressing the question of when a group of samples could
-have existed.
+epoch_percentage_composition.pl - A script for addressing the question of when a group of samples could have existed.
 
 =head1 SYNOPSIS
 
-epoch_percentage_composition.pl [options] -tr|--taxontranslate <TaxonRangesToMapBetween> -s --samples <SampleIDsFile>
+epoch_percentage_composition.pl [options] -tr|--taxontranslate <TaxonRangesToMapBetween> -u|--union flag_for_calculating_union -s --samples <SampleIDsFile>
 
  Basic Options:
   -h --help Get full man page output
@@ -45,13 +43,11 @@ ImmuneSystemCells	12%:12%		34%:46%		...
 
 =head1 EXAMPLES
 
-To get some help output do:
+./epoch_percentage_composition.pl -s TestEpoch -tr TaxaMappingsCollapsed.txt
+#Studies domaina rchitectures that are common to all the samples in a group
 
-skeleton --help
-
-To list the files in the current directory do:
-
-skeleton *
+./epoch_percentage_composition.pl -s SampleIDsFile -r -tr TaxaMappingsCollapsed.txt
+# Removes domain architectures that are present in everything
 
 B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
 
@@ -113,7 +109,9 @@ use Data::Dumper; #Allow easy print dumps of datastructures for debugging
 use Utils::SQL::Connect qw/:all/;
 use Supfam::Utils qw/:all/;
 use Carp;
+use Carp::Assert;
 use Carp::Assert::More;
+use List::Compare;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
@@ -123,6 +121,11 @@ my $help;    #Same again but this time should we output the POD man page defined
 
 my $samplesfile;
 my $translation_file;
+my $union = 0;
+my $removeubiq = 0;
+my $UbiqFuzzyThreshold;
+#The percentage number of samples to hold a comb before we call it is a ubiqutous
+my $source = 1;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -130,19 +133,39 @@ GetOptions("verbose|v!"  => \$verbose,
            "help|h!" => \$help,
            "taxontranslate|tr:s" => \$translation_file,
            "samples|s=s" => \$samplesfile,
+           "union|u!" => \$union,
+           "removeubiq|r!" => \$removeubiq,
+           "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
+           "source|c:i" => \$source,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
 my @files= @ARGV;
+
+
+assert_in($source,[qw(1 2 3 NULL)],"Allowed options for -c|--source are 1,2,3 and NULL\n");
+
+if($UbiqFuzzyThreshold){
+	
+	$removeubiq =1 if($UbiqFuzzyThreshold);
+	assert_positive($UbiqFuzzyThreshold,"Threshold must be greater than 0 - a percentage\n");
+	assert($UbiqFuzzyThreshold <= 100,"Threshold must be less than 100 - a percetage\n");
+	
+}elsif($removeubiq){
+	$UbiqFuzzyThreshold = 100 if($removeubiq);
+	
+}
+
+
 
 #Print out some help if it was asked for or if no arguments were given.
 pod2usage(-exitstatus => 0, -verbose => 2) if $help;
 
 ###Main script
 
-my ( $dbh, $sth );
+my ( $dbh, $sth , $ebh, $tth);
 $dbh = dbConnect();
-
+$ebh = dbConnect();
 
 #Make a translation file to map between taxonomic ranges
 my $Taxon_mapping ={};
@@ -169,7 +192,7 @@ if($translation_file){
 
 my @SortedEpochs;
 
-$sth = $dbh->prepare("SELECT DISTINCT(taxon_id) FROM taxon_details ORDER BY distance ASC;");
+$sth = $dbh->prepare("SELECT DISTINCT(taxon_id) FROM taxon_details ORDER BY distance DESC;");
 
 $sth->execute();
 
@@ -184,6 +207,8 @@ while (my ($taxon_id) = $sth->fetchrow_array()){
 
 #Need to construct these - pull them from the database.
 
+assert_defined($samplesfile,"You must procide a file to calculate statistics upon! See doc\n");
+
 open SAMPLEIDS, "<$samplesfile" or die $?."\t".$!;
 
 mkdir("../data");
@@ -191,49 +216,177 @@ open TIMEPERCENTAGES, ">../data/EpochSampleGroupPercentages.dat" or die $!."\t".
 print TIMEPERCENTAGES join("\t",@SortedEpochs);
 print TIMEPERCENTAGES "\n";
 
-$sth = $dbh->prepare("SELECT DISTINCT(comb_MRCA.comb_id),comb_MRCA.taxon_id 
-						FROM comb_MRCA 
-						JOIN snapshot_order_comb ON comb_MRCA.comb_id = snapshot_order_comb.comb_id
-						WHERE sample_id IN (?)");
+$sth = $dbh->prepare("SELECT DISTINCT sample_id,comb_id 
+						FROM snapshot_order_comb;");
+						
+$tth = $ebh->prepare("SELECT comb_MRCA.taxon_id
+						FROM comb_MRCA
+						WHERE comb_id = ?");
 
+my $SampleID2Combs = {};
+#Grab a list of comb ids per sample and whack them into a hash
+
+#So as to speed up execution, dump that hash to a file, unless we've already done so. In which case, use it!
+
+unless(-e "/tmp/SampleID2Combs.dat" && ! $debug){
+
+	print STDERR "Creating the hash SampleID2combs.dat and dumping it to file ...";
+	$sth->execute();
+			
+	while (my ($sample_id,$comb_id) = $sth->fetchrow_array()){
+				
+				$SampleID2Combs->{$sample_id}=[] unless(exists($SampleID2Combs->{$sample_id}));
+				push(@{$SampleID2Combs->{$sample_id}},$comb_id);
+	}
+
+	EasyDump("/tmp/SampleID2Combs.dat",$SampleID2Combs);
+	print STDERR " done.\n";
+
+}else{
+	
+	print STDERR "Using a dump of the hash SampleID2combs.dat from an earlier run ...";
+	$SampleID2Combs = EasyUnDump("/tmp/SampleID2Combs.dat");
+	print STDERR " loaded.\n";
+}
+
+
+#If requested (using -r or --removeubiq), make a lsit of DAs that exists in ALL samples
+my @UbiqCombs;
+if($removeubiq){
+	
+	unless(-e "/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat" && ! $debug){
+
+		print STDERR "Creating the array UbiqCombs and dumping it to file ...";
+		my $TotalSampleCompare = List::Compare->new( {
+			        lists    => [(@{$SampleID2Combs}{keys(%$SampleID2Combs)})],
+			        unsorted => 1,
+			        accelerated => 1,
+			    });
+		
+		my $SampleNumberThreshold = POSIX::floor(scalar(keys(%$SampleID2Combs))*$UbiqFuzzyThreshold/100);
+		my @BagOfCombs = $TotalSampleCompare->get_bag;
+		
+		print STDERR "\n".scalar(@BagOfCombs) if($debug);
+		print STDERR " - Bag of combs size\n";
+		
+		my $Combcount = {};
+		
+		while (my $comb = shift(@BagOfCombs)){
+			#Try to stay smart on memory
+			
+			$Combcount->{$comb}++;
+		}
+		
+		foreach my $comb (keys(%$Combcount)){
+			
+			push(@UbiqCombs,$comb) if($Combcount->{$comb} >= $SampleNumberThreshold);
+		}
+
+		EasyDump("/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat",\@UbiqCombs);
+		print STDERR " done.\n";
+		print STDERR "(Threshold of $UbiqFuzzyThreshold translates to a sample number threshold of $SampleNumberThreshold)\n";
+		
+	}else{
+		
+		print STDERR "Using a dump of the uniqutous domains from an earlier run ...";
+		my $tmp = EasyUnDump("/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat");
+		@UbiqCombs = @$tmp;
+		print STDERR " loaded.\n";
+	}
+	
+	print STDERR "Number of ubiquitous domain archs:".scalar(@UbiqCombs)." - these shall be removed from the sample sets that you have inputted\n";
+	print STDERR join(",",@UbiqCombs) if($debug);
+	print STDERR "\n";
+		
+}
+
+#For each line of the input file, loop through, grab a list of sample ids and then work out what is in the interection of all of their comb ids
 while(my $line = <SAMPLEIDS>){
 	
+	print STDERR "Processing line $. of input ... \n";
+	
 	chomp($line);
-	my ($comment,$samids) = split("\t",$line);
+	my ($comment,$samids) = split(/\t/,$line);
 	my @sampleids = split(',',$samids);
 	
+	my @DistinctCombIDs;
+	
+	unless(scalar(@sampleids) == 1){
+
+		my $lc = List::Compare->new( {
+	        lists    => [(@{$SampleID2Combs}{@sampleids})],
+	        unsorted => 1,
+	        accelerated => 1,
+	    } );
+		
+		unless($union){
+			
+			@DistinctCombIDs = $lc->get_intersection;
+		}else{
+			
+			@DistinctCombIDs = $lc->get_union;
+		}
+		
+	}else{
+		
+		@DistinctCombIDs = @{@{$SampleID2Combs->{$sampleids[0]}}};
+	}
+	
+	#If asked to remove DAs that are present in all samples, we do that here
+	if($removeubiq){
+		
+		my $removallc = List::Compare->new( {
+	        lists    => [\@DistinctCombIDs,\@UbiqCombs],
+	        unsorted => 1,
+	        accelerated => 1,
+	    } );
+	    
+	    @DistinctCombIDs = $removallc->get_Lonly;;
+	}
+	
 	my $TaxID2DomArchCountHash ={};
+	my $DistinctDAcount=scalar(@DistinctCombIDs);
 	
-	my $DistinctDAcount=0;
-	$sth->execute($samids);
+	print STDERR "DistinctDA count for ".$comment." is 0. Consider a higher unique threshold\n" unless($DistinctDAcount > 0);
 	
-	while (my ($comb_id,$taxon_id) = $sth->fetchrow_array()){
+	#Get the MRCA of each and every comb
+	foreach my $DA (@DistinctCombIDs){
+		
+		$tth->execute($DA);
+		#Use the comb_MRCA table to get the LCA of the comb
+		my ($taxon_id) = $tth->fetchrow_array();
 		
 		my $MappedTaxonID = $taxon_id;
 		$MappedTaxonID = $Taxon_mapping->{$taxon_id} if (exists($Taxon_mapping->{$taxon_id}));
+		#If we are using a mappig between epochs, use it to map the LCA to an epoch used
 		
 		$TaxID2DomArchCountHash->{$MappedTaxonID}++;
-		$DistinctDAcount++;
+		#Finally, uodate the hash
 	}
 	
 	my $CumlativeEpochCount = 0;
 	
+	#Now for the output. For each epoch, print the percentage of our DA set that comes about at that time, alongside the rolling cumulative
+	print TIMEPERCENTAGES $comment."\t";
 	foreach my $Epoch (@SortedEpochs){
 		
 		my $EpochCount=0;
-		print TIMEPERCENTAGES $comment."\t";
 		
-		unless(exists($TaxID2DomArchCountHash->{$Epoch})){
+		if(exists($TaxID2DomArchCountHash->{$Epoch})){
 			
 			$EpochCount=$TaxID2DomArchCountHash->{$Epoch};
 		}
 		
 		$CumlativeEpochCount+=$EpochCount;
 		
-		my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
-		my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
-			
-		print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+		if($DistinctDAcount > 0){
+			my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
+			my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
+			print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+		}else{
+			print TIMEPERCENTAGES "0:0\t";
+		}	
+		
 	}
 	print TIMEPERCENTAGES "\n";
 }

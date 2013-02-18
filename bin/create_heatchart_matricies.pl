@@ -162,6 +162,8 @@ $sth =   $dbh->prepare( "SELECT DISTINCT(snapshot_order_comb.comb_id), comb_MRCA
 						ON comb_MRCA.comb_id = snapshot_order_comb.comb_id
 						JOIN sample_index
 						ON  snapshot_order_comb.sample_id = sample_index.sample_id
+						JOIN combs_to_use
+						ON snapshot_order_comb.comb_id = combs_to_use.comb
 						WHERE comb_MRCA.taxon_id != 0;
 						;"); 
 						
