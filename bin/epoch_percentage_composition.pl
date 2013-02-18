@@ -161,6 +161,9 @@ if($UbiqFuzzyThreshold){
 }
 
 
+assert_positive($summarythreshold,"Summary threshold must be greater than 0 - a percentage\n");
+assert($summarythreshold <= 100,"Summary threshold must be less than 100 - a percetage\n");
+	
 
 #Print out some help if it was asked for or if no arguments were given.
 pod2usage(-exitstatus => 0, -verbose => 2) if $help;
