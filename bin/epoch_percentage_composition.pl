@@ -126,6 +126,7 @@ my $removeubiq = 0;
 my $UbiqFuzzyThreshold;
 #The percentage number of samples to hold a comb before we call it is a ubiqutous
 my $source = 1;
+my $out = "../data/EpochSampleGroupPercentages.dat";
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -137,6 +138,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "removeubiq|r!" => \$removeubiq,
            "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
            "source|c:i" => \$source,
+          "output|o:s" => \$out,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -212,7 +214,10 @@ assert_defined($samplesfile,"You must procide a file to calculate statistics upo
 open SAMPLEIDS, "<$samplesfile" or die $?."\t".$!;
 
 mkdir("../data");
-open TIMEPERCENTAGES, ">../data/EpochSampleGroupPercentages.dat" or die $!."\t".$?;
+
+print STDOUT "Printing to outfile $out\n";
+
+open TIMEPERCENTAGES, ">$out" or die $!."\t".$?;
 print TIMEPERCENTAGES join("\t",@SortedEpochs);
 print TIMEPERCENTAGES "\n";
 
