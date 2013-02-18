@@ -382,7 +382,7 @@ while(my $line = <SAMPLEIDS>){
 		#Finally, uodate the hash
 	}
 	
-	map{assert_in($_,keys(%$Taxon_mapping),"Your tax mapping needs to include $_ as at current it is unmapped\n")}keys(%$TaxID2DomArchCountHash);
+	map{assert_in($_,\@SortedEpochs,"Your tax mapping needs to include $_ as at current it is unmapped\n")}keys(%$TaxID2DomArchCountHash);
 	
 	my $CumlativeEpochCount = 0;
 	
