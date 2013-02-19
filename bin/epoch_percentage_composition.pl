@@ -132,6 +132,7 @@ my $UbiqFuzzyThreshold;
 my $source = 1;
 my $out = "../data/EpochSampleGroupPercentages.dat";
 my $domains = 0;
+my $epochcount = 0;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -144,6 +145,7 @@ GetOptions("verbose|v!"  => \$verbose,
            "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
            "source|c:i" => \$source,
           "output|o:s" => \$out,
+           "epochcount|e!" => \$epochcount,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -411,7 +413,15 @@ foreach my $comment (keys(%$samplegroups2combs)){
 		if($DistinctDAcount > 0){
 			my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
 			my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
-			print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+			
+			unless($epochcount){
+		
+				print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
+			}else{
+				
+				print TIMEPERCENTAGES $EpochCount."\t";
+			}
+			
 			
 			if($CumulativeEcpochPercent > $cent0cutoff){
 				print STDERR "Here 0% $CumulativeEcpochPercent !\n" if($verbose);
