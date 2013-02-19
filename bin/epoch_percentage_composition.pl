@@ -131,6 +131,7 @@ my $UbiqFuzzyThreshold;
 my $source = 1;
 my $out = "../data/EpochSampleGroupPercentages.dat";
 my $summarythreshold = 95;
+my $domains = 0;
 
 #Set command line flags and parameters.
 GetOptions("verbose|v!"  => \$verbose,
@@ -143,12 +144,12 @@ GetOptions("verbose|v!"  => \$verbose,
            "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
            "source|c:i" => \$source,
           "output|o:s" => \$out,
+          "domains|dom!" => \$out,
           "summthreshold|t:f" => \$summarythreshold,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
 my @files= @ARGV;
-
 
 assert_in($source,[qw(1 2 3 NULL)],"Allowed options for -c|--source are 1,2,3 and NULL\n");
 
@@ -162,7 +163,6 @@ if($UbiqFuzzyThreshold){
 	$UbiqFuzzyThreshold = 100 if($removeubiq);
 	
 }
-
 
 assert_positive($summarythreshold,"Summary threshold must be greater than 0 - a percentage\n");
 assert($summarythreshold <= 100,"Summary threshold must be less than 100 - a percetage\n");
@@ -231,6 +231,8 @@ print TIMEPERCENTAGES "\n";
 
 open TIMESUMMARY, ">".$out.".sum" or die $!."\t".$?;
 print TIMESUMMARY "0%	5%	25%	50%	75%	95%	100%\n";
+
+open TIMEDETAILS, ">".$out.".detailed" or die $!."\t".$?;
 
 $sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
 						FROM snapshot_order_comb
@@ -363,7 +365,8 @@ while(my $line = <SAMPLEIDS>){
 	        accelerated => 1,
 	    } );
 	    
-	    @DistinctCombIDs = $removallc->get_Lonly;;
+	    @DistinctCombIDs = $removallc->get_unique;
+	    #Get items which only appear in the first list
 	}
 	
 	my $TaxID2DomArchCountHash ={};
@@ -372,18 +375,28 @@ while(my $line = <SAMPLEIDS>){
 	print STDERR "DistinctDA count for ".$comment." is 0. Consider a higher unique threshold\n" unless($DistinctDAcount > 0);
 	
 	#Get the MRCA of each and every comb
+	print TIMEDETAILS $comment;
+	
 	foreach my $DA (@DistinctCombIDs){
 		
 		$tth->execute($DA);
 		#Use the comb_MRCA table to get the LCA of the comb
 		my ($taxon_id) = $tth->fetchrow_array();
-		
+				
 		my $MappedTaxonID = $taxon_id;
 		$MappedTaxonID = $Taxon_mapping->{$taxon_id} if (exists($Taxon_mapping->{$taxon_id}));
 		#If we are using a mappig between epochs, use it to map the LCA to an epoch used
 		
 		$TaxID2DomArchCountHash->{$MappedTaxonID}++;
 		#Finally, uodate the hash
+		
+		unless($domains){
+			print TIMEDETAILS $MappedTaxonID."\t";		
+		}else{
+			
+			print TIMEDETAILS $DA."\t";		
+		}
+		
 	}
 	
 	map{assert_in($_,\@SortedEpochs,"Your tax mapping needs to include $_ as at current it is unmapped\n")}keys(%$TaxID2DomArchCountHash);
@@ -457,7 +470,7 @@ while(my $line = <SAMPLEIDS>){
 				$cent95cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
 			}
 			
-			if($CumulativeEcpochPercent == $cent100cutoff){
+			if($CumulativeEcpochPercent >= $cent100cutoff){
 				print STDERR "Here 100% $CumulativeEcpochPercent !\n" if($verbose);
 				print TIMESUMMARY "\t".$Epoch;
 				$cent100cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
@@ -474,7 +487,7 @@ while(my $line = <SAMPLEIDS>){
 
 close SAMPLEIDS;
 close TIMEPERCENTAGES;
-
+close TIMEDETAILS;
 
 __END__
 
