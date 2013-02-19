@@ -111,7 +111,10 @@ use Supfam::Utils qw/:all/;
 use Carp;
 use Carp::Assert;
 use Carp::Assert::More;
+
 use List::Compare;
+use List::Util qw(sum);
+use POSIX qw(ceil);
 
 # Command Line Options
 #-------------------------------------------------------------------------------
@@ -227,6 +230,7 @@ print TIMEPERCENTAGES join("\t",@SortedEpochs);
 print TIMEPERCENTAGES "\n";
 
 open TIMESUMMARY, ">".$out.".sum" or die $!."\t".$?;
+print TIMESUMMARY "0%	5%	25%	50%	75%	95%	100%\n";
 
 $sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
 						FROM snapshot_order_comb
@@ -388,7 +392,19 @@ while(my $line = <SAMPLEIDS>){
 	
 	#Now for the output. For each epoch, print the percentage of our DA set that comes about at that time, alongside the rolling cumulative
 	print TIMEPERCENTAGES $comment."\t";
+
+	my $cent0cutoff = 1;
+	my $cent5cutoff = 5;
+	my $cent25cutoff =25;
+	my $cent50cutoff = 50;
+	my $cent75cutoff = 75;
+	my $cent95cutoff = 95;
+	my $cent100cutoff=100;
+	
 	my $CumulativeFlagThres = 0;
+	
+	print TIMESUMMARY $comment;
+	
 	foreach my $Epoch (@SortedEpochs){
 		
 		my $EpochCount=0;
@@ -404,14 +420,56 @@ while(my $line = <SAMPLEIDS>){
 			my $EpochPercent = 100*$EpochCount/$DistinctDAcount;
 			my $CumulativeEcpochPercent= 100*$CumlativeEpochCount/$DistinctDAcount;
 			print TIMEPERCENTAGES $EpochPercent.":".$CumulativeEcpochPercent."\t";
-			print TIMESUMMARY $comment."\t".$Epoch."\n" if($CumulativeEcpochPercent > $summarythreshold && ! $CumulativeFlagThres);
-			$CumulativeFlagThres++ if($CumulativeEcpochPercent > $summarythreshold);
+			
+			if($CumulativeEcpochPercent > $cent0cutoff){
+				print STDERR "Here 0% $CumulativeEcpochPercent !\n" if($verbose);
+				print TIMESUMMARY "\t".$Epoch;
+				$cent0cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
+			}
+			
+			if($CumulativeEcpochPercent > $cent5cutoff){
+				print STDERR "Here 5% $CumulativeEcpochPercent !\n" if($verbose);
+				print TIMESUMMARY "\t".$Epoch;
+				$cent5cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
+			}
+			
+			if($CumulativeEcpochPercent > $cent25cutoff){
+				print STDERR "Here 25% $CumulativeEcpochPercent !\n" if($verbose);
+				print TIMESUMMARY "\t".$Epoch;
+				$cent25cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
+			}
+			
+			if($CumulativeEcpochPercent > $cent50cutoff){
+				print STDERR "Here 50% $CumulativeEcpochPercent !\n" if($verbose);
+				print TIMESUMMARY "\t".$Epoch;
+				$cent50cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
+			}
+			
+			if($CumulativeEcpochPercent > $cent75cutoff){
+				print STDERR "Here 75% $CumulativeEcpochPercent !\n" if($verbose);
+				print TIMESUMMARY "\t".$Epoch;
+				$cent75cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
+			}
+			
+			if($CumulativeEcpochPercent > $cent95cutoff){
+				print STDERR "Here 95% $CumulativeEcpochPercent !\n" if($verbose);
+				print TIMESUMMARY "\t".$Epoch;
+				$cent95cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
+			}
+			
+			if($CumulativeEcpochPercent == $cent100cutoff){
+				print STDERR "Here 100% $CumulativeEcpochPercent !\n" if($verbose);
+				print TIMESUMMARY "\t".$Epoch;
+				$cent100cutoff = 101;#Set an impossible cutoff sothat it will never again be reached
+			}
+			
 		}else{
 			print TIMEPERCENTAGES "0:0\t";
 		}
 		
 	}
 	print TIMEPERCENTAGES "\n";
+	print TIMESUMMARY "\n";
 }
 
 close SAMPLEIDS;
