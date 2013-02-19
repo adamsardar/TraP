@@ -115,6 +115,7 @@ use Carp::Assert::More;
 use List::Compare;
 use List::Util qw(sum);
 use POSIX qw(ceil);
+use List::MoreUtils qw/ uniq /;
 
 # Command Line Options
 #-------------------------------------------------------------------------------
@@ -130,7 +131,6 @@ my $UbiqFuzzyThreshold;
 #The percentage number of samples to hold a comb before we call it is a ubiqutous
 my $source = 1;
 my $out = "../data/EpochSampleGroupPercentages.dat";
-my $summarythreshold = 95;
 my $domains = 0;
 
 #Set command line flags and parameters.
@@ -145,7 +145,6 @@ GetOptions("verbose|v!"  => \$verbose,
            "source|c:i" => \$source,
           "output|o:s" => \$out,
           "domains|dom!" => \$out,
-          "summthreshold|t:f" => \$summarythreshold,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
@@ -164,9 +163,6 @@ if($UbiqFuzzyThreshold){
 	
 }
 
-assert_positive($summarythreshold,"Summary threshold must be greater than 0 - a percentage\n");
-assert($summarythreshold <= 100,"Summary threshold must be less than 100 - a percetage\n");
-	
 
 #Print out some help if it was asked for or if no arguments were given.
 pod2usage(-exitstatus => 0, -verbose => 2) if $help;
@@ -246,27 +242,55 @@ $tth = $ebh->prepare("SELECT comb_MRCA.taxon_id
 my $SampleID2Combs = {};
 #Grab a list of comb ids per sample and whack them into a hash
 
-#So as to speed up execution, dump that hash to a file, unless we've already done so. In which case, use it!
+print STDERR "Creating the hash SampleID2combs.dat ...";
+$sth->execute($source);
 
-unless(-e "/tmp/SampleID2Combs.dat" && ! $debug){
 
-	print STDERR "Creating the hash SampleID2combs.dat and dumping it to file ...";
-	$sth->execute($source);
+#Read in sample ids and make a hash of sample id names to distinct combs
+		
+while (my ($sample_id,$comb_id) = $sth->fetchrow_array()){
 			
-	while (my ($sample_id,$comb_id) = $sth->fetchrow_array()){
-				
-				$SampleID2Combs->{$sample_id}=[] unless(exists($SampleID2Combs->{$sample_id}));
-				push(@{$SampleID2Combs->{$sample_id}},$comb_id);
-	}
+			$SampleID2Combs->{$sample_id}=[] unless(exists($SampleID2Combs->{$sample_id}));
+			push(@{$SampleID2Combs->{$sample_id}},$comb_id);
+}
+print STDERR "done!\n";
 
-	EasyDump("/tmp/SampleID2Combs.dat",$SampleID2Combs);
-	print STDERR " done.\n";
 
-}else{
+
+
+my $samplegroups2combs = {};
+
+
+#For each line of the input file, loop through, grab a list of sample ids and then work out what is in the interection of all of their comb ids
+
+while(my $line = <SAMPLEIDS>){
+			
+	chomp($line);
+	my ($comment,$samids) = split(/\t/,$line);
+	my @sampleids = split(',',$samids);
 	
-	print STDERR "Using a dump of the hash SampleID2combs.dat from an earlier run ...";
-	$SampleID2Combs = EasyUnDump("/tmp/SampleID2Combs.dat");
-	print STDERR " loaded.\n";
+	assert_lacks($samplegroups2combs, $comment, "Sample group names need to be unique!\n" );
+	map{assert_in($_,[keys(%$SampleID2Combs)],"Sample id $_ not in the database - error!\n")}@sampleids;
+	
+	if(scalar(@sampleids) > 1){
+		my $lc = List::Compare->new( {
+	        lists    => [(@{$SampleID2Combs}{@sampleids})],
+	        unsorted => 1,
+	        accelerated => 1,
+	    } );
+		
+		unless($union){
+			
+			$samplegroups2combs->{$comment} = $lc->get_intersection_ref;
+		}else{
+			
+			$samplegroups2combs->{$comment} = $lc->get_union_ref;
+		}
+	}else{
+		
+		$samplegroups2combs->{$comment} = 	$SampleID2Combs->{$sampleids[0]};
+	}
+	
 }
 
 
@@ -274,93 +298,49 @@ unless(-e "/tmp/SampleID2Combs.dat" && ! $debug){
 my @UbiqCombs;
 if($removeubiq){
 	
-	unless(-e "/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat" && ! $debug){
-
-		print STDERR "Creating the array UbiqCombs and dumping it to file ...";
-		my $TotalSampleCompare = List::Compare->new( {
-			        lists    => [(@{$SampleID2Combs}{keys(%$SampleID2Combs)})],
-			        unsorted => 1,
-			    });
-		
-		my $NumberSamples = scalar(keys(%$SampleID2Combs));
-		my $SampleNumberThreshold = POSIX::floor($NumberSamples*$UbiqFuzzyThreshold/100);
-		my @BagOfCombs = $TotalSampleCompare->get_bag;
-		
-		my $Combcount = {};
-		print STDERR scalar(@BagOfCombs)." - Bag of combs size\n" if($debug);
-		
-		while (my $comb = shift(@BagOfCombs)){
-			#Try to stay smart on memory
-			
-			$Combcount->{$comb}++;
-		}
-		
-		$TotalSampleCompare->print_subset_chart if($verbose);
-		$TotalSampleCompare->print_equivalence_chart if($verbose);
-		
-		foreach my $comb (keys(%$Combcount)){
-			
-			push(@UbiqCombs,$comb) if($Combcount->{$comb} >= $SampleNumberThreshold);
-		}
-
-		EasyDump("/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat",\@UbiqCombs);
-		print STDERR " done.\n";
-		print STDERR "(Threshold of $UbiqFuzzyThreshold % translates to a sample number threshold of $SampleNumberThreshold , where the total corpus is $NumberSamples samples)\n";
-		
-		
-	}else{
-		
-		print STDERR "Using a dump of the uniqutous domains from an earlier run ...";
-		my $tmp = EasyUnDump("/tmp/Ubiqcombs".$UbiqFuzzyThreshold."%.dat");
-		@UbiqCombs = @$tmp;
-		print STDERR " loaded.\n";
-	}
+	my $TotalSampleCompare = List::Compare->new( {
+		        lists    => [(@{$samplegroups2combs}{keys(%$samplegroups2combs)})],
+		        unsorted => 1,
+		    });
 	
+	my $NumberGroups= scalar(keys(%$samplegroups2combs));
+	my $SampleNumberThreshold = POSIX::floor($NumberGroups*$UbiqFuzzyThreshold/100);
+	my @BagOfCombs = $TotalSampleCompare->get_bag;
+	
+	my $Combcount = {};
+	print STDERR scalar(@BagOfCombs)." - Bag of combs size\n" if($debug);
+	
+	while (my $comb = shift(@BagOfCombs)){
+		#Try to stay smart on memory
+		
+		$Combcount->{$comb}++;
+	}
+
+	foreach my $comb (keys(%$Combcount)){
+		
+		push(@UbiqCombs,$comb) if($Combcount->{$comb} >= $SampleNumberThreshold);
+	}
+
+	print STDERR "(Threshold of $UbiqFuzzyThreshold % translates to a sample number threshold of $SampleNumberThreshold , where the total corpus is $NumberGroups samples)\n";
 	print STDERR "Number of ubiquitous domain archs:".scalar(@UbiqCombs)." - these shall be removed from the sample sets that you have inputted\n";
 		
 }
 
-#For each line of the input file, loop through, grab a list of sample ids and then work out what is in the interection of all of their comb ids
-while(my $line = <SAMPLEIDS>){
-	
-	print STDERR "Processing line $. of input ... \n";
-	
-	chomp($line);
-	my ($comment,$samids) = split(/\t/,$line);
-	my @sampleids = split(',',$samids);
-	
-	my @DistinctCombIDs;
-	
-	unless(scalar(@sampleids) == 1){
 
-		my $lc = List::Compare->new( {
-	        lists    => [(@{$SampleID2Combs}{@sampleids})],
-	        unsorted => 1,
-	        accelerated => 1,
-	    } );
-		
-		my @SampIdsInkeys = keys(%$SampleID2Combs);
-		map{assert_in($_,\@SampIdsInkeys,"Sample id from file at line $. isn't in the database as having a source id that matches\n")}@sampleids;
-		
-		
-		unless($union){
-			
-			@DistinctCombIDs = $lc->get_intersection;
-		}else{
-			
-			@DistinctCombIDs = $lc->get_union;
-		}
-		
-	}else{
-		
-		@DistinctCombIDs = @{$SampleID2Combs->{$sampleids[0]}};
-	}
+
+
+#Change to being foreach samplegroup
+foreach my $comment (keys(%$samplegroups2combs)){
+	
+	print STDERR "Processing $comment of input ... \n";
+
+	my @DistinctCombIDs;
 	
 	#If asked to remove DAs that are present in all samples, we do that here
 	if($removeubiq){
 		
 		my $removallc = List::Compare->new( {
-	        lists    => [\@DistinctCombIDs,\@UbiqCombs],
+	        lists    => [$samplegroups2combs->{$comment},\@UbiqCombs],
 	        unsorted => 1,
 	        accelerated => 1,
 	    } );
@@ -375,7 +355,7 @@ while(my $line = <SAMPLEIDS>){
 	print STDERR "DistinctDA count for ".$comment." is 0. Consider a higher unique threshold\n" unless($DistinctDAcount > 0);
 	
 	#Get the MRCA of each and every comb
-	print TIMEDETAILS $comment;
+	print TIMEDETAILS $comment."\t";
 	
 	foreach my $DA (@DistinctCombIDs){
 		
@@ -399,6 +379,8 @@ while(my $line = <SAMPLEIDS>){
 		
 	}
 	
+	print TIMEDETAILS "\n";
+	
 	map{assert_in($_,\@SortedEpochs,"Your tax mapping needs to include $_ as at current it is unmapped\n")}keys(%$TaxID2DomArchCountHash);
 	
 	my $CumlativeEpochCount = 0;
@@ -413,9 +395,7 @@ while(my $line = <SAMPLEIDS>){
 	my $cent75cutoff = 75;
 	my $cent95cutoff = 95;
 	my $cent100cutoff=100;
-	
-	my $CumulativeFlagThres = 0;
-	
+
 	print TIMESUMMARY $comment;
 	
 	foreach my $Epoch (@SortedEpochs){
