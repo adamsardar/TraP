@@ -144,7 +144,6 @@ GetOptions("verbose|v!"  => \$verbose,
            "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
            "source|c:i" => \$source,
           "output|o:s" => \$out,
-          "domains|dom!" => \$out,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
