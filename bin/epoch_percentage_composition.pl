@@ -305,6 +305,7 @@ if($removeubiq){
 	
 	my $NumberGroups= scalar(keys(%$samplegroups2combs));
 	my $SampleNumberThreshold = POSIX::floor($NumberGroups*$UbiqFuzzyThreshold/100);
+	$SampleNumberThreshold = 2 if($SampleNumberThreshold < 2); #Just a catch all
 	my @BagOfCombs = $TotalSampleCompare->get_bag;
 	
 	my $Combcount = {};
@@ -318,7 +319,7 @@ if($removeubiq){
 
 	foreach my $comb (keys(%$Combcount)){
 		
-		push(@UbiqCombs,$comb) if($Combcount->{$comb} > $SampleNumberThreshold);
+		push(@UbiqCombs,$comb) if($Combcount->{$comb} >= $SampleNumberThreshold);
 	}
 
 	print STDERR "(Threshold of $UbiqFuzzyThreshold % translates to a sample number threshold of $SampleNumberThreshold , where the total corpus is $NumberGroups samples)\n";
