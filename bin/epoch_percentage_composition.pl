@@ -229,6 +229,7 @@ open TIMESUMMARY, ">".$out.".sum" or die $!."\t".$?;
 print TIMESUMMARY "0%	5%	25%	50%	75%	95%	100%\n";
 
 open TIMEDETAILS, ">".$out.".detailed" or die $!."\t".$?;
+open TIMEDOMAINS, ">".$out.".domains" or die $!."\t".$?;
 
 $sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
 						FROM snapshot_order_comb
@@ -357,6 +358,7 @@ foreach my $comment (keys(%$samplegroups2combs)){
 	
 	#Get the MRCA of each and every comb
 	print TIMEDETAILS $comment."\t";
+	print TIMEDOMAINS  $comment."\t";
 	
 	foreach my $DA (@DistinctCombIDs){
 		
@@ -371,16 +373,13 @@ foreach my $comment (keys(%$samplegroups2combs)){
 		$TaxID2DomArchCountHash->{$MappedTaxonID}++;
 		#Finally, uodate the hash
 		
-		unless($domains){
-			print TIMEDETAILS $MappedTaxonID."\t";		
-		}else{
-			
-			print TIMEDETAILS $DA."\t";		
-		}
-		
+
+		print TIMEDETAILS $MappedTaxonID."\t";					
+		print TIMEDOMAINS $DA."\t";	
 	}
 	
 	print TIMEDETAILS "\n";
+	print TIMEDOMAINS "\n";
 	
 	map{assert_in($_,\@SortedEpochs,"Your tax mapping needs to include $_ as at current it is unmapped\n")}keys(%$TaxID2DomArchCountHash);
 	
@@ -469,6 +468,7 @@ foreach my $comment (keys(%$samplegroups2combs)){
 close SAMPLEIDS;
 close TIMEPERCENTAGES;
 close TIMEDETAILS;
+close TIMEDOMAINS;
 
 __END__
 
