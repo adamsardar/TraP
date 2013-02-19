@@ -467,8 +467,8 @@ foreach my $comment (keys(%$samplegroups2combs)){
 			
 		}else{
 			
-			#Just in case there are no domain archs of that epoch. Keep the file consistant
-			unless($EpochCount){
+			#Just in case there are no domain archs
+			unless($epochcount){
 				print TIMEPERCENTAGES "0:0\t";
 			}else{
 				print TIMEPERCENTAGES "0\t";
