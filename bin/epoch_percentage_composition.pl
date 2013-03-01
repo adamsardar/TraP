@@ -144,12 +144,17 @@ GetOptions("verbose|v!"  => \$verbose,
            "removeubiq|r!" => \$removeubiq,
            "ubiqthreshold|u:f" => \$UbiqFuzzyThreshold,
            "source|c:i" => \$source,
-          "output|o:s" => \$out,
+          	"output|o:s" => \$out,
            "epochcount|e!" => \$epochcount,
         ) or die "Fatal Error: Problem parsing command-line ".$!;
 
 #Get other command line arguments that weren't optional flags.
 my @files= @ARGV;
+
+$source = undef if($source == 0);
+
+print $source."\n";
+
 
 assert_in($source,[qw(1 2 3 NULL)],"Allowed options for -c|--source are 1,2,3 and NULL\n");
 
@@ -232,10 +237,21 @@ print TIMESUMMARY "0%	5%	25%	50%	75%	95%	100%\n";
 open TIMEDETAILS, ">".$out.".detailed" or die $!."\t".$?;
 open TIMEDOMAINS, ">".$out.".domains" or die $!."\t".$?;
 
-$sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
+if($source){
+	
+	$sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
+						FROM snapshot_order_comb
+						JOIN sample_index ON sample_index.sample_id = snapshot_order_comb.sample_id;");
+						
+}else{
+	
+	$sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
 						FROM snapshot_order_comb
 						JOIN sample_index ON sample_index.sample_id = snapshot_order_comb.sample_id
 						AND sample_index.source = ?;");
+}
+
+
 						
 $tth = $ebh->prepare("SELECT comb_MRCA.taxon_id
 						FROM comb_MRCA
@@ -268,7 +284,7 @@ my $samplegroups2combs = {};
 while(my $line = <SAMPLEIDS>){
 			
 	chomp($line);
-	my ($comment,$samids) = split(/\t/,$line);
+	my ($comment,$samids) = split(/\s+/,$line);
 	my @sampleids = split(',',$samids);
 	
 	assert_lacks($samplegroups2combs, $comment, "Sample group names need to be unique!\n" );
@@ -376,7 +392,7 @@ foreach my $comment (keys(%$samplegroups2combs)){
 		
 
 		print TIMEDETAILS $MappedTaxonID."\t";					
-		print TIMEDOMAINS $DA."\t";	
+		print TIMEDOMAINS $DA."\t";
 	}
 	
 	print TIMEDETAILS "\n";
