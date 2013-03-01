@@ -151,12 +151,8 @@ GetOptions("verbose|v!"  => \$verbose,
 #Get other command line arguments that weren't optional flags.
 my @files= @ARGV;
 
-$source = undef if($source == 0);
-
-print $source."\n";
-
-
 assert_in($source,[qw(1 2 3 NULL)],"Allowed options for -c|--source are 1,2,3 and NULL\n");
+$source = undef if($source eq 'NULL');
 
 if($UbiqFuzzyThreshold){
 	
