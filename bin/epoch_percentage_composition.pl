@@ -236,15 +236,19 @@ open TIMEDOMAINS, ">".$out.".domains" or die $!."\t".$?;
 if($source){
 	
 	$sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
-						FROM snapshot_order_comb
-						JOIN sample_index ON sample_index.sample_id = snapshot_order_comb.sample_id;");
+					FROM snapshot_order_comb
+					JOIN sample_index ON sample_index.sample_id = snapshot_order_comb.sample_id
+					AND sample_index.source = ?;");
+						
+
+	$sth->execute($source);
 						
 }else{
-	
 	$sth = $dbh->prepare("SELECT DISTINCT snapshot_order_comb.sample_id,snapshot_order_comb.comb_id 
-						FROM snapshot_order_comb
-						JOIN sample_index ON sample_index.sample_id = snapshot_order_comb.sample_id
-						AND sample_index.source = ?;");
+					FROM snapshot_order_comb
+					JOIN sample_index ON sample_index.sample_id = snapshot_order_comb.sample_id;");
+
+	$sth->execute();
 }
 
 
@@ -257,7 +261,7 @@ my $SampleID2Combs = {};
 #Grab a list of comb ids per sample and whack them into a hash
 
 print STDERR "Creating the hash SampleID2combs.dat ...";
-$sth->execute($source);
+
 
 
 #Read in sample ids and make a hash of sample id names to distinct combs
@@ -274,6 +278,8 @@ print STDERR "done!\n";
 
 my $samplegroups2combs = {};
 
+print join("\t",keys(%$SampleID2Combs));
+print "\n";
 
 #For each line of the input file, loop through, grab a list of sample ids and then work out what is in the interection of all of their comb ids
 
