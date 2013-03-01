@@ -49,6 +49,9 @@ ImmuneSystemCells	12%:12%		34%:46%		...
 ./epoch_percentage_composition.pl -s SampleIDsFile -r -tr TaxaMappingsCollapsed.txt
 # Removes domain architectures that are present in everything
 
+./epoch_percentage_composition.pl  -tr TaxaMappingsFull.txt --samples ~/not_cad_nuc -u 1 -d --output ../data/not_cad_nuc.txt --union -e -c 0
+#Processes tissue samples as well
+
 B<Adam Sardar> - I<Adam.Sardar@bristol.ac.uk>
 
 =head1 NOTICE
@@ -277,9 +280,6 @@ print STDERR "done!\n";
 
 
 my $samplegroups2combs = {};
-
-print join("\t",keys(%$SampleID2Combs));
-print "\n";
 
 #For each line of the input file, loop through, grab a list of sample ids and then work out what is in the interection of all of their comb ids
 
