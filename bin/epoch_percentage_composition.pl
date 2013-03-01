@@ -286,7 +286,7 @@ my $samplegroups2combs = {};
 while(my $line = <SAMPLEIDS>){
 			
 	chomp($line);
-	my ($comment,$samids) = split(/\s+/,$line);
+	my ($comment,$samids) = split(/\t+/,$line);
 	my @sampleids = split(',',$samids);
 	
 	assert_lacks($samplegroups2combs, $comment, "Sample group names need to be unique!\n" );
